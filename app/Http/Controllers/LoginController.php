@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class Login extends Controller
+class LoginController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +28,14 @@ class Login extends Controller
      */
     public function store(Request $request)
     {
-        //
+        User::created([
+            "name"=>$request->name,
+            "email"=>$request->email,
+            "password"=>$request->password
+
+        ]);
+        
+
     }
 
     /**
