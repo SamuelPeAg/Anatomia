@@ -3,16 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Iniciar sesion</title>
-</head>
-<body>
+    <title>Davante Login</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="./css/login.css">
     
-    <div>
-        <h1>Iniciar sesion</h1>
-        <input type="text" id="name" placeholder="Nombre de usuario">
-        <input type="email" id="email" placeholder="Correo electronico">
-        <input type="password" id="contraseña" placeholder="Contraseña">
+    <!-- Iconos Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body>
+
+
+    <div class="login-wrapper">
+
+        <h2>Iniciar Sesión</h2>
+
+        <form>
+
+            <!-- Usuario -->
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-person"></i>
+                </span>
+                <input type="text" class="form-control" placeholder="Usuario">
+            </div>
+
+            <!-- Contraseña -->
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-key"></i>
+                </span>
+                <input type="password" class="form-control" placeholder="Contraseña">
+            </div>
+
+            <!-- <button class="btn-google">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Iniciar sesión con Google
+            </button> -->
+
+
+            <!-- Botón -->
+            <button class="btn-login mt-3">INICIAR SESIÓN</button>
+
+        </form>
+
+        <!-- Enlace footer -->
+        <div class="login-footer">
+            <a href="#">¿Has olvidado tu contraseña?</a>
+        </div>
     </div>
+
 </body>
 </html>
