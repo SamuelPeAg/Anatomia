@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,32 +11,31 @@
 
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="./css/login.css">
-    
+
     <!-- Iconos Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
 <body>
-
-
     <div class="login-wrapper">
 
         <h2>Iniciar Sesión</h2>
 
-        <form>
-
+        <form action="{{ route('login') }}" method="POST">
+            @csrf
             <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-person"></i>
                 </span>
-                <input type="text" class="form-control" placeholder="name" required>
+                <input type="text" name="name" class="form-control" placeholder="ingrese el nombre" required>
             </div>
 
             <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-key"></i>
                 </span>
-                <input type="password" class="form-control" placeholder="password" required>
+                <input type="password" name="password" class="form-control" placeholder="ingrese la contraseña"
+                    required>
             </div>
 
             <!-- <button class="btn-google">
@@ -47,6 +47,12 @@
             <button class="btn-login mt-3">INICIAR SESIÓN</button>
 
         </form>
+        @if ($errors->has('login'))
+            <div class="alert alert-danger mt-3">
+                {{ $errors->first('login') }}
+            </div>
+        @endif
+
 
         <!-- Enlace footer -->
         <div class="login-footer">
@@ -55,4 +61,5 @@
     </div>
 
 </body>
+
 </html>

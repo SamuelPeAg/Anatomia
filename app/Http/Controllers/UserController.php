@@ -5,16 +5,32 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    public function login(Request $request){
+        $credentials = $request->only('name', 'password');
+
+        if (Auth::attempt($credentials)) {
+
+            return redirect()->route('home');
+        }
+
+
+        return back()->withErrors([
+            'login' => 'Nombre o contraseña incorrectos',
+        ]);
+
+    }
+
     public function index()
     {
          $users = User::all();
-        return view('users.index', compact('users'));
+        return view('welcome', compact('users'));
     }
 
     /**
@@ -43,7 +59,7 @@ class UserController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        return redirect()->route('users.index')
+        return redirect()->route('home')
             ->with('success', 'Usuario creado correctamente.');
     }
 
