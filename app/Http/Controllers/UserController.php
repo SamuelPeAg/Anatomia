@@ -13,7 +13,7 @@ class UserController extends Controller
      */
     public function index()
     {
-         $users = User::all(); // puedes paginar si quieres
+         $users = User::all();
         return view('users.index', compact('users'));
     }
 
@@ -38,8 +38,8 @@ class UserController extends Controller
         ]);
 
         User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name'     => $request["name"],
+            'email'    => $request["email"],
             'password' => bcrypt($request->password),
         ]);
 
@@ -52,7 +52,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        return view('users.show', compact('user'));
+
     }
 
     /**
@@ -60,7 +60,7 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-       return view('users.edit', compact('user'));
+     
     }
 
     /**

@@ -24,20 +24,18 @@
 
         <form>
 
-            <!-- Usuario -->
             <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-person"></i>
                 </span>
-                <input type="text" class="form-control" placeholder="Usuario">
+                <input type="text" class="form-control" placeholder="name" required>
             </div>
 
-            <!-- Contraseña -->
             <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-key"></i>
                 </span>
-                <input type="password" class="form-control" placeholder="Contraseña">
+                <input type="password" class="form-control" placeholder="password" required>
             </div>
 
             <!-- <button class="btn-google">
@@ -46,7 +44,6 @@
             </button> -->
 
 
-            <!-- Botón -->
             <button class="btn-login mt-3">INICIAR SESIÓN</button>
 
         </form>
