@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 //Inicio de sesion
 Route::get('/', function () {
-    return view('login');
+    return view('sesion.login');
 })->name("login.form");
 
 Route::post("/login",[UserController::class,"login"])->name("login");
@@ -23,5 +23,5 @@ Route::get('/welcome', function () {
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
 
 Route::get('/register', function () {
-    return view('register');
+    return view('sesion.register');
 })->name("register");
