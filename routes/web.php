@@ -13,6 +13,19 @@ Route::get('/', function () {
 Route::post("/login",[UserController::class,"login"])->name("login");
 
 
+// nuevo informe
+Route::get("/nuevo_informe",function(){
+    return view("nuevoinforme");
+
+})->name("nuevo informe");
+
+//revision informes
+Route::get("/revision",function(){
+    return view("revision");
+
+})->name("revision");
+
+
 //Pagina principal
 Route::get('/welcome', function () {
     return view('welcome');
