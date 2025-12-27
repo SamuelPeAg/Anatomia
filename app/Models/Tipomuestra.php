@@ -9,9 +9,6 @@ class TipoMuestra extends Model
 {
     use HasFactory;
 
-    /**
-     * Campos asignables en masa
-     */
     protected $fillable = [
         'nombre',
         'prefijo',
@@ -21,13 +18,16 @@ class TipoMuestra extends Model
         'activo',
     ];
 
-    /**
-     * Relación con informes
-     * Un tipo de muestra puede tener muchos informes
-     */
+    protected $casts = [
+        'contador_actual' => 'integer',
+        'requiere_organo' => 'boolean',
+        'activo' => 'boolean',
+    ];
+
     public function informes()
     {
         return $this->hasMany(Informe::class, 'tipo_id');
     }
 }
+
  

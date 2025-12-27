@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+
 use App\Models\Imagenes;
 use App\Models\Informe;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -12,21 +13,37 @@ class ImagenesFactory extends Factory
 
     public function definition(): array
     {
+        $fase = $this->faker->randomElement(['recepcion', 'procesamiento', 'tincion', 'microscopio']);
+        $esMicro = $fase === 'microscopio';
+
         return [
-            // Relación con un informe
-            'informe_id' => Informe::inRandomOrder()->first()->id,
+            'informe_id' => Informe::inRandomOrder()->value('id')
+                ?? Informe::factory()->create()->id,
 
-            // Ruta de la imagen
-            'ruta' => $this->faker->imageUrl(640, 480, 'animals', true, 'cats'),
+            'fase' => $fase,
 
-            // Tipo de imagen: puede ser 'general' o 'microscopica'
-            'tipo_imagen' => $this->faker->randomElement(['general', 'microscopica']),
+            // Ruta fake para seed (en real usarás Storage::putFile / store)
+            'ruta' => 'imagenes/demo/' . $this->faker->uuid() . '.jpg',
 
-            // Zoom (solo para microscópicas)
-            'zoom' => $this->faker->randomElement(['x4', 'x10', 'x40', 'x100']),
+            'descripcion' => $this->faker->optional(0.7)->sentence(8),
 
-            // Descripción de la imagen (opcional)
-            'descripcion' => $this->faker->optional()->sentence(),
+            // Solo microscopio tiene zoom
+            'zoom' => $esMicro ? $this->faker->randomElement(['x4', 'x10', 'x40', 'x100']) : null,
+
+            // Solo microscopio puede ser obligatoria
+            'obligatoria' => $esMicro ? $this->faker->boolean(40) : false,
         ];
+    }
+
+    /**
+     * Estado: imagen obligatoria de microscopio con un zoom concreto (x4/x10/x40/x100).
+     */
+    public function microsObligatoria(string $zoom): static
+    {
+        return $this->state(fn () => [
+            'fase' => 'microscopio',
+            'zoom' => $zoom,
+            'obligatoria' => true,
+        ]);
     }
 }

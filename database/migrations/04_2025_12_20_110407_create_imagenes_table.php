@@ -11,32 +11,31 @@ return new class extends Migration
         Schema::create('imagenes', function (Blueprint $table) {
             $table->id();
 
-            // Relación con informe
+            // Relación: una imagen pertenece a un informe
             $table->foreignId('informe_id')
-                  ->constrained('informes')
-                  ->cascadeOnDelete();
+                ->constrained('informes')
+                ->cascadeOnDelete();
 
-            // Ruta del archivo de imagen
-            $table->string('ruta');
+            // Para clasificar en qué bloque del formulario está
+            $table->enum('fase', ['recepcion', 'procesamiento', 'tincion', 'microscopio']);
 
-            // Tipo de imagen: general o microscopica
-            $table->enum('tipo_imagen', [
-                'general',
-                'microscopica'
-            ]);
-
-            // Zoom del microscopio (solo para microscópicas)
-            $table->enum('zoom', [
-                'x4',
-                'x10',
-                'x40',
-                'x100'
-            ])->nullable();
+            // Ruta/archivo guardado (Storage)
+            $table->string('ruta', 255);
 
             // Descripción opcional
-            $table->text('descripcion')->nullable();
+            $table->string('descripcion', 255)->nullable();
+
+            // Solo para microscopio (si no es microscopio, null)
+            $table->enum('zoom', ['x4', 'x10', 'x40', 'x100'])->nullable();
+
+            // Solo para microscopio: true para las 4 obligatorias, false para extras
+            $table->boolean('obligatoria')->default(false);
 
             $table->timestamps();
+
+            // Índices útiles (revisión/carga rápida)
+            $table->index(['informe_id', 'fase']);
+            $table->index(['informe_id', 'fase', 'zoom']);
         });
     }
 

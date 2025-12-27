@@ -9,23 +9,26 @@ class Imagenes extends Model
 {
     use HasFactory;
 
-    /**
-     * Campos asignables en masa
-     */
+    protected $table = 'imagenes';
+
     protected $fillable = [
         'informe_id',
-        'ruta',
-        'tipo_imagen',
-        'zoom',
-        'descripcion',
+        'fase',         // recepcion | procesamiento | tincion | microscopio
+        'ruta',         // path en storage
+        'descripcion',  // nullable
+        'zoom',         // x4 | x10 | x40 | x100 (nullable)
+        'obligatoria',  // bool
+    ];
+
+    protected $casts = [
+        'obligatoria' => 'boolean',
     ];
 
     /**
-     * Relación con Informe
      * Una imagen pertenece a un informe
      */
     public function informe()
     {
-        return $this->belongsTo(Informe::class);
+        return $this->belongsTo(Informe::class, 'informe_id');
     }
 }

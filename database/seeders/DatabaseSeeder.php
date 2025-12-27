@@ -2,41 +2,82 @@
 
 namespace Database\Seeders;
 
-use App\Models\Expediente;
-use App\Models\Imagenes;
-use App\Models\Informe;
-use App\Models\TipoMuestra;
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+
+use App\Models\TipoMuestra;
+use App\Models\Expediente;
+use App\Models\Informe;
+use App\Models\Imagenes;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-       
-        // Paso 1: Crear los tipos de muestra
-        TipoMuestra::factory()->count(5)->create();
+        // 1) TIPOS FIJOS (catalogo) -> sin duplicados de prefijo
+        TipoMuestra::query()->delete(); // por si ya hay algo
 
-        // Paso 2: Crear los expedientes
-        Expediente::factory()->count(5)->create();
-
-        // Paso 3: Crear los informes (con relaciones correctas)
-        Informe::factory()->count(10)->create();
-
-        // Paso 4: Crear las imágenes asociadas a los informes
-        Imagenes::factory()->count(5)->create();
-
-
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        TipoMuestra::insert([
+            ['nombre'=>'Biopsia',               'prefijo'=>'B',   'contador_actual'=>0, 'requiere_organo'=>1, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Biopsia veterinaria',   'prefijo'=>'BV',  'contador_actual'=>0, 'requiere_organo'=>1, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Cavidad bucal',         'prefijo'=>'CB',  'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Citología vaginal',     'prefijo'=>'CV',  'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Extensión sanguínea',   'prefijo'=>'EX',  'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Orinas',                'prefijo'=>'O',   'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Esputo',                'prefijo'=>'E',   'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Semen',                 'prefijo'=>'ES',  'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Improntas',             'prefijo'=>'I',   'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Frotis',                'prefijo'=>'F',   'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
+            ['nombre'=>'Otro',                  'prefijo'=>'OTRO','contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
         ]);
+
+        // 2) EXPEDIENTES (si los estás usando)
+        Expediente::factory()->count(10)->create();
+
+        // 3) INFORMES
+        //    Ojo: tu InformeFactory debe usar 'prefijo' (no 'codigo')
+        Informe::factory()->count(20)->create();
+
+        // 4) IMÁGENES (colgando de informes)
+        //    Creamos algunas fotos por fases y para algunos informes las 4 obligatorias del microscopio
+        $informes = Informe::all();
+
+        foreach ($informes as $informe) {
+
+            // Opcionales por fase (0-2)
+            Imagenes::factory()->count(rand(0,2))->create([
+                'informe_id' => $informe->id,
+                'fase' => 'recepcion',
+                'zoom' => null,
+                'obligatoria' => false,
+            ]);
+
+            Imagenes::factory()->count(rand(0,2))->create([
+                'informe_id' => $informe->id,
+                'fase' => 'procesamiento',
+                'zoom' => null,
+                'obligatoria' => false,
+            ]);
+
+            Imagenes::factory()->count(rand(0,2))->create([
+                'informe_id' => $informe->id,
+                'fase' => 'tincion',
+                'zoom' => null,
+                'obligatoria' => false,
+            ]);
+
+            // En algunos informes, metemos las 4 obligatorias del microscopio
+            if (rand(0, 1) === 1) {
+                Imagenes::factory()->microsObligatoria('x4')->create(['informe_id' => $informe->id]);
+                Imagenes::factory()->microsObligatoria('x10')->create(['informe_id' => $informe->id]);
+                Imagenes::factory()->microsObligatoria('x40')->create(['informe_id' => $informe->id]);
+                Imagenes::factory()->microsObligatoria('x100')->create(['informe_id' => $informe->id]);
+            } else {
+                // Si no, alguna microscópica suelta
+                Imagenes::factory()->count(rand(0,2))->create([
+                    'informe_id' => $informe->id,
+                    'fase' => 'microscopio',
+                ]);
+            }
+        }
     }
 }

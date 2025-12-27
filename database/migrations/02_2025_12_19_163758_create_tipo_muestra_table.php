@@ -11,31 +11,22 @@ return new class extends Migration
         Schema::create('tipo_muestras', function (Blueprint $table) {
             $table->id();
 
-            // Nombre del tipo de muestra (Biopsia, Esputo, Otro...)
-            $table->string('nombre');
+            $table->string('nombre', 80);
 
-            // Prefijo para el código identificador (BIO, ESP, OTR...)
-            $table->enum('prefijo', [
-                'B',    // Biopsia
-                'BV',   // Biopsia veterinaria
-                'CB',   // Cavidad bucal
-                'CV',   // Citología vaginal
-                'EX',   // Extensión sanguínea
-                'O',    // Orinas
-                'E',    // Esputo
-                'ES',   // Semen
-                'I',    // Improntas
-                'F'     // Frotis
-            ]);
+            // Prefijo (si ya tienes enum preparado con todos los valores, lo ponemos como enum)
+            $table->enum('prefijo', ['B','BV','CB','CV','EX','O','E','ES','I','F','OTRO'])
+                ->unique();
 
-            // Contador para generar el número correlativo por tipo
+            // Contador para generar correlativos por tipo (lo normal: empieza en 0)
             $table->unsignedInteger('contador_actual')->default(0);
 
-            // Indica si este tipo requiere el campo "órgano"
+            // Si requiere órgano (biopsias, etc.)
             $table->boolean('requiere_organo')->default(false);
 
+            // Descripción opcional del tipo
+            $table->string('descripcion', 255)->nullable();
 
-            // Permite activar/desactivar tipos sin borrarlos
+            // Activo/inactivo
             $table->boolean('activo')->default(true);
 
             $table->timestamps();

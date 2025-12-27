@@ -10,29 +10,49 @@ class Informe extends Model
     use HasFactory;
 
     protected $fillable = [
+        // Identificación / control
         'expediente_id',
         'tipo_id',
+        'anio',
+        'correlativo',
         'codigo_identificador',
-        'organo',
-        'formato_recibido',
-        'descripcion_recogida',
-        'descripcion_citologica',
         'estado',
+
+        // Fase 1 - Recepción
+        'recepcion_formato_recibido',
+        'recepcion_observaciones',
+        'recepcion_organo',
+
+        // Fase 2 - Procesamiento
+        'procesamiento_tipo',
+        'procesamiento_otro',
+        'procesamiento_observaciones',
+
+        // Fase 3 - Tinción
+        'tincion_tipo',
+        'tincion_observaciones',
+
+        // Fase 4 - Citodiagnóstico
+        'citodiagnostico',
     ];
 
-    /**
-     * Relación con Expediente
-     * Un informe puede pertenecer a un expediente (o no)
-     */
+    protected $casts = [
+        'anio' => 'integer',
+        'correlativo' => 'integer',
+    ];
+
     public function expediente()
     {
         return $this->belongsTo(Expediente::class);
     }
 
-
     public function tipo()
     {
-        return $this->belongsTo(TipoMuestra::class);
+        return $this->belongsTo(TipoMuestra::class, 'tipo_id');
+    }
+
+    public function imagenes()
+    {
+        return $this->hasMany(Imagenes::class, 'informe_id');
     }
 }
-

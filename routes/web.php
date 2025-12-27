@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\TipoMuestraController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +11,10 @@ Route::get('/', function () {
 })->name("login.form");
 
 Route::post("/login",[UserController::class,"login"])->name("login");
+
+//
+Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'siguienteCodigo'])
+    ->name('tipos.siguienteCodigo');
 
 
 // nuevo informe
