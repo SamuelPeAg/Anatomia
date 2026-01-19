@@ -91,16 +91,15 @@ document.addEventListener("DOMContentLoaded", () => {
     tipoProcesamiento.addEventListener("change", mostrarOcultarProcesamientoOtro);
     mostrarOcultarProcesamientoOtro();
   }
-array.forEach(element => {
-  
-});
+
   // =========================
   // AÑADIR / ELIMINAR FILAS DE IMÁGENES (delegación)
   // Para: recepcion, procesamiento, tincion, micro-extra
   // =========================
   function anadirFila(clave) {
     const lista = document.querySelector(`[data-lista-imagenes="${clave}"]`);
-    const plantilla = document.getElementById(`plantilla-${clave}`);
+    var plantilla = document.getElementById("plantilla-" + clave);
+
 
     if (!lista || !plantilla) {
       console.warn("No se encuentra data-lista-imagenes/plantilla para:", clave);

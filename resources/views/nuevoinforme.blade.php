@@ -61,7 +61,13 @@
           </div>
 
           <div class="tarjeta-cuerpo">
-            <form class="formulario" id="formularioNuevoInforme" action="{{ route("guardar_informe") }}">
+            <form class="formulario" 
+            name="formularioFase1" 
+            action="{{ route("guardar_informe") }}" 
+            method="POST"
+            id="formularioNuevoInforme" 
+            >
+            @csrf
               <!-- =======================================================
                    FASE 1 — RECEPCIÓN
               ======================================================== -->
@@ -72,6 +78,7 @@
                       Tipo de muestra <span class="obligatorio">*</span>
                     </label>
                     <select class="control-campo" id="tipo_muestra" name="tipo_muestra" required>
+                      <option value="">Selecciona un tipo</option>
                       <option value="B">Biopsia</option>
                       <option value="E">Esputo</option>
                       <option value="CB">Cavidad bucal</option>
@@ -186,7 +193,7 @@
                   </div>
 
                   <div class="acciones-derecha">
-                    <button class="boton boton-secundario" type="button" id="botonGuardarFase1">
+                    <button class="boton boton-secundario" type="submit" id="botonGuardarFase1">
                       Guardar recepción (incompleto)
                     </button>
                     <button class="boton boton-principal" type="button" id="botonIrFase2">
@@ -545,6 +552,7 @@
                     </div>
 
                     <div class="acciones-imagenes">
+                      <!-- ✅ CLAVE CORRECTA -->
                       <button class="boton boton-secundario" type="button" data-anadir-fila="micro-extra">
                         Añadir otra imagen
                       </button>

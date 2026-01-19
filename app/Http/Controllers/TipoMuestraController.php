@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TipoMuestra;
 use App\Models\Informe;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class TipoMuestraController extends Controller
 {
@@ -32,9 +33,11 @@ class TipoMuestraController extends Controller
         ]);
     }
 
-    // public function store(Request $request){
+    public function store(Request $request){
+        
 
-    // }
+        return view("sesion.login");
+    }
 
-    
+
 }
