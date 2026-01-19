@@ -20,8 +20,11 @@ Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'sig
 // nuevo informe
 Route::get("/nuevo_informe",function(){
     return view("nuevoinforme");
-
 })->name("nuevo informe");
+
+// guarder informe
+Route::post("/guardar_informe",[TipoMuestraController::class, "store"])->name("guardar_informe");
+
 
 //revision informes
 Route::get("/revision",function(){

@@ -8,12 +8,6 @@ use Illuminate\Http\JsonResponse;
 
 class TipoMuestraController extends Controller
 {
-    /**
-     * Devuelve el siguiente código identificador para un tipo de muestra
-     * Ej: B2530 (prefijo + año(2) + siguiente correlativo)
-     *
-     * GET /tipos/{tipo}/siguiente-codigo
-     */
     public function siguienteCodigo(TipoMuestra $tipo): JsonResponse
     {
         $anio = (int) now()->format('Y');  // 2025
@@ -37,4 +31,10 @@ class TipoMuestraController extends Controller
             'codigo' => $codigo,
         ]);
     }
+
+    // public function store(Request $request){
+
+    // }
+
+    
 }

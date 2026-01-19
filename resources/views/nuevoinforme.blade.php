@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nuevo informe — DAVANTE · MEDAC</title>
+    <title>Nuevo informe — DAVANTE</title>
 
     <link rel="stylesheet" href="{{ asset('css/nuevoinforme.css') }}" />
   </head>
@@ -11,68 +11,67 @@
   <body>
     <x-header />
 
-    <main class="page">
-      <section class="container">
+    <main class="pagina">
+      <section class="contenedor">
         <!-- CABECERA DE PÁGINA -->
-        <header class="page-head">
-          <div class="page-head__left">
-            <h1 class="page-title">Nuevo informe</h1>
-            <p class="page-subtitle">
+        <header class="cabecera-pagina">
+          <div class="cabecera-izquierda">
+            <h1 class="titulo-pagina">Nuevo informe</h1>
+            <p class="subtitulo-pagina">
               El informe se completa por fases:
               <strong>Recepción → Procesamiento → Tinción → Citodiagnóstico</strong>.
             </p>
           </div>
 
-          <div class="page-head__right">
-            <span class="badge badge--warning" id="estadoBadge">Incompleto</span>
+          <div class="cabecera-derecha">
+            <span class="etiqueta etiqueta-aviso" id="etiquetaEstado">Incompleto</span>
           </div>
         </header>
 
         <!-- PASOS -->
-        <nav class="steps" aria-label="Progreso del informe">
-          <button class="step step--active" type="button" data-step="1">
-            <span class="step__num">1</span>
-            <span class="step__label">Recepción</span>
+        <nav class="pasos" aria-label="Progreso del informe">
+          <button class="paso paso-activo" type="button" data-paso="1">
+            <span class="paso-numero">1</span>
+            <span class="paso-texto">Recepción</span>
           </button>
 
-          <button class="step" type="button" data-step="2">
-            <span class="step__num">2</span>
-            <span class="step__label">Procesamiento</span>
+          <button class="paso" type="button" data-paso="2">
+            <span class="paso-numero">2</span>
+            <span class="paso-texto">Procesamiento</span>
           </button>
 
-          <button class="step" type="button" data-step="3">
-            <span class="step__num">3</span>
-            <span class="step__label">Tinción</span>
+          <button class="paso" type="button" data-paso="3">
+            <span class="paso-numero">3</span>
+            <span class="paso-texto">Tinción</span>
           </button>
 
-          <button class="step" type="button" data-step="4">
-            <span class="step__num">4</span>
-            <span class="step__label">Citodiagnóstico</span>
+          <button class="paso" type="button" data-paso="4">
+            <span class="paso-numero">4</span>
+            <span class="paso-texto">Citodiagnóstico</span>
           </button>
         </nav>
 
         <!-- TARJETA -->
-        <article class="card">
-          <div class="card__head">
-            <h2 class="card__title" id="faseTitle">Fase 1 — Recepción</h2>
-            <p class="card__hint">
-              Campos con <span class="req">*</span> obligatorios.
+        <article class="tarjeta">
+          <div class="tarjeta-cabecera">
+            <h2 class="tarjeta-titulo" id="tituloFase">Fase 1 — Recepción</h2>
+            <p class="tarjeta-ayuda">
+              Campos con <span class="obligatorio">*</span> obligatorios.
             </p>
           </div>
 
-          <div class="card__body">
-            <form class="form" id="nuevoInformeForm" enctype="multipart/form-data">
+          <div class="tarjeta-cuerpo">
+            <form class="formulario" id="formularioNuevoInforme" action="{{ route("guardar_informe") }}">
               <!-- =======================================================
                    FASE 1 — RECEPCIÓN
               ======================================================== -->
-              <section class="phase phase--active" id="phase-1" data-phase="1">
-                <div class="grid">
-                  <div class="field">
-                    <label class="field__label" for="tipo_muestra">
-                      Tipo de muestra <span class="req">*</span>
+              <section class="fase fase-activa" id="fase-1" data-fase="1">
+                <div class="rejilla">
+                  <div class="campo">
+                    <label class="etiqueta-campo" for="tipo_muestra">
+                      Tipo de muestra <span class="obligatorio">*</span>
                     </label>
-                    <select class="field__control" id="tipo_muestra" name="tipo_muestra" required>
-                      <option value="">Selecciona un tipo</option>
+                    <select class="control-campo" id="tipo_muestra" name="tipo_muestra" required>
                       <option value="B">Biopsia</option>
                       <option value="E">Esputo</option>
                       <option value="CB">Cavidad bucal</option>
@@ -86,30 +85,30 @@
                     </select>
                   </div>
 
-                  <div class="field">
-                    <label class="field__label" for="codigo_identificador">
+                  <div class="campo">
+                    <label class="etiqueta-campo" for="codigo_identificador">
                       Código identificador (auto)
                     </label>
                     <input
-                      class="field__control"
+                      class="control-campo"
                       type="text"
                       id="codigo_identificador"
                       name="codigo_identificador"
                       placeholder="Ej: B2530"
                       readonly
                     />
-                    <small class="field__help" id="codigoHelp">
+                    <small class="ayuda-campo" id="ayudaCodigo">
                       Se genera automáticamente al seleccionar el tipo.
                     </small>
                   </div>
                 </div>
 
-                <div class="field">
-                  <label class="field__label" for="observaciones_llegada">
-                    Observaciones de la llegada <span class="req">*</span>
+                <div class="campo">
+                  <label class="etiqueta-campo" for="observaciones_llegada">
+                    Observaciones de la llegada <span class="obligatorio">*</span>
                   </label>
                   <textarea
-                    class="field__control"
+                    class="control-campo"
                     id="observaciones_llegada"
                     name="observaciones_llegada"
                     rows="5"
@@ -118,74 +117,79 @@
                   ></textarea>
                 </div>
 
-                <div class="field field--hidden" id="organoField">
-                  <label class="field__label" for="organo">
-                    Órgano (solo biopsia) <span class="req">*</span>
+                <div class="campo oculto" id="campoOrgano">
+                  <label class="etiqueta-campo" for="organo">
+                    Órgano (solo biopsia) <span class="obligatorio">*</span>
                   </label>
-                  <input class="field__control" type="text" id="organo" name="organo" />
+                  <input class="control-campo" type="text" id="organo" name="organo" />
                 </div>
 
                 <!-- IMÁGENES RECEPCIÓN (opcionales, añadir/quitar) -->
-                <div class="subcard">
-                  <div class="subcard__head">
-                    <h3 class="subcard__title">Imágenes de recepción (opcional)</h3>
-                    <p class="subcard__hint">Puedes adjuntar 0 o más imágenes.</p>
+                <div class="subtarjeta">
+                  <div class="subtarjeta-cabecera">
+                    <h3 class="subtarjeta-titulo">Imágenes de recepción (opcional)</h3>
+                    <p class="subtarjeta-ayuda">Puedes adjuntar 0 o más imágenes.</p>
                   </div>
-                  <div class="subcard__body">
-                    <div class="img-list" data-img-list="recepcion">
-                      <div class="img-row">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen</label>
-                          <input class="field__control" type="file" name="recepcion_img[]" accept="image/*" />
+
+                  <div class="subtarjeta-cuerpo">
+                    <div class="lista-imagenes" data-lista-imagenes="recepcion">
+                      <div class="fila-imagen">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen</label>
+                          <input class="control-campo" type="file" name="recepcion_img[]" accept="image/*" />
                         </div>
 
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="recepcion_desc[]" placeholder="Descripción..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="recepcion_desc[]" placeholder="Descripción..." />
                         </div>
 
-                        <div class="img-row__actions">
-                          <button class="btn btn--danger" type="button" data-remove-row>Eliminar</button>
+                        <div class="acciones-imagen">
+                          <button class="boton boton-peligro" type="button" data-eliminar-fila>
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    <div class="img-actions">
-                      <button class="btn btn--secondary" type="button" data-add-row="recepcion">
+                    <div class="acciones-imagenes">
+                      <button class="boton boton-secundario" type="button" data-anadir-fila="recepcion">
                         Añadir imagen
                       </button>
                     </div>
 
-                    <template id="tpl-recepcion">
-                      <div class="img-row">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen</label>
-                          <input class="field__control" type="file" name="recepcion_img[]" accept="image/*" />
+                    <template id="plantilla-recepcion">
+                      <div class="fila-imagen">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen</label>
+                          <input class="control-campo" type="file" name="recepcion_img[]" accept="image/*" />
                         </div>
 
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="recepcion_desc[]" placeholder="Descripción..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="recepcion_desc[]" placeholder="Descripción..." />
                         </div>
 
-                        <div class="img-row__actions">
-                          <button class="btn btn--danger" type="button" data-remove-row>Eliminar</button>
+                        <div class="acciones-imagen">
+                          <button class="boton boton-peligro" type="button" data-eliminar-fila>
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </template>
                   </div>
                 </div>
 
-                <div class="actions">
-                  <div class="actions__left">
-                    <a class="link" href="#">Volver</a>
+                <div class="acciones">
+                  <div class="acciones-izquierda">
+                    <a class="enlace" href="#">Volver</a>
                   </div>
 
-                  <div class="actions__right">
-                    <button class="btn btn--secondary" type="button" id="savePhase1">
+                  <div class="acciones-derecha">
+                    <button class="boton boton-secundario" type="button" id="botonGuardarFase1">
                       Guardar recepción (incompleto)
                     </button>
-                    <button class="btn btn--primary" type="button" id="toPhase2">
+                    <button class="boton boton-principal" type="button" id="botonIrFase2">
                       Siguiente fase
                     </button>
                   </div>
@@ -195,12 +199,12 @@
               <!-- =======================================================
                    FASE 2 — PROCESAMIENTO
               ======================================================== -->
-              <section class="phase" id="phase-2" data-phase="2">
-                <div class="field">
-                  <label class="field__label" for="tipo_procesamiento">
-                    Tipo de procesamiento <span class="req">*</span>
+              <section class="fase" id="fase-2" data-fase="2">
+                <div class="campo">
+                  <label class="etiqueta-campo" for="tipo_procesamiento">
+                    Tipo de procesamiento <span class="obligatorio">*</span>
                   </label>
-                  <select class="field__control" id="tipo_procesamiento" name="tipo_procesamiento" required>
+                  <select class="control-campo" id="tipo_procesamiento" name="tipo_procesamiento" required>
                     <option value="">Selecciona…</option>
                     <option value="CITOCENTRIFUGADO">Citocentrifugado</option>
                     <option value="EXTENSION">Extensión / Frotis</option>
@@ -210,19 +214,19 @@
                   </select>
                 </div>
 
-                <div class="field field--hidden" id="procesamientoOtroField">
-                  <label class="field__label" for="procesamiento_otro">
-                    Especifica el procesamiento <span class="req">*</span>
+                <div class="campo oculto" id="campoProcesamientoOtro">
+                  <label class="etiqueta-campo" for="procesamiento_otro">
+                    Especifica el procesamiento <span class="obligatorio">*</span>
                   </label>
-                  <input class="field__control" type="text" id="procesamiento_otro" name="procesamiento_otro" />
+                  <input class="control-campo" type="text" id="procesamiento_otro" name="procesamiento_otro" />
                 </div>
 
-                <div class="field">
-                  <label class="field__label" for="observaciones_procesamiento">
+                <div class="campo">
+                  <label class="etiqueta-campo" for="observaciones_procesamiento">
                     Observaciones del procesamiento
                   </label>
                   <textarea
-                    class="field__control"
+                    class="control-campo"
                     id="observaciones_procesamiento"
                     name="observaciones_procesamiento"
                     rows="5"
@@ -230,67 +234,72 @@
                   ></textarea>
                 </div>
 
-                <!-- IMÁGENES PROCESAMIENTO (opcionales, añadir/quitar) -->
-                <div class="subcard">
-                  <div class="subcard__head">
-                    <h3 class="subcard__title">Imágenes del procesamiento (opcional)</h3>
-                    <p class="subcard__hint">Puedes adjuntar 0 o más imágenes.</p>
+                <!-- IMÁGENES PROCESAMIENTO -->
+                <div class="subtarjeta">
+                  <div class="subtarjeta-cabecera">
+                    <h3 class="subtarjeta-titulo">Imágenes del procesamiento (opcional)</h3>
+                    <p class="subtarjeta-ayuda">Puedes adjuntar 0 o más imágenes.</p>
                   </div>
-                  <div class="subcard__body">
-                    <div class="img-list" data-img-list="procesamiento">
-                      <div class="img-row">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen</label>
-                          <input class="field__control" type="file" name="procesamiento_img[]" accept="image/*" />
+
+                  <div class="subtarjeta-cuerpo">
+                    <div class="lista-imagenes" data-lista-imagenes="procesamiento">
+                      <div class="fila-imagen">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen</label>
+                          <input class="control-campo" type="file" name="procesamiento_img[]" accept="image/*" />
                         </div>
 
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="procesamiento_desc[]" placeholder="Descripción..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="procesamiento_desc[]" placeholder="Descripción..." />
                         </div>
 
-                        <div class="img-row__actions">
-                          <button class="btn btn--danger" type="button" data-remove-row>Eliminar</button>
+                        <div class="acciones-imagen">
+                          <button class="boton boton-peligro" type="button" data-eliminar-fila>
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    <div class="img-actions">
-                      <button class="btn btn--secondary" type="button" data-add-row="procesamiento">
+                    <div class="acciones-imagenes">
+                      <button class="boton boton-secundario" type="button" data-anadir-fila="procesamiento">
                         Añadir imagen
                       </button>
                     </div>
 
-                    <template id="tpl-procesamiento">
-                      <div class="img-row">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen</label>
-                          <input class="field__control" type="file" name="procesamiento_img[]" accept="image/*" />
+                    <template id="plantilla-procesamiento">
+                      <div class="fila-imagen">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen</label>
+                          <input class="control-campo" type="file" name="procesamiento_img[]" accept="image/*" />
                         </div>
 
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="procesamiento_desc[]" placeholder="Descripción..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="procesamiento_desc[]" placeholder="Descripción..." />
                         </div>
 
-                        <div class="img-row__actions">
-                          <button class="btn btn--danger" type="button" data-remove-row>Eliminar</button>
+                        <div class="acciones-imagen">
+                          <button class="boton boton-peligro" type="button" data-eliminar-fila>
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </template>
                   </div>
                 </div>
 
-                <div class="actions">
-                  <div class="actions__left">
-                    <button class="btn btn--ghost" type="button" id="backTo1">Volver</button>
+                <div class="acciones">
+                  <div class="acciones-izquierda">
+                    <button class="boton boton-fantasma" type="button" id="botonVolverFase1">Volver</button>
                   </div>
 
-                  <div class="actions__right">
-                    <button class="btn btn--secondary" type="button" id="savePhase2">
+                  <div class="acciones-derecha">
+                    <button class="boton boton-secundario" type="button" id="botonGuardarFase2">
                       Guardar procesamiento (incompleto)
                     </button>
-                    <button class="btn btn--primary" type="button" id="toPhase3">
+                    <button class="boton boton-principal" type="button" id="botonIrFase3">
                       Siguiente fase
                     </button>
                   </div>
@@ -300,14 +309,14 @@
               <!-- =======================================================
                    FASE 3 — TINCIÓN
               ======================================================== -->
-              <section class="phase" id="phase-3" data-phase="3">
-                <div class="field">
-                  <label class="field__label" for="tipo_tincion">
-                    Tipo de tinción <span class="req">*</span>
+              <section class="fase" id="fase-3" data-fase="3">
+                <div class="campo">
+                  <label class="etiqueta-campo" for="tipo_tincion">
+                    Tipo de tinción <span class="obligatorio">*</span>
                   </label>
 
                   <input
-                    class="field__control"
+                    class="control-campo"
                     id="tipo_tincion"
                     name="tipo_tincion"
                     list="tinciones_sugeridas"
@@ -325,12 +334,12 @@
                   </datalist>
                 </div>
 
-                <div class="field">
-                  <label class="field__label" for="observacion_tincion">
-                    Observaciones de la tinción <span class="req">*</span>
+                <div class="campo">
+                  <label class="etiqueta-campo" for="observacion_tincion">
+                    Observaciones de la tinción <span class="obligatorio">*</span>
                   </label>
                   <textarea
-                    class="field__control"
+                    class="control-campo"
                     id="observacion_tincion"
                     name="observacion_tincion"
                     rows="6"
@@ -339,67 +348,72 @@
                   ></textarea>
                 </div>
 
-                <!-- IMÁGENES TINCIÓN (opcionales, añadir/quitar) -->
-                <div class="subcard">
-                  <div class="subcard__head">
-                    <h3 class="subcard__title">Imágenes de la tinción (opcional)</h3>
-                    <p class="subcard__hint">Puedes adjuntar 0 o más imágenes.</p>
+                <!-- IMÁGENES TINCIÓN -->
+                <div class="subtarjeta">
+                  <div class="subtarjeta-cabecera">
+                    <h3 class="subtarjeta-titulo">Imágenes de la tinción (opcional)</h3>
+                    <p class="subtarjeta-ayuda">Puedes adjuntar 0 o más imágenes.</p>
                   </div>
-                  <div class="subcard__body">
-                    <div class="img-list" data-img-list="tincion">
-                      <div class="img-row">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen</label>
-                          <input class="field__control" type="file" name="tincion_img[]" accept="image/*" />
+
+                  <div class="subtarjeta-cuerpo">
+                    <div class="lista-imagenes" data-lista-imagenes="tincion">
+                      <div class="fila-imagen">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen</label>
+                          <input class="control-campo" type="file" name="tincion_img[]" accept="image/*" />
                         </div>
 
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="tincion_desc[]" placeholder="Descripción..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="tincion_desc[]" placeholder="Descripción..." />
                         </div>
 
-                        <div class="img-row__actions">
-                          <button class="btn btn--danger" type="button" data-remove-row>Eliminar</button>
+                        <div class="acciones-imagen">
+                          <button class="boton boton-peligro" type="button" data-eliminar-fila>
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    <div class="img-actions">
-                      <button class="btn btn--secondary" type="button" data-add-row="tincion">
+                    <div class="acciones-imagenes">
+                      <button class="boton boton-secundario" type="button" data-anadir-fila="tincion">
                         Añadir imagen
                       </button>
                     </div>
 
-                    <template id="tpl-tincion">
-                      <div class="img-row">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen</label>
-                          <input class="field__control" type="file" name="tincion_img[]" accept="image/*" />
+                    <template id="plantilla-tincion">
+                      <div class="fila-imagen">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen</label>
+                          <input class="control-campo" type="file" name="tincion_img[]" accept="image/*" />
                         </div>
 
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="tincion_desc[]" placeholder="Descripción..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="tincion_desc[]" placeholder="Descripción..." />
                         </div>
 
-                        <div class="img-row__actions">
-                          <button class="btn btn--danger" type="button" data-remove-row>Eliminar</button>
+                        <div class="acciones-imagen">
+                          <button class="boton boton-peligro" type="button" data-eliminar-fila>
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </template>
                   </div>
                 </div>
 
-                <div class="actions">
-                  <div class="actions__left">
-                    <button class="btn btn--ghost" type="button" id="backTo2">Volver</button>
+                <div class="acciones">
+                  <div class="acciones-izquierda">
+                    <button class="boton boton-fantasma" type="button" id="botonVolverFase2">Volver</button>
                   </div>
 
-                  <div class="actions__right">
-                    <button class="btn btn--secondary" type="button" id="savePhase3">
+                  <div class="acciones-derecha">
+                    <button class="boton boton-secundario" type="button" id="botonGuardarFase3">
                       Guardar tinción (incompleto)
                     </button>
-                    <button class="btn btn--primary" type="button" id="toPhase4">
+                    <button class="boton boton-principal" type="button" id="botonIrFase4">
                       Siguiente fase
                     </button>
                   </div>
@@ -409,13 +423,13 @@
               <!-- =======================================================
                    FASE 4 — CITODIAGNÓSTICO
               ======================================================== -->
-              <section class="phase" id="phase-4" data-phase="4">
-                <div class="field">
-                  <label class="field__label" for="citodiagnostico">
-                    Citodiagnóstico <span class="req">*</span>
+              <section class="fase" id="fase-4" data-fase="4">
+                <div class="campo">
+                  <label class="etiqueta-campo" for="citodiagnostico">
+                    Citodiagnóstico <span class="obligatorio">*</span>
                   </label>
                   <textarea
-                    class="field__control"
+                    class="control-campo"
                     id="citodiagnostico"
                     name="citodiagnostico"
                     rows="6"
@@ -424,91 +438,91 @@
                   ></textarea>
                 </div>
 
-                <div class="subcard">
-                  <div class="subcard__head">
-                    <h3 class="subcard__title">Imágenes microscópicas obligatorias</h3>
-                    <p class="subcard__hint">Debes adjuntar 4 imágenes: x4, x10, x40 y x100.</p>
+                <div class="subtarjeta">
+                  <div class="subtarjeta-cabecera">
+                    <h3 class="subtarjeta-titulo">Imágenes microscópicas obligatorias</h3>
+                    <p class="subtarjeta-ayuda">Debes adjuntar 4 imágenes: x4, x10, x40 y x100.</p>
                   </div>
 
-                  <div class="subcard__body">
-                    <div class="img-list" id="requiredImgList">
+                  <div class="subtarjeta-cuerpo">
+                    <div class="lista-imagenes" id="listaImagenesObligatorias">
                       <!-- x4 -->
-                      <div class="img-row img-row--required">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen x4 <span class="req">*</span></label>
-                          <input class="field__control" type="file" name="micros_required_img[x4]" accept="image/*" required />
+                      <div class="fila-imagen fila-obligatoria">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen x4 <span class="obligatorio">*</span></label>
+                          <input class="control-campo" type="file" name="micros_required_img[x4]" accept="image/*" required />
                         </div>
-                        <div class="img-row__zoom">
-                          <label class="field__label">Zoom</label>
-                          <input class="field__control" type="text" value="x4" readonly />
+                        <div class="zoom-imagen">
+                          <label class="etiqueta-campo">Zoom</label>
+                          <input class="control-campo" type="text" value="x4" readonly />
                         </div>
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="micros_required_desc[x4]" placeholder="Qué se ve..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="micros_required_desc[x4]" placeholder="Qué se ve..." />
                         </div>
                       </div>
 
                       <!-- x10 -->
-                      <div class="img-row img-row--required">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen x10 <span class="req">*</span></label>
-                          <input class="field__control" type="file" name="micros_required_img[x10]" accept="image/*" required />
+                      <div class="fila-imagen fila-obligatoria">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen x10 <span class="obligatorio">*</span></label>
+                          <input class="control-campo" type="file" name="micros_required_img[x10]" accept="image/*" required />
                         </div>
-                        <div class="img-row__zoom">
-                          <label class="field__label">Zoom</label>
-                          <input class="field__control" type="text" value="x10" readonly />
+                        <div class="zoom-imagen">
+                          <label class="etiqueta-campo">Zoom</label>
+                          <input class="control-campo" type="text" value="x10" readonly />
                         </div>
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="micros_required_desc[x10]" placeholder="Qué se ve..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="micros_required_desc[x10]" placeholder="Qué se ve..." />
                         </div>
                       </div>
 
                       <!-- x40 -->
-                      <div class="img-row img-row--required">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen x40 <span class="req">*</span></label>
-                          <input class="field__control" type="file" name="micros_required_img[x40]" accept="image/*" required />
+                      <div class="fila-imagen fila-obligatoria">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen x40 <span class="obligatorio">*</span></label>
+                          <input class="control-campo" type="file" name="micros_required_img[x40]" accept="image/*" required />
                         </div>
-                        <div class="img-row__zoom">
-                          <label class="field__label">Zoom</label>
-                          <input class="field__control" type="text" value="x40" readonly />
+                        <div class="zoom-imagen">
+                          <label class="etiqueta-campo">Zoom</label>
+                          <input class="control-campo" type="text" value="x40" readonly />
                         </div>
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="micros_required_desc[x40]" placeholder="Qué se ve..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="micros_required_desc[x40]" placeholder="Qué se ve..." />
                         </div>
                       </div>
 
                       <!-- x100 -->
-                      <div class="img-row img-row--required">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen x100 <span class="req">*</span></label>
-                          <input class="field__control" type="file" name="micros_required_img[x100]" accept="image/*" required />
+                      <div class="fila-imagen fila-obligatoria">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen x100 <span class="obligatorio">*</span></label>
+                          <input class="control-campo" type="file" name="micros_required_img[x100]" accept="image/*" required />
                         </div>
-                        <div class="img-row__zoom">
-                          <label class="field__label">Zoom</label>
-                          <input class="field__control" type="text" value="x100" readonly />
+                        <div class="zoom-imagen">
+                          <label class="etiqueta-campo">Zoom</label>
+                          <input class="control-campo" type="text" value="x100" readonly />
                         </div>
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción (opcional)</label>
-                          <input class="field__control" type="text" name="micros_required_desc[x100]" placeholder="Qué se ve..." />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción (opcional)</label>
+                          <input class="control-campo" type="text" name="micros_required_desc[x100]" placeholder="Qué se ve..." />
                         </div>
                       </div>
                     </div>
 
-                    <h3 class="subcard__title" style="margin-top:16px;">Imágenes extra (opcional)</h3>
+                    <h3 class="subtarjeta-titulo" style="margin-top:16px;">Imágenes extra (opcional)</h3>
 
-                    <div class="img-list" data-img-list="micro-extra">
-                      <div class="img-row">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen</label>
-                          <input class="field__control" type="file" name="micros_extra_img[]" accept="image/*" />
+                    <div class="lista-imagenes" data-lista-imagenes="micro-extra">
+                      <div class="fila-imagen">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen</label>
+                          <input class="control-campo" type="file" name="micros_extra_img[]" accept="image/*" />
                         </div>
 
-                        <div class="img-row__zoom">
-                          <label class="field__label">Zoom</label>
-                          <select class="field__control" name="micros_extra_zoom[]">
+                        <div class="zoom-imagen">
+                          <label class="etiqueta-campo">Zoom</label>
+                          <select class="control-campo" name="micros_extra_zoom[]">
                             <option value="">—</option>
                             <option value="x4">x4</option>
                             <option value="x10">x10</option>
@@ -517,33 +531,35 @@
                           </select>
                         </div>
 
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción</label>
-                          <input class="field__control" type="text" name="micros_extra_desc[]" />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción</label>
+                          <input class="control-campo" type="text" name="micros_extra_desc[]" />
                         </div>
 
-                        <div class="img-row__actions">
-                          <button class="btn btn--danger" type="button" data-remove-row>Eliminar</button>
+                        <div class="acciones-imagen">
+                          <button class="boton boton-peligro" type="button" data-eliminar-fila>
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    <div class="img-actions">
-                      <button class="btn btn--secondary" type="button" data-add-row="micro-extra">
+                    <div class="acciones-imagenes">
+                      <button class="boton boton-secundario" type="button" data-anadir-fila="micro-extra">
                         Añadir otra imagen
                       </button>
                     </div>
 
-                    <template id="tpl-micro-extra">
-                      <div class="img-row">
-                        <div class="img-row__file">
-                          <label class="field__label">Imagen</label>
-                          <input class="field__control" type="file" name="micros_extra_img[]" accept="image/*" />
+                    <template id="plantilla-micro-extra">
+                      <div class="fila-imagen">
+                        <div class="archivo-imagen">
+                          <label class="etiqueta-campo">Imagen</label>
+                          <input class="control-campo" type="file" name="micros_extra_img[]" accept="image/*" />
                         </div>
 
-                        <div class="img-row__zoom">
-                          <label class="field__label">Zoom</label>
-                          <select class="field__control" name="micros_extra_zoom[]">
+                        <div class="zoom-imagen">
+                          <label class="etiqueta-campo">Zoom</label>
+                          <select class="control-campo" name="micros_extra_zoom[]">
                             <option value="">—</option>
                             <option value="x4">x4</option>
                             <option value="x10">x10</option>
@@ -552,29 +568,31 @@
                           </select>
                         </div>
 
-                        <div class="img-row__desc">
-                          <label class="field__label">Descripción</label>
-                          <input class="field__control" type="text" name="micros_extra_desc[]" />
+                        <div class="descripcion-imagen">
+                          <label class="etiqueta-campo">Descripción</label>
+                          <input class="control-campo" type="text" name="micros_extra_desc[]" />
                         </div>
 
-                        <div class="img-row__actions">
-                          <button class="btn btn--danger" type="button" data-remove-row>Eliminar</button>
+                        <div class="acciones-imagen">
+                          <button class="boton boton-peligro" type="button" data-eliminar-fila>
+                            Eliminar
+                          </button>
                         </div>
                       </div>
                     </template>
                   </div>
                 </div>
 
-                <div class="actions">
-                  <div class="actions__left">
-                    <button class="btn btn--ghost" type="button" id="backTo3">Volver</button>
+                <div class="acciones">
+                  <div class="acciones-izquierda">
+                    <button class="boton boton-fantasma" type="button" id="botonVolverFase3">Volver</button>
                   </div>
 
-                  <div class="actions__right">
-                    <button class="btn btn--secondary" type="button" id="savePhase4">
+                  <div class="acciones-derecha">
+                    <button class="boton boton-secundario" type="button" id="botonGuardarFase4">
                       Guardar citodiagnóstico
                     </button>
-                    <button class="btn btn--primary" type="submit" id="submitFinal">
+                    <button class="boton boton-principal" type="submit" id="botonFinalizarEnviar">
                       Finalizar y enviar
                     </button>
                   </div>

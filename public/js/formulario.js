@@ -1,140 +1,160 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // =========================
-  // FASES (wizard)
-  // =========================
-  const steps = document.querySelectorAll(".step");
-  const phases = document.querySelectorAll(".phase");
-  const faseTitle = document.getElementById("faseTitle");
 
-  const titles = {
+  const botonesPasos = document.querySelectorAll(".paso");
+  const seccionesFase = document.querySelectorAll(".fase");
+  const tituloFase = document.getElementById("tituloFase");
+
+  const titulosPorFase = {
     1: "Fase 1 — Recepción",
     2: "Fase 2 — Procesamiento",
     3: "Fase 3 — Tinción",
     4: "Fase 4 — Citodiagnóstico",
   };
 
-  function setStep(n) {
-    phases.forEach((p) => p.classList.remove("phase--active"));
-    steps.forEach((s) => s.classList.remove("step--active"));
+  function cambiarAFase(numeroFase) {
 
-    const phase = document.getElementById(`phase-${n}`);
-    const stepBtn = document.querySelector(`.step[data-step="${n}"]`);
-    if (phase) phase.classList.add("phase--active");
-    if (stepBtn) stepBtn.classList.add("step--active");
-    if (faseTitle) faseTitle.textContent = titles[n] || "Nuevo informe";
+    seccionesFase.forEach((fase) => fase.classList.remove("fase-activa"));
+    botonesPasos.forEach((paso) => paso.classList.remove("paso-activo"));
+
+    const faseActual = document.getElementById(`fase-${numeroFase}`);
+    const botonPasoActual = document.querySelector(`.paso[data-paso="${numeroFase}"]`);
+
+    if (faseActual) faseActual.classList.add("fase-activa");
+    if (botonPasoActual) botonPasoActual.classList.add("paso-activo");
+
+    if (tituloFase) {
+      tituloFase.textContent = titulosPorFase[numeroFase] || "Nuevo informe";
+    }
   }
 
-  steps.forEach((btn) => {
-    btn.addEventListener("click", () => setStep(Number(btn.dataset.step)));
+  // Click en los pasos de arriba
+  botonesPasos.forEach((boton) => {
+    boton.addEventListener("click", () => {
+      const numero = Number(boton.dataset.paso);
+      cambiarAFase(numero);
+    });
   });
 
-  // Botones next/back
-  const toPhase2 = document.getElementById("toPhase2");
-  const toPhase3 = document.getElementById("toPhase3");
-  const toPhase4 = document.getElementById("toPhase4");
-  const backTo1 = document.getElementById("backTo1");
-  const backTo2 = document.getElementById("backTo2");
-  const backTo3 = document.getElementById("backTo3");
+  // Botones siguiente / volver
+  const botonIrFase2 = document.getElementById("botonIrFase2");
+  const botonIrFase3 = document.getElementById("botonIrFase3");
+  const botonIrFase4 = document.getElementById("botonIrFase4");
 
-  if (toPhase2) toPhase2.addEventListener("click", () => setStep(2));
-  if (toPhase3) toPhase3.addEventListener("click", () => setStep(3));
-  if (toPhase4) toPhase4.addEventListener("click", () => setStep(4));
-  if (backTo1) backTo1.addEventListener("click", () => setStep(1));
-  if (backTo2) backTo2.addEventListener("click", () => setStep(2));
-  if (backTo3) backTo3.addEventListener("click", () => setStep(3));
+  const botonVolverFase1 = document.getElementById("botonVolverFase1");
+  const botonVolverFase2 = document.getElementById("botonVolverFase2");
+  const botonVolverFase3 = document.getElementById("botonVolverFase3");
+
+  if (botonIrFase2) botonIrFase2.addEventListener("click", () => cambiarAFase(2));
+  if (botonIrFase3) botonIrFase3.addEventListener("click", () => cambiarAFase(3));
+  if (botonIrFase4) botonIrFase4.addEventListener("click", () => cambiarAFase(4));
+
+  if (botonVolverFase1) botonVolverFase1.addEventListener("click", () => cambiarAFase(1));
+  if (botonVolverFase2) botonVolverFase2.addEventListener("click", () => cambiarAFase(2));
+  if (botonVolverFase3) botonVolverFase3.addEventListener("click", () => cambiarAFase(3));
 
   // =========================
   // CAMPOS CONDICIONALES
   // =========================
   const tipoMuestra = document.getElementById("tipo_muestra");
-  const organoField = document.getElementById("organoField");
-  const organoInput = document.getElementById("organo");
+  const campoOrgano = document.getElementById("campoOrgano");
+  const inputOrgano = document.getElementById("organo");
 
-  function toggleOrgano() {
-    const isBiopsia = tipoMuestra && tipoMuestra.value === "B";
-    if (organoField) organoField.classList.toggle("field--hidden", !isBiopsia);
-    if (organoInput) organoInput.required = !!isBiopsia;
+  function mostrarOcultarOrgano() {
+    const esBiopsia = tipoMuestra && tipoMuestra.value === "B";
+
+    if (campoOrgano) {
+      // si NO es biopsia -> oculto
+      campoOrgano.classList.toggle("oculto", !esBiopsia);
+    }
+    if (inputOrgano) inputOrgano.required = !!esBiopsia;
   }
 
   if (tipoMuestra) {
-    tipoMuestra.addEventListener("change", toggleOrgano);
-    toggleOrgano();
+    tipoMuestra.addEventListener("change", mostrarOcultarOrgano);
+    mostrarOcultarOrgano();
   }
 
   const tipoProcesamiento = document.getElementById("tipo_procesamiento");
-  const procOtroField = document.getElementById("procesamientoOtroField");
-  const procOtroInput = document.getElementById("procesamiento_otro");
+  const campoProcesamientoOtro = document.getElementById("campoProcesamientoOtro");
+  const inputProcesamientoOtro = document.getElementById("procesamiento_otro");
 
-  function toggleProcOtro() {
-    const isOtro = tipoProcesamiento && tipoProcesamiento.value === "OTRO";
-    if (procOtroField) procOtroField.classList.toggle("field--hidden", !isOtro);
-    if (procOtroInput) procOtroInput.required = !!isOtro;
+  function mostrarOcultarProcesamientoOtro() {
+    const esOtro = tipoProcesamiento && tipoProcesamiento.value === "OTRO";
+
+    if (campoProcesamientoOtro) {
+      campoProcesamientoOtro.classList.toggle("oculto", !esOtro);
+    }
+    if (inputProcesamientoOtro) inputProcesamientoOtro.required = !!esOtro;
   }
 
   if (tipoProcesamiento) {
-    tipoProcesamiento.addEventListener("change", toggleProcOtro);
-    toggleProcOtro();
+    tipoProcesamiento.addEventListener("change", mostrarOcultarProcesamientoOtro);
+    mostrarOcultarProcesamientoOtro();
   }
-
+array.forEach(element => {
+  
+});
   // =========================
   // AÑADIR / ELIMINAR FILAS DE IMÁGENES (delegación)
-  // Works for: recepcion, procesamiento, tincion, micro-extra
+  // Para: recepcion, procesamiento, tincion, micro-extra
   // =========================
-  function addRow(key) {
-    const list = document.querySelector(`[data-img-list="${key}"]`);
-    const tpl = document.getElementById(`tpl-${key}`);
+  function anadirFila(clave) {
+    const lista = document.querySelector(`[data-lista-imagenes="${clave}"]`);
+    const plantilla = document.getElementById(`plantilla-${clave}`);
 
-    if (!list || !tpl) {
-      console.warn("No se encuentra data-img-list/template para:", key);
+    if (!lista || !plantilla) {
+      console.warn("No se encuentra data-lista-imagenes/plantilla para:", clave);
       return;
     }
 
-    const node = tpl.content.firstElementChild.cloneNode(true);
-    list.appendChild(node);
+    const nuevaFila = plantilla.content.firstElementChild.cloneNode(true);
+    lista.appendChild(nuevaFila);
   }
 
-  function clearRow(row) {
-    row.querySelectorAll("input").forEach((i) => {
-      if (i.type === "file") i.value = "";
-      else i.value = "";
+  function limpiarFila(fila) {
+    fila.querySelectorAll("input").forEach((input) => {
+      input.value = "";
     });
-    row.querySelectorAll("select").forEach((s) => (s.value = ""));
+    fila.querySelectorAll("select").forEach((select) => {
+      select.value = "";
+    });
   }
 
-  function removeRow(btn) {
-    const row = btn.closest(".img-row");
-    if (!row) return;
+  function eliminarFila(boton) {
+    const fila = boton.closest(".fila-imagen");
+    if (!fila) return;
 
     // No se permite borrar las filas obligatorias (x4,x10,x40,x100)
-    if (row.classList.contains("img-row--required")) return;
+    if (fila.classList.contains("fila-obligatoria")) return;
 
-    const list = row.closest("[data-img-list]");
-    if (!list) return;
+    const lista = fila.closest("[data-lista-imagenes]");
+    if (!lista) return;
 
-    const rows = list.querySelectorAll(".img-row");
-    if (rows.length <= 1) {
-      // si es la última fila, la vaciamos (para permitir "0 imágenes" sin romper la UI)
-      clearRow(row);
+    const filas = lista.querySelectorAll(".fila-imagen");
+
+    // Si solo queda 1 fila, no la borramos: la limpiamos
+    if (filas.length <= 1) {
+      limpiarFila(fila);
       return;
     }
 
-    row.remove();
+    fila.remove();
   }
 
-  document.addEventListener("click", (e) => {
-    const addBtn = e.target.closest("[data-add-row]");
-    if (addBtn) {
-      addRow(addBtn.dataset.addRow);
+  document.addEventListener("click", (evento) => {
+    const botonAnadir = evento.target.closest("[data-anadir-fila]");
+    if (botonAnadir) {
+      anadirFila(botonAnadir.dataset.anadirFila);
       return;
     }
 
-    const removeBtn = e.target.closest("[data-remove-row]");
-    if (removeBtn) {
-      removeRow(removeBtn);
+    const botonEliminar = evento.target.closest("[data-eliminar-fila]");
+    if (botonEliminar) {
+      eliminarFila(botonEliminar);
       return;
     }
   });
 
   // Inicial
-  setStep(1);
+  cambiarAFase(1);
 });

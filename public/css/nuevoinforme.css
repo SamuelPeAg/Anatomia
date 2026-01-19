@@ -1,6 +1,6 @@
 /* =========================
    DAVANTE · MEDAC — APP CSS
-   (nuevo desde 0)
+   (adaptado a clases en español)
 ========================= */
 
 /* ===== PALETA ===== */
@@ -35,20 +35,22 @@ body{
 }
 
 /* main empuja el footer */
-main.page{
+main.page,
+main.pagina{
   flex:1;
   padding-top:92px; /* espacio para header fixed */
   padding-bottom:24px;
 }
 
 /* ===== CONTENEDOR ===== */
-.container{
+.container,
+.contenedor{
   width:min(1100px, calc(100% - 32px));
   margin:0 auto;
 }
 
 /* =========================
-   HEADER (estilo más lleno)
+   HEADER (si tu x-header usa estas clases)
 ========================= */
 .app-header{
   position:fixed;
@@ -118,9 +120,10 @@ main.page{
 }
 
 /* =========================
-   PAGE HEAD
+   CABECERA DE PÁGINA
 ========================= */
-.page-head{
+.page-head,
+.cabecera-pagina{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
@@ -128,22 +131,25 @@ main.page{
   margin:10px 0 18px;
 }
 
-.page-title{
+.page-title,
+.titulo-pagina{
   margin:0;
   font-size:28px;
   font-weight:900;
   color:var(--secondary);
 }
 
-.page-subtitle{
+.page-subtitle,
+.subtitulo-pagina{
   margin:8px 0 0;
   color:var(--muted);
   line-height:1.4;
   max-width:62ch;
 }
 
-/* badges */
-.badge{
+/* badges / etiquetas */
+.badge,
+.etiqueta{
   display:inline-flex;
   align-items:center;
   padding:8px 12px;
@@ -152,23 +158,27 @@ main.page{
   font-size:12px;
   letter-spacing:.3px;
 }
-.badge--warning{
+
+.badge--warning,
+.etiqueta-aviso{
   background:rgba(255,91,65,.14);
   color:#b42318;
   border:1px solid rgba(255,91,65,.35);
 }
 
 /* =========================
-   STEPS
+   STEPS / PASOS
 ========================= */
-.steps{
+.steps,
+.pasos{
   display:flex;
   gap:10px;
   margin:14px 0 16px;
   flex-wrap:wrap;
 }
 
-.step{
+.step,
+.paso{
   appearance:none;
   border:none;
   cursor:pointer;
@@ -181,16 +191,18 @@ main.page{
   border-radius:12px;
 
   background:rgba(2,52,171,.10);
-  border:1px solid rgba(2,52,171,.20);
+  border:1px solid rgba(23, 69, 177, 0.788);
 
   transition:all .2s ease;
 }
 
-.step:hover{
-  background:rgba(2,52,171,.14);
+.step:hover,
+.paso:hover{
+  background:#49ace6
 }
 
-.step__num{
+.step__num,
+.paso-numero{
   width:28px; height:28px;
   border-radius:10px;
   display:grid;
@@ -200,68 +212,92 @@ main.page{
   background:var(--secondary);
 }
 
-.step__label{
+.step__label,
+.paso-texto{
   font-weight:800;
   color:var(--secondary);
   font-size:13px;
 }
 
-.step--active{
+.step--active,
+.paso-activo{
   background:var(--secondary);
   border-color:var(--secondary);
 }
 
-.step--active .step__num{
+.step--active .step__num,
+.paso-activo .paso-numero{
   background:var(--primary);
 }
-.step--active .step__label{
+
+.step--active .step__label,
+.paso-activo .paso-texto{
   color:var(--white);
 }
 
 /* =========================
-   CARD / FORM
+   CARD / TARJETA
 ========================= */
-.card{
+.card,
+.tarjeta{
   background:linear-gradient(180deg, rgba(2,52,171,.08) 0%, rgba(255,255,255,1) 28%);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
   overflow:hidden;
 }
 
-.card__head{
+.card__head,
+.tarjeta-cabecera{
   padding:18px 20px 10px;
   border-bottom:1px solid rgba(2,52,171,.12);
 }
 
-.card__title{
+.card__title,
+.tarjeta-titulo{
   margin:0;
   font-size:18px;
   font-weight:900;
   color:var(--secondary);
 }
 
-.card__hint{
+.card__hint,
+.tarjeta-ayuda{
   margin:8px 0 0;
   color:var(--muted);
   font-size:13px;
 }
 
-.req{ color:var(--primary); font-weight:900; }
+/* el asterisco obligatorio */
+.req,
+.obligatorio{
+  color:var(--primary);
+  font-weight:900;
+}
 
-.card__body{
+.card__body,
+.tarjeta-cuerpo{
   padding:18px 20px 22px;
 }
 
-/* fields */
-.field{ margin-bottom:16px; }
-.field__label{
+/* =========================
+   FORM / CAMPOS
+========================= */
+.field,
+.campo{
+  margin-bottom:16px;
+}
+
+.field__label,
+.etiqueta-campo{
   display:block;
   margin-bottom:8px;
   font-weight:800;
   color:var(--secondary-2);
   font-size:13px;
 }
-.field__help{
+
+.field__help,
+.ayuda-campo{
   display:block;
   margin-top:8px;
   color:var(--muted);
@@ -269,7 +305,8 @@ main.page{
   line-height:1.35;
 }
 
-.field__control{
+.field__control,
+.control-campo{
   width:100%;
   padding:12px 12px;
   border-radius:12px;
@@ -283,29 +320,38 @@ main.page{
   transition:border-color .15s ease, box-shadow .15s ease;
 }
 
-.field__control:focus{
+.field__control:focus,
+.control-campo:focus{
   border-color:var(--primary);
   box-shadow:0 0 0 4px rgba(255,91,65,.18);
 }
 
-.field--hidden{
+/* ocultar */
+.field--hidden,
+.oculto{
   display:none;
 }
 
-/* grid */
-.grid{
+/* grid / rejilla */
+.grid,
+.rejilla{
   display:grid;
   gap:14px;
   grid-template-columns: 1fr 1fr;
 }
+
 @media (max-width: 820px){
-  .grid{ grid-template-columns:1fr; }
+  .grid,
+  .rejilla{
+    grid-template-columns:1fr;
+  }
 }
 
 /* =========================
-   SUBCARD (microscopio)
+   SUBCARD / SUBTARJETA
 ========================= */
-.subcard{
+.subcard,
+.subtarjeta{
   margin-top:18px;
   border-radius:14px;
   border:1px solid rgba(2,52,171,.18);
@@ -313,28 +359,38 @@ main.page{
   overflow:hidden;
 }
 
-.subcard__head{
+.subcard__head,
+.subtarjeta-cabecera{
   padding:14px 16px;
   background:rgba(2,52,171,.10);
   border-bottom:1px solid rgba(2,52,171,.14);
 }
-.subcard__title{
+
+.subcard__title,
+.subtarjeta-titulo{
   margin:0;
   font-size:15px;
   font-weight:900;
   color:var(--secondary);
 }
-.subcard__hint{
+
+.subcard__hint,
+.subtarjeta-ayuda{
   margin:6px 0 0;
   font-size:12px;
   color:var(--muted);
 }
 
-.subcard__body{
+.subcard__body,
+.subtarjeta-cuerpo{
   padding:14px 16px 16px;
 }
 
-.img-row{
+/* =========================
+   IMÁGENES (filas)
+========================= */
+.img-row,
+.fila-imagen{
   display:grid;
   gap:12px;
   grid-template-columns: 1.2fr .6fr 1.2fr auto;
@@ -349,16 +405,23 @@ main.page{
 }
 
 @media (max-width: 900px){
-  .img-row{
+  .img-row,
+  .fila-imagen{
     grid-template-columns:1fr;
     align-items:stretch;
   }
 }
 
+/* Si quieres diferenciar las obligatorias (no cambia el layout, solo deja marcado) */
+.fila-obligatoria{
+  border-color: rgba(2,52,171,.25);
+}
+
 /* =========================
-   ACTIONS / BUTTONS
+   ACTIONS / ACCIONES
 ========================= */
-.actions{
+.actions,
+.acciones{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -367,14 +430,20 @@ main.page{
   flex-wrap:wrap;
 }
 
-.link{
+.link,
+.enlace{
   color:var(--secondary);
   text-decoration:none;
   font-weight:800;
 }
-.link:hover{ text-decoration:underline; }
+.link:hover,
+.enlace:hover{
+  text-decoration:underline;
+}
 
-.btn{
+/* botones */
+.btn,
+.boton{
   border:none;
   cursor:pointer;
   border-radius:12px;
@@ -384,38 +453,60 @@ main.page{
   transition:transform .08s ease, opacity .2s ease, background .2s ease;
 }
 
-.btn:active{ transform:scale(.98); }
+.btn:active,
+.boton:active{
+  transform:scale(.98);
+}
 
-.btn--primary{
+.btn--primary,
+.boton-principal{
   background:var(--primary);
   color:var(--white);
 }
-.btn--primary:hover{ opacity:.95; }
+.btn--primary:hover,
+.boton-principal:hover{
+  opacity:.95;
+}
 
-.btn--secondary{
+.btn--secondary,
+.boton-secundario{
   background:var(--secondary);
   color:var(--white);
 }
-.btn--secondary:hover{ opacity:.95; }
+.btn--secondary:hover,
+.boton-secundario:hover{
+  opacity:.95;
+}
 
-.btn--ghost{
+.btn--ghost,
+.boton-fantasma{
   background:transparent;
   color:var(--secondary);
   border:1px solid rgba(2,52,171,.25);
 }
-.btn--ghost:hover{
+.btn--ghost:hover,
+.boton-fantasma:hover{
   background:rgba(2,52,171,.08);
 }
 
-.btn--danger{
+.btn--danger,
+.boton-peligro{
   background:#b42318;
   color:#fff;
 }
-.btn--danger:hover{ opacity:.95; }
+.btn--danger:hover,
+.boton-peligro:hover{
+  opacity:.95;
+}
 
-/* fases */
-.phase{ display:none; }
-.phase--active{ display:block; }
+/* =========================
+   FASES (mostrar/ocultar)
+========================= */
+.phase,
+.fase{ display:none; }
+
+.phase--active,
+.fase-activa{ display:block; }
 
 /* =========================
    FOOTER (SIEMPRE ABAJO)
@@ -442,5 +533,8 @@ main.page{
     padding:9px 12px;
     font-size:13px;
   }
-  .page-title{ font-size:22px; }
+  .page-title,
+  .titulo-pagina{
+    font-size:22px;
+  }
 }

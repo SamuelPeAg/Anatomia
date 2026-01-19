@@ -18,6 +18,8 @@ body {
 /* ===== Tarjeta del login ===== */
 .login-wrapper {
     background: var(--white);
+    margin-top: 100px;
+    height: 470px;
     width: 400px;
     padding: 2rem;
     border-radius: 12px;

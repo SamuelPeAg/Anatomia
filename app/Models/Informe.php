@@ -18,7 +18,7 @@ class Informe extends Model
         'codigo_identificador',
         'estado',
 
-        // Fase 1 - Recepción
+        // Fase 1 - Recepcion
         'recepcion_formato_recibido',
         'recepcion_observaciones',
         'recepcion_organo',
@@ -28,11 +28,11 @@ class Informe extends Model
         'procesamiento_otro',
         'procesamiento_observaciones',
 
-        // Fase 3 - Tinción
+        // Fase 3 - Tincion
         'tincion_tipo',
         'tincion_observaciones',
 
-        // Fase 4 - Citodiagnóstico
+        // Fase 4 - citodiagnostico
         'citodiagnostico',
     ];
 
