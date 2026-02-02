@@ -25,9 +25,9 @@
             @csrf
             <div class="input-group">
                 <span class="input-group-text">
-                    <i class="bi bi-person"></i>
+                    <i class="bi bi-envelope"></i>
                 </span>
-                <input type="text" name="name" class="form-control" placeholder="ingrese el nombre" required>
+                <input type="email" name="email" class="form-control" placeholder="ingrese el correo" maxlength="70" required>
             </div>
 
             <div class="input-group">
@@ -54,10 +54,6 @@
         @endif
 
 
-        <!-- Enlace footer -->
-        <div class="login-footer">
-            <a href="#">¿Has olvidado tu contraseña?</a>
-        </div>
     </div>
 
 </body>

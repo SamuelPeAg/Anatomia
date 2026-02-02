@@ -5,43 +5,43 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
-//Inicio de sesion
+// Página Principal
 Route::get('/', function () {
+    return view('inicio');
+})->name("inicio");
+
+// Autenticación
+Route::get('/login', function () {
     return view('sesion.login');
-})->name("login.form");
+})->name("login");
 
-Route::post("/login",[UserController::class,"login"])->name("login");
-
-//
-Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'siguienteCodigo'])
-    ->name('tipos.siguienteCodigo');
-
-
-// nuevo informe
-Route::get("/nuevo_informe",function(){
-    return view("nuevoinforme");
-})->name("nuevo informe");
-
-// guarder informe
-Route::post("/guardar_informe",[TipoMuestraController::class, "store"])->name("guardar_informe");
-
-
-//revision informes
-Route::get("/revision",function(){
-    return view("revision");
-
-})->name("revision");
-
-
-//Pagina principal
-Route::get('/welcome', function () {
-    return view('welcome');
-})->name("home");
-
-
-//Registro de usuarios 
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::post("/login", [UserController::class, "login"]);
 
 Route::get('/register', function () {
     return view('sesion.register');
 })->name("register");
+
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+// Rutas Protegidas
+Route::middleware(['auth'])->group(function () {
+    
+    Route::get('/welcome', function () {
+        return view('welcome');
+    })->name("home");
+
+    Route::get("/nuevo_informe", function () {
+        return view("nuevoinforme");
+    })->name("nuevo informe");
+
+    Route::post("/guardar_informe", [TipoMuestraController::class, "store"])->name("guardar_informe");
+
+    Route::get("/revision", function () {
+        return view("revision");
+    })->name("revision");
+
+    Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'siguienteCodigo'])
+        ->name('tipos.siguienteCodigo');
+});

@@ -12,19 +12,31 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function login(Request $request){
-        $credentials = $request->only('name', 'password');
-
-        if (Auth::attempt($credentials)) {
-
-            return redirect()->route('home');
-        }
-
-
-        return back()->withErrors([
-            'login' => 'Nombre o contraseña incorrectos',
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email|max:70',
+            'password' => 'required|string',
         ]);
 
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('welcome');
+        }
+
+        return back()->withErrors([
+            'login' => 'Correo o contraseña incorrectos',
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 
     public function index()
@@ -48,19 +60,21 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'name'     => 'required|string|max:70',
+            'email'    => 'required|email|max:70|unique:users,email',
             'password' => 'required|string|min:6',
         ]);
 
-        User::create([
+        $user = User::create([
             'name'     => $request["name"],
             'email'    => $request["email"],
             'password' => bcrypt($request->password),
         ]);
 
+        Auth::login($user);
+
         return redirect()->route('home')
-            ->with('success', 'Usuario creado correctamente.');
+            ->with('success', 'Usuario registrado y autenticado correctamente.');
     }
 
     /**

@@ -25,12 +25,10 @@ class InformeFactory extends Factory
         $anio = (int) now()->format('Y'); // 2025
         $yy = now()->format('y');         // 25
 
-        // Correlativo de demo (en real lo sacarás de BD)
-        $correlativo = $this->faker->numberBetween(1, 250);
-
-        // Evitar colisiones en seeds: añade sufijo corto
-        $suffix = strtoupper(substr($this->faker->uuid(), 0, 4));
-        $codigo = "{$tipo->codigo}{$yy}{$correlativo}{$suffix}"; // Ej: B2512A3F
+        // Correlativo único para evitar colisiones en el seed
+        $correlativo = $this->faker->unique()->numberBetween(1, 100000);
+        
+        $codigo = "{$tipo->prefijo}{$yy}{$correlativo}"; // Ej: B25120
 
         $estado = $this->faker->randomElement(['incompleto', 'completo', 'revisado']);
 
@@ -46,7 +44,7 @@ class InformeFactory extends Factory
             // Fase 1 - Recepción
             'recepcion_formato_recibido' => $this->faker->optional()->randomElement(['Fresco', 'Formol', 'Etanol 70%']),
             'recepcion_observaciones' => $this->faker->sentence(12),
-            'recepcion_organo' => ($tipo->codigo === 'B')
+            'recepcion_organo' => ($tipo->prefijo === 'B')
                 ? $this->faker->randomElement(['Piel', 'Pulmón', 'Hígado', 'Colon', 'Mama'])
                 : null,
 

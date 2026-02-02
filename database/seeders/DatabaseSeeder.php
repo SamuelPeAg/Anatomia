@@ -8,11 +8,22 @@ use App\Models\TipoMuestra;
 use App\Models\Expediente;
 use App\Models\Informe;
 use App\Models\Imagenes;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // 0) USUARIO POR DEFECTO
+        User::updateOrCreate(
+            ['email' => 'admin@medac.es'],
+            [
+                'name' => 'admin',
+                'password' => Hash::make('admin'),
+            ]
+        );
+
         // 1) TIPOS FIJOS (catalogo) -> sin duplicados de prefijo
         TipoMuestra::query()->delete(); // por si ya hay algo
 

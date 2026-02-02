@@ -1,10 +1,29 @@
-<header class="app-header">
-    <div class="header-left">
-        <span class="app-logo">DAVANTE · MEDAC</span>
-    </div>
+<header class="header">
+    <a href="{{ url('/') }}" class="logo">
+        Anatomía MEDAC
+    </a>
 
-    <nav class="header-nav">
-        <a href="#" class="nav-link active">Crear informe</a>
-        <a href="#" class="nav-link">Revisar informes</a>
+    <nav class="nav-links">
+        @if (Route::has('login'))
+            @auth
+                <a href="{{ route('home') }}" class="btn btn-login">
+                    Inicio
+                </a>
+                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-register">Cerrar Sesión</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-login">
+                    Iniciar Sesión
+                </a>
+
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="btn btn-register">
+                        Crear Cuenta
+                    </a>
+                @endif
+            @endauth
+        @endif
     </nav>
 </header>

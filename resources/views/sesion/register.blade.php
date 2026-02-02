@@ -31,7 +31,7 @@
                     <i class="bi bi-person"></i>
                 </span>
                 <input type="text" name="name" class="form-control"
-                    placeholder="Nombre completo" value="{{ old('name') }}" required>
+                    placeholder="Nombre completo" value="{{ old('name') }}" maxlength="70" required>
             </div>
             @error('name')
                 <div class="alert alert-danger p-1">{{ $message }}</div>
@@ -43,7 +43,7 @@
                     <i class="bi bi-envelope"></i>
                 </span>
                 <input type="email" name="email" class="form-control"
-                    placeholder="Correo electrónico" value="{{ old('email') }}" required>
+                    placeholder="Correo electrónico" value="{{ old('email') }}" maxlength="70" required>
             </div>
             @error('email')
                 <div class="alert alert-danger p-1">{{ $message }}</div>
@@ -55,7 +55,7 @@
                     <i class="bi bi-key"></i>
                 </span>
                 <input type="password" name="password" class="form-control"
-                    placeholder="Contraseña" required>
+                    placeholder="Contraseña" minlength="6" required>
             </div>
             @error('password')
                 <div class="alert alert-danger p-1">{{ $message }}</div>
@@ -67,7 +67,7 @@
                     <i class="bi bi-shield-check"></i>
                 </span>
                 <input type="password" name="password_confirmation" class="form-control"
-                    placeholder="Confirmar contraseña" required>
+                    placeholder="Confirmar contraseña" minlength="6" required>
             </div>
 
             <button class="btn-login mt-3">CREAR USUARIO</button>
