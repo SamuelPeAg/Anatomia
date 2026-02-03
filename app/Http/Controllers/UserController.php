@@ -23,7 +23,7 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('welcome');
+            return redirect()->intended('nuevo_informe');
         }
 
         return back()->withErrors([

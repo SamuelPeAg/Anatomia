@@ -6,6 +6,7 @@
     <title>Nuevo informe — DAVANTE</title>
 
     <link rel="stylesheet" href="{{ asset('css/nuevoinforme.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/header_footer.css') }}" />
   </head>
 
   <body>
