@@ -1,0 +1,27 @@
+/* =========================
+   NOTIFICACIONES Y ALERTAS
+========================= */
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background: #ecfdf5 !important;
+    color: #065f46 !important;
+    border-color: #a7f3d0 !important;
+}
+
+.alert-danger {
+    background: #fef2f2 !important;
+    color: #991b1b !important;
+    border-color: #fecaca !important;
+}
+
+.alert ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}

@@ -9,14 +9,7 @@ class TipoMuestra extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'nombre',
-        'prefijo',
-        'contador_actual',
-        'requiere_organo',
-        'descripcion',
-        'activo',
-    ];
+    protected $fillable = ['nombre', 'prefijo', 'contador_actual', 'requiere_organo', 'descripcion', 'activo'];
 
     protected $casts = [
         'contador_actual' => 'integer',
@@ -29,5 +22,3 @@ class TipoMuestra extends Model
         return $this->hasMany(Informe::class, 'tipo_id');
     }
 }
-
- 

@@ -5,39 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\TipoMuestra;
 use App\Models\Informe;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Illuminate\Http\Request;
 
 class TipoMuestraController extends Controller
 {
-    public function siguienteCodigo(TipoMuestra $tipo): JsonResponse
+    public function siguienteCodigo(string $prefijo): JsonResponse
     {
-        $anio = (int) now()->format('Y');  // 2025
-        $yy   = now()->format('y');        // 25
-
-        // Último correlativo usado para ESTE tipo y ESTE año
+        $tipo = TipoMuestra::where('prefijo', $prefijo)->firstOrFail();
+        
         $ultimo = Informe::where('tipo_id', $tipo->id)
-            ->where('anio', $anio)
+            ->where('anio', now()->year)
             ->max('correlativo');
 
         $siguiente = ($ultimo ?? 0) + 1;
-
-        // Formato compacto: B2530
-        $codigo = $tipo->prefijo . $yy . $siguiente;
+        $codigo = $tipo->prefijo . now()->format('y') . $siguiente;
 
         return response()->json([
-            'tipo_id' => $tipo->id,
-            'prefijo' => $tipo->prefijo,
-            'anio' => $anio,
+            'tipo_id'     => $tipo->id,
+            'prefijo'     => $tipo->prefijo,
             'correlativo' => $siguiente,
-            'codigo' => $codigo,
+            'codigo'      => $codigo,
         ]);
     }
-
-    public function store(Request $request){
-        
-
-        return view("sesion.login");
-    }
-
-
 }

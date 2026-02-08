@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\TipoMuestraController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\InformeController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -36,11 +37,11 @@ Route::middleware(['auth'])->group(function () {
         return view("nuevoinforme");
     })->name("nuevo informe");
 
-    Route::post("/guardar_informe", [TipoMuestraController::class, "store"])->name("guardar_informe");
+    Route::post("/guardar_informe", [InformeController::class, "store"])->name("guardar_informe");
 
-    Route::get("/revision", function () {
-        return view("revision");
-    })->name("revision");
+    Route::get("/revision", [InformeController::class, "index"])->name("revision");
+    Route::get("/revision/{informe}/editar", [InformeController::class, "edit"])->name("informes.edit");
+    Route::put("/informe/{informe}/actualizar", [InformeController::class, "update"])->name("informes.update");
 
     Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'siguienteCodigo'])
         ->name('tipos.siguienteCodigo');

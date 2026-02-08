@@ -7,6 +7,7 @@
         @if (Route::has('login'))
             @auth
                 <a href="{{ route('inicio') }}" class="btn-ghost">Inicio</a>
+                <a href="{{ route('revision') }}" class="btn-ghost">Revisión</a>
                 <a href="{{ route('nuevo informe') }}" class="btn-ghost">Nuevo Informe</a>
                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
