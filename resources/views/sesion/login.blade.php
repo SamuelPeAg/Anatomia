@@ -9,53 +9,78 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- CSS personalizado -->
-    <link rel="stylesheet" href="./css/login.css">
+    <!-- Estilos y Scripts con Vite -->
+    @vite(['resources/css/principal.css', 'resources/css/login.css'])
 
     <!-- Iconos Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
 <body>
-    <div class="login-wrapper">
+    <!-- Header Integrado -->
+    <header class="main-header">
+        <a href="{{ url('/') }}" class="brand">
+            <span class="brand-name">Anatomía MEDAC</span>
+        </a>
+        <nav class="nav-actions">
+            <a href="{{ url('/') }}" class="btn-ghost">Volver Atrás</a>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" class="btn-premium">Registro</a>
+            @endif
+        </nav>
+    </header>
 
-        <h2>Iniciar Sesión</h2>
+    <div class="auth-container">
+        <div class="login-wrapper">
 
-        <form action="{{ route('login') }}" method="POST">
-            @csrf
-            <div class="input-group">
-                <span class="input-group-text">
-                    <i class="bi bi-envelope"></i>
-                </span>
-                <input type="email" name="email" class="form-control" placeholder="ingrese el correo" maxlength="70" required>
+            <h2>Iniciar Sesión</h2>
+
+            <form action="{{ route('login') }}" method="POST">
+                @csrf
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input type="email" name="email" class="form-control" placeholder="Ingrese el correo" maxlength="70" required>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-key"></i>
+                    </span>
+                    <input type="password" name="password" class="form-control" placeholder="Ingrese la contraseña"
+                        required>
+                </div>
+
+                <button class="btn-login mt-3">INICIAR SESIÓN</button>
+            </form>
+
+            @if ($errors->has('login'))
+                <div class="alert alert-danger mt-3">
+                    {{ $errors->first('login') }}
+                </div>
+            @endif
+
+            <div class="login-footer">
+                @if (Route::has('register'))
+                    <span>¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate aquí</a></span>
+                @endif
             </div>
-
-            <div class="input-group">
-                <span class="input-group-text">
-                    <i class="bi bi-key"></i>
-                </span>
-                <input type="password" name="password" class="form-control" placeholder="ingrese la contraseña"
-                    required>
-            </div>
-
-            <!-- <button class="btn-google">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-                Iniciar sesión con Google
-            </button> -->
-
-
-            <button class="btn-login mt-3">INICIAR SESIÓN</button>
-
-        </form>
-        @if ($errors->has('login'))
-            <div class="alert alert-danger mt-3">
-                {{ $errors->first('login') }}
-            </div>
-        @endif
-
-
+        </div>
     </div>
 
+    <!-- Footer Integrado -->
+    <footer class="main-footer">
+        <nav class="footer-nav">
+            <a href="{{ url('/') }}">Inicio</a>
+            <a href="#">Ayuda</a>
+            <a href="#">Privacidad</a>
+            <a href="#">Términos</a>
+        </nav>
+        <div class="copy">
+            &copy; {{ date('Y') }} Anatomía MEDAC. Todos los derechos reservados.
+        </div>
+    </footer>
 </body>
 
 </html>

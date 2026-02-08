@@ -28,8 +28,8 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 // Rutas Protegidas
 Route::middleware(['auth'])->group(function () {
     
-    Route::get('/welcome', function () {
-        return view('welcome');
+    Route::get('/home', function () {
+        return view('inicio');
     })->name("home");
 
     Route::get("/nuevo_informe", function () {

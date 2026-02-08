@@ -3,46 +3,84 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Anatomía MEDAC — Gestión Patológica Premium</title>
 
-        <title>Inicio - Anatomía MEDAC</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
-
-        <!-- Estilos vinculados externamente -->
-        <link rel="stylesheet" href="{{ asset('css/principal.css') }}">
-        <script src="{{ asset('js/principal.js') }}" defer></script>
+        <!-- Estilos y Scripts con Vite -->
+        @vite(['resources/css/principal.css', 'resources/js/principal.js'])
     </head>
     <body>
         <x-header />
 
-        <main class="main-content">
-            <section class="hero-section">
-                <h1 class="hero-title">Optimiza tus prácticas de Anatomía Patológica</h1>
+        <main>
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-tag">Laboratorio Patológico Digital</div>
+                <h1 class="hero-title">Gestión centralizada para Anatomía Patológica</h1>
                 <p class="hero-subtitle">
-                    Dile adiós al caos de los correos y las imágenes perdidas. 
-                    Una plataforma centralizada para el seguimiento paso a paso del procesado de muestras.
+                    Optimiza el procesado de muestras y la generación de informes técnicos con una plataforma diseñada para laboratorios modernos.
                 </p>
-                <div class="cta-group">
-                    <a href="{{ route('login') }}" class="btn btn-register">
-                        Empieza ahora
-                    </a>
+                <div class="hero-btns">
+                    <a href="{{ route('login') }}" class="btn-premium">Comenzar Ahora</a>
+                    <a href="#proceso" class="btn-outline">Ver Funcionamiento</a>
                 </div>
             </section>
 
-            <section class="features">
-                <div class="feature-card">
-                    <h3>Procesado por Etapas</h3>
-                    <p>Registra cada fase del procesado de la muestra de forma estructurada y cronológica.</p>
+            <!-- Benefits/Process Section -->
+            <section class="benefits-section" id="proceso">
+                <div class="section-header">
+                    <h2 class="section-title">¿Por qué elegir nuestra plataforma?</h2>
+                    <p class="section-desc">Diseñamos cada función pensando en la precisión y rapidez que requiere un entorno de laboratorio.</p>
                 </div>
-                <div class="feature-card">
-                    <h3>Gestión de Imágenes</h3>
-                    <p>Sube y organiza las fotografías de tus prácticas directamente en la plataforma, sin intermediarios.</p>
+
+                <div class="benefits-grid">
+                    <div class="benefit-list">
+                        <div class="benefit-item">
+                            <div class="benefit-num">1</div>
+                            <div class="benefit-content">
+                                <h4>Control Total del Proceso</h4>
+                                <p>Supervisión detallada de cada fase: recepción, procesamiento, tinción y citodiagnóstico.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-num">2</div>
+                            <div class="benefit-content">
+                                <h4>Gestión de Imágenes</h4>
+                                <p>Captura y almacenamiento seguro de fotografías microscópicas organizadas por expediente.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-num">3</div>
+                            <div class="benefit-content">
+                                <h4>Informes Profesionales</h4>
+                                <p>Generación automática de documentos técnicos listos para su revisión y envío.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="benefit-visual">
+                        <div class="visual-placeholder">
+                            Vista previa del Panel de Control
+                        </div>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <h3>Adiós al Papeleo</h3>
-                    <p>Informes digitales listos para revisión, eliminando la necesidad de formularios por correo.</p>
+            </section>
+
+            <!-- Features Grid -->
+            <section class="features-container">
+                <div class="features-grid">
+                    <article class="feature-card">
+                        <h3>Trazabilidad Completa</h3>
+                        <p>Historial inalterable de cada muestra, asegurando el cumplimiento de normativas de calidad.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <h3>Acceso Remoto</h3>
+                        <p>Consulta expedientes e imágenes desde cualquier dispositivo autorizado con total seguridad.</p>
+                    </article>
+
+                    <article class="feature-card">
+                        <h3>Búsqueda Avanzada</h3>
+                        <p>Localiza cualquier informe o muestra en segundos mediante filtros inteligentes y etiquetas.</p>
+                    </article>
                 </div>
             </section>
         </main>

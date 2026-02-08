@@ -1,0 +1,123 @@
+/* ===== PALETA ===== */
+:root {
+    --primary: #FF5B41;
+    --secondary: #0234AB;
+    --gray: #EDEDED;
+    --white: #FFFFFF;
+}
+
+/* ===== Centramos todo ===== */
+/* ===== Configuración General ===== */
+body {
+    background: var(--gray);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
+
+/* ===== Tarjeta del login ===== */
+/* ===== Contenedor Principal ===== */
+.auth-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* ===== Tarjeta del login ===== */
+.login-wrapper {
+    background: var(--white);
+    width: 400px;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Título */
+.login-wrapper h2 {
+    text-align: center;
+    margin-bottom: 1.8rem;
+    font-weight: 700;
+    color: var(--secondary);
+}
+
+/* ===== Inputs modernos ===== */
+.input-group {
+    margin-bottom: 1.2rem;
+}
+
+.input-group-text {
+    background: var(--white);
+    border: none;
+    border-bottom: 2px solid var(--secondary);
+}
+
+.form-control {
+    border: none !important;
+    border-bottom: 2px solid var(--secondary) !important;
+    border-radius: 0 !important;
+    padding: 10px;
+    outline: none;
+    box-shadow: none !important;
+}
+
+.form-control:focus {
+    border-bottom: 2px solid var(--primary) !important;
+}
+
+/* ===== BOTÓN ===== */
+.btn-login {
+    width: 100%;
+    background: var(--secondary);
+    color: var(--white);
+    padding: 12px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-login:hover {
+    background: #012a3c;
+}
+
+/* ===== Enlace ===== */
+.login-footer {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.login-footer a {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+.btn-google {
+    width: 100%;
+    background: #ffffff;
+    border: 2px solid #dadce0;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-google img {
+    width: 20px;
+}
+
+.btn-google:hover {
+    background: #f7f7f7;
+    border-color: #c6c6c6;
+}

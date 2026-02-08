@@ -4,22 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request): RedirectResponse
     {
-        $request->validate([
-            'email'    => 'required|email|max:70',
-            'password' => 'required|string',
-        ]);
-
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validated();
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
@@ -31,7 +31,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
         $request->session()->invalidate();
@@ -39,16 +39,16 @@ class UserController extends Controller
         return redirect('/');
     }
 
-    public function index()
+    public function index(): View
     {
          $users = User::all();
-        return view('welcome', compact('users'));
+        return view('inicio', compact('users'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         return view('users.create');
 
@@ -57,18 +57,14 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name'     => 'required|string|max:70',
-            'email'    => 'required|email|max:70|unique:users,email',
-            'password' => 'required|string|min:6',
-        ]);
+        $validated = $request->validated();
 
         $user = User::create([
-            'name'     => $request["name"],
-            'email'    => $request["email"],
-            'password' => bcrypt($request->password),
+            'name'     => $validated["name"],
+            'email'    => $validated["email"],
+            'password' => bcrypt($validated["password"]),
         ]);
 
         Auth::login($user);
@@ -96,19 +92,15 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6',
-        ]);
+        $validated = $request->validated();
 
-        $user->name = $request->name;
-        $user->email = $request->email;
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
 
-        if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
+        if (!empty($validated['password'])) {
+            $user->password = bcrypt($validated['password']);
         }
 
         $user->save();
@@ -120,7 +112,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(User $user): RedirectResponse
     {
         $user->delete();
 

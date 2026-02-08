@@ -1,6 +1,11 @@
-<footer class="footer">
-    <div class="footer-content">
-        <p>&copy; {{ date('Y') }} Anatomía MEDAC. Todos los derechos reservados.</p>
-        <p>Transformando el procesado de muestras en el laboratorio.</p>
+<footer class="main-footer">
+    <nav class="footer-nav">
+        <a href="#">Ayuda</a>
+        <a href="#">Privacidad</a>
+        <a href="#">Términos de Uso</a>
+        <a href="#">Configuración</a>
+    </nav>
+    <div class="copy">
+        &copy; {{ date('Y') }} Anatomía MEDAC. Todos los derechos reservados.
     </div>
 </footer>
