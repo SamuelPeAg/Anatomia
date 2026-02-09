@@ -58,7 +58,7 @@
                     </div>
                     <div class="benefit-visual">
                         <div class="visual-placeholder">
-                            Vista previa del Panel de Control
+                            <img src="">
                         </div>
                     </div>
                 </div>

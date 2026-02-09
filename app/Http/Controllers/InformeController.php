@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Informe;
 use App\Models\TipoMuestra;
+use App\Models\Imagen;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class InformeController extends Controller
 {
-    public function index(): View
+    public function index()
     {
         $informes = Informe::with('tipo')->orderBy('created_at', 'desc')->get();
 
@@ -23,7 +26,7 @@ class InformeController extends Controller
         return view('revision', compact('informes'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'tipo_muestra' => 'required|string',
@@ -55,18 +58,20 @@ class InformeController extends Controller
             'recepcion_organo' => $request->organo,
         ]);
 
+        $this->procesarImagenes($request, $informe);
+
         return redirect()->route('informes.edit', $informe)
             ->with('success', 'Recepción guardada correctamente.');
     }
 
-    public function edit(Informe $informe): View
+    public function edit(Informe $informe)
     {
         $numeroFase = request('fase') ?: $this->getSiguienteFaseInfo($informe)['numero'];
         
         return view('nuevoinforme', compact('informe', 'numeroFase'));
     }
 
-    public function update(Request $request, Informe $informe): RedirectResponse
+    public function update(Request $request, Informe $informe)
     {
         $data = [];
 
@@ -102,6 +107,8 @@ class InformeController extends Controller
         }
 
         $informe->update($data);
+        
+        $this->procesarImagenes($request, $informe);
 
         if ($request->input('stay') == '1') {
             return back()->with('success', 'Progreso guardado.');
@@ -122,5 +129,81 @@ class InformeController extends Controller
         if (empty($informe->citodiagnostico)) return ['nombre' => 'Citodiagnóstico', 'numero' => 4];
         
         return ['nombre' => 'Finalizado', 'numero' => 4];
+    }
+
+    private function procesarImagenes(Request $request, Informe $informe)
+    {
+        Log::info('Inicio procesarImagenes Informe ID: ' . $informe->id);
+        
+        // 1. Recepción
+        if ($request->hasFile('recepcion_img')) {
+            $archivos = $request->file('recepcion_img');
+            $descripciones = $request->input('recepcion_desc', []);
+            
+            Log::info('Imágenes recepción detectadas: ' . count($archivos));
+
+            foreach ($archivos as $index => $file) {
+                if ($file && $file->isValid()) {
+                    $path = $file->store("informes/{$informe->id}/recepcion", 'public');
+                    
+                    Imagen::create([
+                        'informe_id' => $informe->id,
+                        'fase' => 'recepcion',
+                        'ruta' => $path,
+                        'descripcion' => $descripciones[$index] ?? null,
+                    ]);
+                    Log::info("Imagen guardada en: $path");
+                } else {
+                    Log::warning("Archivo inválido en índice $index: " . ($file ? $file->getErrorMessage() : 'NULL'));
+                }
+            }
+        }
+
+        // 2. Micro Obligatorias
+        if ($request->hasFile('micros_required_img')) {
+            $archivos = $request->file('micros_required_img');
+            $descripciones = $request->input('micros_required_desc', []);
+            
+            foreach ($archivos as $zoom => $file) {
+                 if ($file && $file->isValid()) {
+                    $path = $file->store("informes/{$informe->id}/microscopio", 'public');
+                    
+                    Imagen::updateOrCreate(
+                        [
+                            'informe_id' => $informe->id,
+                            'fase' => 'microscopio',
+                            'zoom' => $zoom,
+                            'obligatoria' => true
+                        ],
+                        [
+                            'ruta' => $path,
+                            'descripcion' => $descripciones[$zoom] ?? null
+                        ]
+                    );
+                 }
+            }
+        }
+        
+        // 3. Micro Extras
+        if ($request->hasFile('micros_extra_img')) {
+             $archivos = $request->file('micros_extra_img');
+             $descripciones = $request->input('micros_extra_desc', []);
+             $zooms = $request->input('micros_extra_zoom', []);
+
+             foreach ($archivos as $index => $file) {
+                if ($file && $file->isValid()) {
+                    $path = $file->store("informes/{$informe->id}/microscopio", 'public');
+                    
+                    Imagen::create([
+                        'informe_id' => $informe->id,
+                        'fase' => 'microscopio',
+                        'ruta' => $path,
+                        'zoom' => $zooms[$index] ?? null,
+                        'descripcion' => $descripciones[$index] ?? null,
+                        'obligatoria' => false
+                    ]);
+                }
+             }
+        }
     }
 }

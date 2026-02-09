@@ -27,74 +27,63 @@
                 <p class="subtarjeta-ayuda">Debes adjuntar 4 imágenes: x4, x10, x40 y x100.</p>
             </div>
 
+            @php
+                $imgsMicro = $informe ? $informe->imagenes->where('fase', 'microscopio') : collect(); 
+                $obl = $imgsMicro->where('obligatoria', 1)->keyBy('zoom');
+                $ext = $imgsMicro->where('obligatoria', 0);
+            @endphp
+
             <div class="subtarjeta-cuerpo">
                 <div class="lista-imagenes" id="listaImagenesObligatorias">
-                    <!-- x4 -->
-                    <div class="fila-imagen fila-obligatoria">
-                        <div class="archivo-imagen">
-                            <label class="etiqueta-campo">Imagen x4</label>
-                            <input class="control-campo" type="file" name="micros_required_img[x4]" accept="image/*" />
+                    @foreach(['x4', 'x10', 'x40', 'x100'] as $zoom)
+                        <div class="fila-imagen fila-obligatoria">
+                            <div class="archivo-imagen">
+                                <label class="etiqueta-campo">Imagen {{ $zoom }}</label>
+                                <input class="control-campo" type="file" name="micros_required_img[{{ $zoom }}]" accept="image/*" />
+                                @if($img = $obl->get($zoom))
+                                    <div class="img-preview-container" style="margin-top: 10px;">
+                                         <img src="{{ asset('storage/' . $img->ruta) }}" style="max-width: 300px; max-height: 300px; width: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                         <div style="margin-top: 4px; font-size: 0.85em; color: #059669; display: flex; align-items: center; gap: 4px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            Guardada correctamente
+                                         </div>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="zoom-imagen">
+                                <label class="etiqueta-campo">Zoom</label>
+                                <input class="control-campo" type="text" value="{{ $zoom }}" readonly />
+                            </div>
+                            <div class="descripcion-imagen">
+                                <label class="etiqueta-campo">Descripción (opcional)</label>
+                                <input class="control-campo" type="text" name="micros_required_desc[{{ $zoom }}]" 
+                                       placeholder="Qué se ve..." 
+                                       value="{{ $obl->get($zoom)->descripcion ?? '' }}" />
+                            </div>
                         </div>
-                        <div class="zoom-imagen">
-                            <label class="etiqueta-campo">Zoom</label>
-                            <input class="control-campo" type="text" value="x4" readonly />
-                        </div>
-                        <div class="descripcion-imagen">
-                            <label class="etiqueta-campo">Descripción (opcional)</label>
-                            <input class="control-campo" type="text" name="micros_required_desc[x4]" placeholder="Qué se ve..." />
-                        </div>
-                    </div>
-
-                    <!-- x10 -->
-                    <div class="fila-imagen fila-obligatoria">
-                        <div class="archivo-imagen">
-                            <label class="etiqueta-campo">Imagen x10</label>
-                            <input class="control-campo" type="file" name="micros_required_img[x10]" accept="image/*" />
-                        </div>
-                        <div class="zoom-imagen">
-                            <label class="etiqueta-campo">Zoom</label>
-                            <input class="control-campo" type="text" value="x10" readonly />
-                        </div>
-                        <div class="descripcion-imagen">
-                            <label class="etiqueta-campo">Descripción (opcional)</label>
-                            <input class="control-campo" type="text" name="micros_required_desc[x10]" placeholder="Qué se ve..." />
-                        </div>
-                    </div>
-
-                    <!-- x40 -->
-                    <div class="fila-imagen fila-obligatoria">
-                        <div class="archivo-imagen">
-                            <label class="etiqueta-campo">Imagen x40</label>
-                            <input class="control-campo" type="file" name="micros_required_img[x40]" accept="image/*" />
-                        </div>
-                        <div class="zoom-imagen">
-                            <label class="etiqueta-campo">Zoom</label>
-                            <input class="control-campo" type="text" value="x40" readonly />
-                        </div>
-                        <div class="descripcion-imagen">
-                            <label class="etiqueta-campo">Descripción (opcional)</label>
-                            <input class="control-campo" type="text" name="micros_required_desc[x40]" placeholder="Qué se ve..." />
-                        </div>
-                    </div>
-
-                    <!-- x100 -->
-                    <div class="fila-imagen fila-obligatoria">
-                        <div class="archivo-imagen">
-                            <label class="etiqueta-campo">Imagen x100</label>
-                            <input class="control-campo" type="file" name="micros_required_img[x100]" accept="image/*" />
-                        </div>
-                        <div class="zoom-imagen">
-                            <label class="etiqueta-campo">Zoom</label>
-                            <input class="control-campo" type="text" value="x100" readonly />
-                        </div>
-                        <div class="descripcion-imagen">
-                            <label class="etiqueta-campo">Descripción (opcional)</label>
-                            <input class="control-campo" type="text" name="micros_required_desc[x100]" placeholder="Qué se ve..." />
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
 
                 <h3 class="subtarjeta-titulo" style="margin-top:16px;">Imágenes extra (opcional)</h3>
+
+                <!-- Imágenes Extra Guardadas -->
+                @if($ext->count() > 0)
+                    <div class="imagenes-existentes" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
+                        @foreach($ext as $img)
+                            <div class="imagen-item" style="border: 1px solid #e5e7eb; padding: 10px; border-radius: 8px; width: 320px;">
+                                <div style="position: relative;">
+                                    <img src="{{ asset('storage/' . $img->ruta) }}" 
+                                         alt="Imagen extra" 
+                                         style="width: 100%; height: 200px; object-fit: contain; border-radius: 4px; margin-bottom: 10px;">
+                                </div>
+                                <div class="info-img">
+                                    <span style="display:inline-block; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-bottom: 4px;">{{ $img->zoom }}</span>
+                                    <p style="font-size: 0.9em; color: #4b5563; margin-top: 4px;">{{ $img->descripcion ?: 'Sin descripción' }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
 
                 <div class="lista-imagenes" data-lista-imagenes="micro-extra">
                     <div class="fila-imagen">

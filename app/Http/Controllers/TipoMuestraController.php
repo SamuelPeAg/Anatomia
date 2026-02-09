@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class TipoMuestraController extends Controller
 {
-    public function siguienteCodigo(string $prefijo): JsonResponse
+    public function siguienteCodigo(string $prefijo)
     {
         $tipo = TipoMuestra::where('prefijo', $prefijo)->firstOrFail();
         

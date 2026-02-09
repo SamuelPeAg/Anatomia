@@ -146,12 +146,75 @@ document.addEventListener("DOMContentLoaded", () => {
       const fila = del.closest(".fila-imagen");
       if (fila && !fila.classList.contains("fila-obligatoria")) {
         const lista = fila.closest("[data-lista-imagenes]");
-        if (lista?.querySelectorAll(".fila-imagen").length > 1) fila.remove();
-        else fila.querySelectorAll("input, select").forEach(i => i.value = "");
+        if (lista?.querySelectorAll(".fila-imagen").length > 1) {
+          fila.remove();
+        } else {
+          // Limpiar inputs si es la última fila
+          fila.querySelectorAll("input, select").forEach(i => i.value = "");
+          // Limpiar preview si existe
+          const preview = fila.querySelector(".img-preview");
+          if (preview) preview.remove();
+        }
         hayCambiosSinGuardar = true;
       }
     }
   });
+
+  // Previsualización de imágenes
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="file"]')) {
+      const input = e.target;
+      const file = input.files[0];
+      const contenedor = input.closest('.archivo-imagen');
+
+      // Eliminar preview anterior si existe
+      let oldPreview = contenedor.querySelector('.img-preview');
+      if (oldPreview) oldPreview.remove();
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.className = 'img-preview';
+          img.style.maxWidth = '300px';
+          img.style.maxHeight = '300px';
+          img.style.width = '100%';
+          img.style.objectFit = 'contain';
+          img.style.marginTop = '10px';
+          img.style.borderRadius = '8px';
+          img.style.display = 'block';
+          img.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+          contenedor.appendChild(img);
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+  });
+
+  // Confirmación al finalizar informe
+  const btnFinalizar = document.querySelector('button[onclick*="stayFase4"][onclick*="0"]');
+  if (btnFinalizar) {
+    // Reemplazar el handler onclick inline o añadir uno nuevo que prevenga el envio
+    // Hack: Clonamos el botón para quitar los listeners antiguos si es necesario, pero mejor interceptamos el submit
+    // Como el botón es type="submit", el form se envía.
+    // Vamos a interceptar el click.
+
+    btnFinalizar.addEventListener('click', async (e) => {
+      e.preventDefault(); // Paramos el envío directo
+
+      document.getElementById('stayFase4').value = '0'; // Aseguramos el valor correcto
+
+      const confirmado = await pedirConfirmacion(
+        '¿Finalizar informe?',
+        'Revisa que todos los datos e imágenes sean correctos. Una vez finalizado pasará a revisión.'
+      );
+
+      if (confirmado) {
+        btnFinalizar.closest('form').submit();
+      }
+    });
+  }
 
   // Inicio
   cambiarAFase(config.faseInicial);

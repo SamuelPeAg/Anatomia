@@ -12,7 +12,7 @@ class ExpedienteController extends Controller
     /**
      * Muestra el formulario de acceso para pacientes.
      */
-    public function showAcceso(): View
+    public function showAcceso()
     {
         return view('paciente.login');
     }
@@ -20,7 +20,7 @@ class ExpedienteController extends Controller
     /**
      * Valida el email y guarda en sesión para "autenticar" al paciente.
      */
-    public function acceder(Request $request): RedirectResponse
+    public function acceder(Request $request)
     {
         $request->validate([
             'email' => 'required|email|exists:expedientes,correo',
@@ -37,7 +37,7 @@ class ExpedienteController extends Controller
     /**
      * Lista los informes asociados al expediente del paciente en sesión.
      */
-    public function misInformes(): View|RedirectResponse
+    public function misInformes()
     {
         $email = session('paciente_email');
 
