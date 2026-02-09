@@ -3,9 +3,8 @@
 use App\Http\Controllers\TipoMuestraController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\InformeController;
+use App\Http\Controllers\ExpedienteController;
 use Illuminate\Support\Facades\Route;
-
-
 // Página Principal
 Route::get('/', function () {
     return view('inicio');
@@ -34,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
     })->name("home");
 
     Route::get("/nuevo_informe", function () {
-        return view("nuevoinforme");
+        return view("nuevoinforme", ['informe' => null]);
     })->name("nuevo informe");
 
     Route::post("/guardar_informe", [InformeController::class, "store"])->name("guardar_informe");
@@ -48,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Portal de Pacientes (Acceso Público con Email)
-use App\Http\Controllers\ExpedienteController;
+
 Route::get('/paciente/acceso', [ExpedienteController::class, 'showAcceso'])->name('paciente.acceso');
 Route::post('/paciente/acceso', [ExpedienteController::class, 'acceder'])->name('paciente.login');
 Route::get('/paciente/mis-informes', [ExpedienteController::class, 'misInformes'])->name('paciente.informes');

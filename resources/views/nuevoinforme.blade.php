@@ -82,10 +82,10 @@
                         </div>
                     @endif
 
-                    <x-fase-recepcion :informe="$informe ?? null" />
-                    <x-fase-procesamiento :informe="$informe ?? null" />
-                    <x-fase-tincion :informe="$informe ?? null" />
-                    <x-fase-citodiagnostico :informe="$informe ?? null" />
+                    <x-fase-recepcion :informe="$informe" />
+                    <x-fase-procesamiento :informe="$informe" />
+                    <x-fase-tincion :informe="$informe" />
+                    <x-fase-citodiagnostico :informe="$informe" />
                 </div>
             </article>
         </section>
