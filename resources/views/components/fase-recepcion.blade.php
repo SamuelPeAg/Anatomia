@@ -7,6 +7,39 @@
     
     <div class="rejilla">
         <div class="campo">
+            <label class="etiqueta-campo" for="paciente_nombre">
+                Nombre del Paciente <span class="opcional">(Opcional)</span>
+            </label>
+            <input
+                class="control-campo"
+                type="text"
+                id="paciente_nombre"
+                name="paciente_nombre"
+                placeholder="Ej: Juan Pérez"
+                value="{{ $informe && $informe->expediente ? $informe->expediente->nombre : '' }}"
+                {{ $informe ? 'readonly' : '' }}
+            />
+        </div>
+
+        <div class="campo">
+            <label class="etiqueta-campo" for="paciente_correo">
+                Correo del Paciente <span class="opcional">(Opcional)</span>
+            </label>
+            <input
+                class="control-campo"
+                type="email"
+                id="paciente_correo"
+                name="paciente_correo"
+                placeholder="paciente@ejemplo.com"
+                value="{{ $informe && $informe->expediente ? $informe->expediente->correo : '' }}"
+                {{ $informe ? 'readonly' : '' }}
+            />
+            <small class="ayuda-campo">Úsalo para vincular informes al mismo paciente.</small>
+        </div>
+    </div>
+
+    <div class="rejilla">
+        <div class="campo">
             <label class="etiqueta-campo" for="tipo_muestra">
                 Tipo de muestra <span class="obligatorio">*</span>
             </label>
@@ -46,7 +79,7 @@
 
     <div class="campo">
         <label class="etiqueta-campo" for="observaciones_llegada">
-            Observaciones de la llegada <span class="obligatorio">*</span>
+            Observaciones de la llegada (Opcional)
         </label>
         <textarea
             class="control-campo"
@@ -54,7 +87,6 @@
             name="observaciones_llegada"
             rows="5"
             placeholder="Estado del recipiente, incidencias, cantidad, etc."
-            required
         >{{ $informe->recepcion_observaciones ?? '' }}</textarea>
     </div>
 
@@ -127,6 +159,7 @@
         </div>
 
         <div class="acciones-derecha">
+            <input type="hidden" name="fase_origen" value="1">
             <input type="hidden" name="stay" value="1" id="stayFase1">
             <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase1').value='1'">
                 Guardar recepción (incompleto)

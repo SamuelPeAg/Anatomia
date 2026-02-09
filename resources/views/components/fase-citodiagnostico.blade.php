@@ -1,11 +1,11 @@
 @props(['informe' => null])
 <section class="fase" id="fase-4" data-fase="4">
-  @if(!$informe || empty($informe->tincion_tipo))
-    <div class="empty-state">
-        <p>Debes completar la tinción antes de poder realizar el citodiagnóstico final.</p>
-    </div>
-  @else
-    <form action="{{ route('informes.update', $informe) }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ $informe ? route('informes.update', $informe) : '#' }}" method="POST" enctype="multipart/form-data">
+    @if(!$informe)
+      <div class="alert alert-warning">
+          Para guardar esta fase, primero debes completar y guardar la <strong>Fase 1 (Recepción)</strong>.
+      </div>
+    @endif
         @csrf
         @method('PUT')
         <div class="campo">
@@ -18,7 +18,6 @@
                 name="citodiagnostico"
                 rows="6"
                 placeholder="Descripción diagnóstica, hallazgos citológicos / tisulares..."
-                required
             >{{ $informe->citodiagnostico ?? '' }}</textarea>
         </div>
 
@@ -33,8 +32,8 @@
                     <!-- x4 -->
                     <div class="fila-imagen fila-obligatoria">
                         <div class="archivo-imagen">
-                            <label class="etiqueta-campo">Imagen x4 <span class="obligatorio">*</span></label>
-                            <input class="control-campo" type="file" name="micros_required_img[x4]" accept="image/*" required />
+                            <label class="etiqueta-campo">Imagen x4</label>
+                            <input class="control-campo" type="file" name="micros_required_img[x4]" accept="image/*" />
                         </div>
                         <div class="zoom-imagen">
                             <label class="etiqueta-campo">Zoom</label>
@@ -49,8 +48,8 @@
                     <!-- x10 -->
                     <div class="fila-imagen fila-obligatoria">
                         <div class="archivo-imagen">
-                            <label class="etiqueta-campo">Imagen x10 <span class="obligatorio">*</span></label>
-                            <input class="control-campo" type="file" name="micros_required_img[x10]" accept="image/*" required />
+                            <label class="etiqueta-campo">Imagen x10</label>
+                            <input class="control-campo" type="file" name="micros_required_img[x10]" accept="image/*" />
                         </div>
                         <div class="zoom-imagen">
                             <label class="etiqueta-campo">Zoom</label>
@@ -65,8 +64,8 @@
                     <!-- x40 -->
                     <div class="fila-imagen fila-obligatoria">
                         <div class="archivo-imagen">
-                            <label class="etiqueta-campo">Imagen x40 <span class="obligatorio">*</span></label>
-                            <input class="control-campo" type="file" name="micros_required_img[x40]" accept="image/*" required />
+                            <label class="etiqueta-campo">Imagen x40</label>
+                            <input class="control-campo" type="file" name="micros_required_img[x40]" accept="image/*" />
                         </div>
                         <div class="zoom-imagen">
                             <label class="etiqueta-campo">Zoom</label>
@@ -81,8 +80,8 @@
                     <!-- x100 -->
                     <div class="fila-imagen fila-obligatoria">
                         <div class="archivo-imagen">
-                            <label class="etiqueta-campo">Imagen x100 <span class="obligatorio">*</span></label>
-                            <input class="control-campo" type="file" name="micros_required_img[x100]" accept="image/*" required />
+                            <label class="etiqueta-campo">Imagen x100</label>
+                            <input class="control-campo" type="file" name="micros_required_img[x100]" accept="image/*" />
                         </div>
                         <div class="zoom-imagen">
                             <label class="etiqueta-campo">Zoom</label>
@@ -173,6 +172,7 @@
             </div>
 
             <div class="acciones-derecha">
+                <input type="hidden" name="fase_origen" value="4">
                 <input type="hidden" name="stay" value="1" id="stayFase4">
                 <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase4').value='1'">
                     Guardar citodiagnóstico
@@ -183,5 +183,4 @@
             </div>
         </div>
     </form>
-  @endif
 </section>

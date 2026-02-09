@@ -1,18 +1,18 @@
 @props(['informe' => null])
 <section class="fase" id="fase-2" data-fase="2">
-  @if(!$informe)
-    <div class="empty-state">
-        <p>Debes guardar la recepción antes de poder procesar la muestra.</p>
-    </div>
-  @else
-    <form action="{{ route('informes.update', $informe) }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ $informe ? route('informes.update', $informe) : '#' }}" method="POST" enctype="multipart/form-data">
+    @if(!$informe)
+      <div class="alert alert-warning">
+          Para guardar esta fase, primero debes completar y guardar la <strong>Fase 1 (Recepción)</strong>.
+      </div>
+    @endif
         @csrf
         @method('PUT')
         <div class="campo">
             <label class="etiqueta-campo" for="tipo_procesamiento">
                 Tipo de procesamiento <span class="obligatorio">*</span>
             </label>
-            <select class="control-campo" id="tipo_procesamiento" name="tipo_procesamiento" required>
+            <select class="control-campo" id="tipo_procesamiento" name="tipo_procesamiento">
                 <option value="">Selecciona…</option>
                 <option value="CITOCENTRIFUGADO" {{ $informe && $informe->procesamiento_tipo == 'CITOCENTRIFUGADO' ? 'selected' : '' }}>Citocentrifugado</option>
                 <option value="EXTENSION" {{ $informe && $informe->procesamiento_tipo == 'EXTENSION' ? 'selected' : '' }}>Extensión / Frotis</option>
@@ -24,7 +24,7 @@
 
         <div class="campo {{ $informe && $informe->procesamiento_otro ? '' : 'oculto' }}" id="campoProcesamientoOtro">
             <label class="etiqueta-campo" for="procesamiento_otro">
-                Especifica el procesamiento <span class="obligatorio">*</span>
+                Especifica el procesamiento (Opcional)
             </label>
             <input class="control-campo" type="text" id="procesamiento_otro" name="procesamiento_otro" value="{{ $informe->procesamiento_otro ?? '' }}" />
         </div>
@@ -104,6 +104,7 @@
             </div>
 
             <div class="acciones-derecha">
+                <input type="hidden" name="fase_origen" value="2">
                 <input type="hidden" name="stay" value="1" id="stayFase2">
                 <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase2').value='1'">
                     Guardar procesamiento (incompleto)
@@ -114,5 +115,4 @@
             </div>
         </div>
     </form>
-  @endif
 </section>

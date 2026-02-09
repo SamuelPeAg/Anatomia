@@ -29,11 +29,23 @@ class InformeController extends Controller
             'tipo_muestra' => 'required|string',
             'codigo_identificador' => 'required|string|unique:informes,codigo_identificador',
             'observaciones_llegada' => 'required|string',
+            'paciente_nombre' => 'nullable|string|max:255',
+            'paciente_correo' => 'nullable|email|max:255',
         ]);
 
         $tipo = TipoMuestra::where('prefijo', $request->tipo_muestra)->firstOrFail();
         
+        $expedienteId = null;
+        if ($request->filled('paciente_correo')) {
+            $expediente = \App\Models\Expediente::firstOrCreate(
+                ['correo' => $request->paciente_correo],
+                ['nombre' => $request->paciente_nombre ?? 'Paciente sin nombre']
+            );
+            $expedienteId = $expediente->id;
+        }
+
         $informe = Informe::create([
+            'expediente_id' => $expedienteId,
             'tipo_id' => $tipo->id,
             'anio' => now()->year,
             'correlativo' => (int) substr($request->codigo_identificador, strlen($tipo->prefijo) + 2),
@@ -62,6 +74,15 @@ class InformeController extends Controller
         if ($request->has('observaciones_llegada')) {
             $data['recepcion_observaciones'] = $request->observaciones_llegada;
             $data['recepcion_organo'] = $request->organo;
+
+            // Vincular/Actualizar expediente si se envían datos
+            if ($request->filled('paciente_correo')) {
+                $expediente = \App\Models\Expediente::firstOrCreate(
+                    ['correo' => $request->paciente_correo],
+                    ['nombre' => $request->paciente_nombre ?? 'Paciente sin nombre']
+                );
+                $data['expediente_id'] = $expediente->id;
+            }
         }
 
         if ($request->has('tipo_procesamiento')) {
@@ -86,8 +107,10 @@ class InformeController extends Controller
             return back()->with('success', 'Progreso guardado.');
         }
 
-        $next = $this->getSiguienteFaseInfo($informe);
-        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $next['numero']])
+        $faseActual = (int) $request->input('fase_origen', 1);
+        $siguienteFase = ($faseActual < 4) ? $faseActual + 1 : 4;
+
+        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $siguienteFase])
             ->with('success', 'Información actualizada.');
     }
 

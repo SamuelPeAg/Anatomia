@@ -46,3 +46,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'siguienteCodigo'])
         ->name('tipos.siguienteCodigo');
 });
+
+// Portal de Pacientes (Acceso Público con Email)
+use App\Http\Controllers\ExpedienteController;
+Route::get('/paciente/acceso', [ExpedienteController::class, 'showAcceso'])->name('paciente.acceso');
+Route::post('/paciente/acceso', [ExpedienteController::class, 'acceder'])->name('paciente.login');
+Route::get('/paciente/mis-informes', [ExpedienteController::class, 'misInformes'])->name('paciente.informes');

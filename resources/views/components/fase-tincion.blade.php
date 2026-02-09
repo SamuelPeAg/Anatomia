@@ -1,11 +1,11 @@
 @props(['informe' => null])
 <section class="fase" id="fase-3" data-fase="3">
-  @if(!$informe || empty($informe->procesamiento_tipo))
-    <div class="empty-state">
-        <p>Debes completar el procesamiento antes de poder realizar la tinción.</p>
-    </div>
-  @else
-    <form action="{{ route('informes.update', $informe) }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ $informe ? route('informes.update', $informe) : '#' }}" method="POST" enctype="multipart/form-data">
+    @if(!$informe)
+      <div class="alert alert-warning">
+          Para guardar esta fase, primero debes completar y guardar la <strong>Fase 1 (Recepción)</strong>.
+      </div>
+    @endif
         @csrf
         @method('PUT')
         <div class="campo">
@@ -20,7 +20,6 @@
                 list="tinciones_sugeridas"
                 placeholder="Ej: Hematoxilina-Eosina, Giemsa, PAP..."
                 value="{{ $informe->tincion_tipo ?? '' }}"
-                required
             />
 
             <datalist id="tinciones_sugeridas">
@@ -43,7 +42,6 @@
                 name="observacion_tincion"
                 rows="6"
                 placeholder="Qué se observa tras la tinción, calidad, hallazgos..."
-                required
             >{{ $informe->tincion_observaciones ?? '' }}</textarea>
         </div>
 
@@ -109,6 +107,7 @@
             </div>
 
             <div class="acciones-derecha">
+                <input type="hidden" name="fase_origen" value="3">
                 <input type="hidden" name="stay" value="1" id="stayFase3">
                 <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase3').value='1'">
                     Guardar tinción (incompleto)
@@ -119,5 +118,4 @@
             </div>
         </div>
     </form>
-  @endif
 </section>

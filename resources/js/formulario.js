@@ -93,23 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
     hayCambiosSinGuardar = false;
   }
 
-  // Navegación entre pasos
+  // Navegación entre pasos — ACCESO TOTAL Y LIBRE
   botonesPasos.forEach(btn => {
-    btn.addEventListener("click", async () => {
+    btn.addEventListener("click", () => {
       const n = parseInt(btn.dataset.paso);
-      const actual = parseInt(document.querySelector(".paso-activo")?.dataset.paso || 1);
-      if (n === actual) return;
-
-      if (config.esModoEdicion) {
-        const accesible = (n === 1) || (config.fasesCompletas && config.fasesCompletas[n - 1]);
-        if (!accesible) return mostrarToast("Esta fase aún no está disponible.", "warning");
-
-        if (hayCambiosSinGuardar && !(await pedirConfirmacion("Cambios sin guardar", "¿Deseas cambiar de fase sin salvar tus cambios actuales?"))) return;
-        cambiarAFase(n);
-      } else {
-        if (n > actual) return mostrarToast("Usa 'Siguiente fase' para guardar y avanzar.", "warning");
-        cambiarAFase(n);
-      }
+      cambiarAFase(n);
     });
   });
 
