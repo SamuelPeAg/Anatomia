@@ -121,3 +121,7 @@ body {
     background: #f7f7f7;
     border-color: #c6c6c6;
 }
+.login-wrapper-auto {
+    height: auto;
+}
+

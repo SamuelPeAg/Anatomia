@@ -1,5 +1,6 @@
 @props(['informe' => null])
 <section class="fase" id="fase-3" data-fase="3">
+
   <form action="{{ $informe ? route('informes.update', $informe) : '#' }}" method="POST" enctype="multipart/form-data">
     @if(!$informe)
       <div class="alert alert-warning">
@@ -53,6 +54,25 @@
             </div>
 
             <div class="subtarjeta-cuerpo">
+                <!-- Imágenes Guardadas -->
+                @if($informe && $informe->imagenes->where('fase', 'tincion')->count() > 0)
+                    <div class="imagenes-existentes">
+                        @foreach($informe->imagenes->where('fase', 'tincion') as $img)
+                            <div class="imagen-item">
+                                <img src="{{ asset('storage/' . $img->ruta) }}" 
+                                     alt="Imagen guardada" 
+                                     class="imagen-guardada-img">
+                                <div class="info-img">
+                                    <p><strong>Descripción:</strong> {{ $img->descripcion ?: 'Sin descripción' }}</p>
+                                </div>
+                                <button type="button" class="boton boton-peligro btn-eliminar-ajustado" onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">
+                                    Eliminar
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
                 <div class="lista-imagenes" data-lista-imagenes="tincion">
                     <div class="fila-imagen">
                         <div class="archivo-imagen">

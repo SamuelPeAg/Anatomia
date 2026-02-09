@@ -219,3 +219,47 @@ document.addEventListener("DOMContentLoaded", () => {
   // Inicio
   cambiarAFase(config.faseInicial);
 });
+
+// Función global para borrar imágenes sin recargar forms
+window.borrarImagen = async function (e, id) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  if (!confirm('¿Seguro que quieres borrar esta imagen permanentemente?')) return;
+
+  try {
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+    const respuesta = await fetch(`/informes/imagen/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+
+    if (respuesta.ok) {
+      // Eliminar visualmente el elemento
+      const btn = e.target.closest('button');
+      // Buscar contenedor padre más cercano (imagen-item o img-preview-container)
+      const item = btn.closest('.imagen-item, .img-preview-container');
+
+      if (item) {
+        item.style.transition = 'opacity 0.3s, transform 0.3s';
+        item.style.opacity = '0';
+        item.style.transform = 'scale(0.9)';
+        setTimeout(() => item.remove(), 300);
+      } else {
+        window.location.reload(); // Fallback
+      }
+    } else {
+      console.error('Error del servidor', respuesta);
+      alert('No se pudo eliminar la imagen. Inténtalo de nuevo.');
+    }
+  } catch (error) {
+    console.error('Error de red:', error);
+    alert('Error de conexión al intentar borrar.');
+  }
+};

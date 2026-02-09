@@ -13,6 +13,19 @@ use Illuminate\Support\Facades\Log;
 
 class InformeController extends Controller
 {
+    public function destroyImagen(Imagen $imagen)
+    {
+        // Borrar archivo físico
+        if (Storage::disk('public')->exists($imagen->ruta)) {
+            Storage::disk('public')->delete($imagen->ruta);
+        }
+
+        // Borrar registro DB
+        $imagen->delete();
+
+        return redirect()->back()->with('success', 'Imagen eliminada correctamente.');
+    }
+
     public function index()
     {
         $informes = Informe::with('tipo')->orderBy('created_at', 'desc')->get();
@@ -159,7 +172,47 @@ class InformeController extends Controller
             }
         }
 
-        // 2. Micro Obligatorias
+        // 2. Procesamiento
+        if ($request->hasFile('procesamiento_img')) {
+            $archivos = $request->file('procesamiento_img');
+            $descripciones = $request->input('procesamiento_desc', []);
+
+            foreach ($archivos as $index => $file) {
+                if ($file && $file->isValid()) {
+                    $path = $file->store("informes/{$informe->id}/procesamiento", 'public');
+                    
+                    Imagen::create([
+                        'informe_id' => $informe->id,
+                        'fase' => 'procesamiento',
+                        'ruta' => $path,
+                        'descripcion' => $descripciones[$index] ?? null,
+                    ]);
+                    Log::info("Imagen procesamiento guardada en: $path");
+                }
+            }
+        }
+
+        // 3. Tinción
+        if ($request->hasFile('tincion_img')) {
+            $archivos = $request->file('tincion_img');
+            $descripciones = $request->input('tincion_desc', []);
+
+            foreach ($archivos as $index => $file) {
+                if ($file && $file->isValid()) {
+                    $path = $file->store("informes/{$informe->id}/tincion", 'public');
+                    
+                    Imagen::create([
+                        'informe_id' => $informe->id,
+                        'fase' => 'tincion',
+                        'ruta' => $path,
+                        'descripcion' => $descripciones[$index] ?? null,
+                    ]);
+                    Log::info("Imagen tinción guardada en: $path");
+                }
+            }
+        }
+
+        // 4. Micro Obligatorias
         if ($request->hasFile('micros_required_img')) {
             $archivos = $request->file('micros_required_img');
             $descripciones = $request->input('micros_required_desc', []);

@@ -107,15 +107,18 @@
         <div class="subtarjeta-cuerpo">
             <!-- Imágenes Guardadas -->
             @if($informe && $informe->imagenes->where('fase', 'recepcion')->count() > 0)
-                <div class="imagenes-existentes" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
+                <div class="imagenes-existentes">
                     @foreach($informe->imagenes->where('fase', 'recepcion') as $img)
-                        <div class="imagen-item" style="border: 1px solid #e5e7eb; padding: 10px; border-radius: 8px; width: 320px;">
+                        <div class="imagen-item">
                             <img src="{{ asset('storage/' . $img->ruta) }}" 
                                  alt="Imagen guardada" 
-                                 style="width: 100%; height: 200px; object-fit: contain; border-radius: 4px; margin-bottom: 10px;">
+                                 class="imagen-guardada-img">
                             <div class="info-img">
-                                <p style="font-size: 0.9em; color: #4b5563; margin-bottom: 5px;"><strong>Descripción:</strong> {{ $img->descripcion ?: 'Sin descripción' }}</p>
+                                <p><strong>Descripción:</strong> {{ $img->descripcion ?: 'Sin descripción' }}</p>
                             </div>
+                            <button type="button" class="boton boton-peligro btn-eliminar-ajustado" onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">
+                                Eliminar
+                            </button>
                         </div>
                     @endforeach
                 </div>

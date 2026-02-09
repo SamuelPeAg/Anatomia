@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get("/revision", [InformeController::class, "index"])->name("revision");
     Route::get("/revision/{informe}/editar", [InformeController::class, "edit"])->name("informes.edit");
     Route::put("/informe/{informe}/actualizar", [InformeController::class, "update"])->name("informes.update");
+    Route::delete("/informes/imagen/{imagen}", [InformeController::class, "destroyImagen"])->name("imagen.destroy");
 
     Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'siguienteCodigo'])
         ->name('tipos.siguienteCodigo');

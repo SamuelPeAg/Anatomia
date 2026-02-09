@@ -41,11 +41,11 @@
                                 <label class="etiqueta-campo">Imagen {{ $zoom }}</label>
                                 <input class="control-campo" type="file" name="micros_required_img[{{ $zoom }}]" accept="image/*" />
                                 @if($img = $obl->get($zoom))
-                                    <div class="img-preview-container" style="margin-top: 10px;">
-                                         <img src="{{ asset('storage/' . $img->ruta) }}" style="max-width: 300px; max-height: 300px; width: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                                         <div style="margin-top: 4px; font-size: 0.85em; color: #059669; display: flex; align-items: center; gap: 4px;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                            Guardada correctamente
+                                    <div class="img-preview-container img-preview-container-margin">
+                                         <img src="{{ asset('storage/' . $img->ruta) }}" class="imagen-guardada-img">
+                                         <div class="estado-guardada-container">
+                                            <span>✓ Guardada</span>
+                                            <button type="button" class="boton boton-peligro btn-eliminar-ajustado" onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">Eliminar</button>
                                          </div>
                                     </div>
                                 @endif
@@ -64,22 +64,25 @@
                     @endforeach
                 </div>
 
-                <h3 class="subtarjeta-titulo" style="margin-top:16px;">Imágenes extra (opcional)</h3>
+                <h3 class="subtarjeta-titulo titulo-extra">Imágenes extra (opcional)</h3>
 
                 <!-- Imágenes Extra Guardadas -->
                 @if($ext->count() > 0)
-                    <div class="imagenes-existentes" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
+                    <div class="imagenes-existentes">
                         @foreach($ext as $img)
-                            <div class="imagen-item" style="border: 1px solid #e5e7eb; padding: 10px; border-radius: 8px; width: 320px;">
-                                <div style="position: relative;">
+                            <div class="imagen-item">
+                                <div class="wrapper-relativo">
                                     <img src="{{ asset('storage/' . $img->ruta) }}" 
                                          alt="Imagen extra" 
-                                         style="width: 100%; height: 200px; object-fit: contain; border-radius: 4px; margin-bottom: 10px;">
+                                         class="imagen-guardada-img">
                                 </div>
                                 <div class="info-img">
-                                    <span style="display:inline-block; background: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-bottom: 4px;">{{ $img->zoom }}</span>
-                                    <p style="font-size: 0.9em; color: #4b5563; margin-top: 4px;">{{ $img->descripcion ?: 'Sin descripción' }}</p>
+                                    <span class="etiqueta-zoom">{{ $img->zoom }}</span>
+                                    <p><strong>Descripción:</strong> {{ $img->descripcion ?: 'Sin descripción' }}</p>
                                 </div>
+                                <button type="button" class="boton boton-peligro btn-eliminar-ajustado" onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">
+                                    Eliminar
+                                </button>
                             </div>
                         @endforeach
                     </div>

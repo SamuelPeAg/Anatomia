@@ -29,7 +29,7 @@
     </header>
 
     <div class="auth-container">
-        <div class="login-wrapper" style="height: auto;">
+        <div class="login-wrapper login-wrapper-auto">
             <h2>Crear Usuario</h2>
 
             <form action="{{ route('users.store') }}" method="POST">

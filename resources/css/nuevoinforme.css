@@ -779,3 +779,111 @@ main.pagina {
   justify-content: center;
 }
 
+
+/* Correcciones Datist */
+input::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
+
+/* Clases de elementos en previsualización */
+.imagen-previsualizada {
+    max-width: 300px;
+    max-height: 300px;
+    width: 100%;
+    object-fit: contain;
+    margin-top: 10px;
+    border-radius: 8px;
+    display: block;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.preview-existente {
+    margin-top: 10px;
+}
+
+.imagen-guardada-img {
+    max-width: 300px;
+    max-height: 300px;
+    width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.estado-guardada {
+    margin-top: 4px;
+    font-size: 0.85em;
+    color: #059669;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.btn-eliminar-ajustado {
+    padding: 2px 6px;
+    font-size: 0.8em;
+}
+
+.imagen-item {
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+    border-radius: 8px;
+    width: 320px;
+}
+
+.imagen-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.info-img p {
+    font-size: 0.9em;
+    color: #4b5563;
+    margin-bottom: 5px;
+}
+.btn-peligro-ajustado {
+    padding: 4px 8px; 
+    font-size: 0.8em; 
+    margin-top: 5px;
+}
+
+
+.imagenes-existentes {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+
+.img-preview-container-margin {
+    margin-top: 10px;
+}
+.estado-guardada-container {
+    margin-top: 4px;
+    font-size: 0.85em;
+    color: #059669;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+.titulo-extra {
+    margin-top: 16px;
+}
+.etiqueta-zoom {
+    display: inline-block;
+    background: #e5e7eb;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-bottom: 4px;
+}
+.wrapper-relativo {
+    position: relative;
+}
+

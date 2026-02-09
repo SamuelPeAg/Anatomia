@@ -14,6 +14,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $esEdicion ? 'Editar' : 'Nuevo' }} informe — DAVANTE</title>
     @vite(['resources/css/nuevoinforme.css', 'resources/css/principal.css', 'resources/css/alerts.css'])
 </head>
@@ -95,6 +96,6 @@
     <div id="toast-container" class="toast-container"></div>
     <x-footer />
 
-    @vite(['resources/js/formulario.js'])
+    @vite(['resources/js/formulario-ui.js', 'resources/js/formulario-acciones.js'])
 </body>
 </html>
