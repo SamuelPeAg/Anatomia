@@ -56,16 +56,13 @@ class InformeController extends Controller
         $query = Informe::with('tipo')->orderBy('created_at', 'desc');
 
         // Lógica de filtrado:
-        // 1. Si usuario pide 'mostrar_todos', no filtramos por fecha.
-        // 2. Si usuario selecciona fecha específica, filtramos por ella.
-        // 3. Por defecto (sin params), mostramos solo los de HOY.
-        
-        if ($request->has('mostrar_todos')) {
-            // Sin filtro (histórico completo)
-        } elseif ($request->filled('fecha')) {
-            $query->whereDate('created_at', $request->fecha);
-        } else {
-            $query->whereDate('created_at', now());
+        // 1. Mostrar todos o filtrar por fecha
+        if (!$request->has('mostrar_todos')) {
+            if ($request->filled('fecha')) {
+                $query->whereDate('created_at', $request->fecha);
+            } else {
+                $query->whereDate('created_at', now());
+            }
         }
 
         $informes = $query->get();
@@ -260,94 +257,83 @@ class InformeController extends Controller
 
     private function procesarImagenes(Request $request, Informe $informe)
     {
-        Log::info(">>> PROCESAR IMAGENES INFORME #{$informe->id}");
-
-        // 1. Fases Regulares (Grupo simple) y Extras
-        $fases = [
-            'recepcion' => ['img' => 'recepcion_img', 'desc' => 'recepcion_desc'],
+        // 1. Procesar Fases Estándar y Extras (Arrays de archivos)
+        $configuraciones = [
+            'recepcion'     => ['img' => 'recepcion_img', 'desc' => 'recepcion_desc'],
             'procesamiento' => ['img' => 'procesamiento_img', 'desc' => 'procesamiento_desc'],
-            'tincion' => ['img' => 'tincion_img', 'desc' => 'tincion_desc'],
-            'microscopio' => ['img' => 'micros_extra_img', 'desc' => 'micros_extra_desc', 'zoom' => 'micros_extra_zoom']
+            'tincion'       => ['img' => 'tincion_img', 'desc' => 'tincion_desc'],
+            'microscopio'   => ['img' => 'micros_extra_img', 'desc' => 'micros_extra_desc', 'zoom' => 'micros_extra_zoom'] // Extras
         ];
 
-        foreach ($fases as $faseName => $config) {
-            // Fase BD es 'microscopio' incluso para extras
-            $faseBD = ($faseName === 'microscopio') ? 'microscopio' : $faseName;
-            
-            if ($request->hasFile($config['img'])) {
-                $this->guardarGrupoImagenes(
-                    $request, 
-                    $informe, 
-                    $faseBD, 
-                    $config['img'], 
-                    $config['desc'], 
-                    $config['zoom'] ?? null
-                );
+        foreach ($configuraciones as $faseKey => $conf) {
+            // Fase BD es 'microscopio' incluso para extras, sino el nombre de la key
+            $faseBD = ($faseKey === 'microscopio') ? 'microscopio' : $faseKey;
+
+            if ($request->hasFile($conf['img'])) {
+                $files = $request->file($conf['img']);
+                if (!is_array($files)) $files = [$files];
+                
+                $descs = $request->input($conf['desc'], []);
+                $zooms = isset($conf['zoom']) ? $request->input($conf['zoom'], []) : [];
+
+                foreach ($files as $i => $file) {
+                    $this->guardarImagen(
+                        $file, 
+                        $informe, 
+                        $faseBD, 
+                        $descs[$i] ?? null, 
+                        $zooms[$i] ?? null, 
+                        false // No obligatoria
+                    );
+                }
             }
         }
 
-        // 2. Microscopio OBLIGATORIAS (Inputs específicos planos)
-        $zoomsObligatorios = ['x4', 'x10', 'x40', 'x100'];
-
-        foreach ($zoomsObligatorios as $zoom) {
+        // 2. Procesar Microscopio OBLIGATORIAS (Inputs planos por Zoom)
+        foreach (['x4', 'x10', 'x40', 'x100'] as $zoom) {
             $inputImg = "micro_{$zoom}_img";
-            $inputDesc = "micro_{$zoom}_desc";
-
+            
             if ($request->hasFile($inputImg)) {
                 $files = $request->file($inputImg);
                 if (!is_array($files)) $files = [$files];
-                
-                $descs = $request->input($inputDesc, []);
+                $descs = $request->input("micro_{$zoom}_desc", []);
 
-                foreach ($files as $index => $file) {
-                    if (!$file || !$file->isValid()) {
-                        Log::warning("Archivo inválido Micro $zoom index $index");
-                        continue;
-                    }
-
-                    try {
-                        $path = $file->store("informes/{$informe->id}/microscopio", 'public');
-                        Imagen::create([
-                            'informe_id' => $informe->id,
-                            'fase' => 'microscopio',
-                            'ruta' => $path,
-                            'descripcion' => $descs[$index] ?? null,
-                            'zoom' => $zoom,
-                            'obligatoria' => true
-                        ]);
-                        Log::info("GUARDADA: Micro $zoom ($path)");
-                    } catch (\Exception $e) {
-                         Log::error("Error guardando Micro $zoom: " . $e->getMessage());
-                    }
+                foreach ($files as $i => $file) {
+                    $this->guardarImagen(
+                        $file, 
+                        $informe, 
+                        'microscopio', 
+                        $descs[$i] ?? null, 
+                        $zoom, 
+                        true // Obligatoria
+                    );
                 }
             }
         }
     }
 
-    private function guardarGrupoImagenes(Request $request, Informe $informe, string $fase, string $inputImg, string $inputDesc, ?string $inputZoom = null)
+    /**
+     * Método unificado para guardar una sola imagen.
+     * Maneja subida de archivo, creación en BD y errores.
+     */
+    private function guardarImagen($file, Informe $informe, string $fase, ?string $descripcion, ?string $zoom, bool $obligatoria)
     {
-        $files = $request->file($inputImg);
-        if (!is_array($files)) $files = [$files];
-        
-        $descs = $request->input($inputDesc, []);
-        $zooms = $inputZoom ? $request->input($inputZoom, []) : [];
+        if (!$file || !$file->isValid()) return;
 
-        foreach ($files as $index => $file) {
-            if ($file && $file->isValid()) {
-                try {
-                    $path = $file->store("informes/{$informe->id}/{$fase}", 'public');
-                    Imagen::create([
-                        'informe_id' => $informe->id,
-                        'fase' => $fase,
-                        'ruta' => $path,
-                        'descripcion' => $descs[$index] ?? null,
-                        'zoom' => $zooms[$index] ?? null,
-                        'obligatoria' => false
-                    ]);
-                } catch (\Exception $e) {
-                    Log::error("Error guardando imagen grupo $fase: " . $e->getMessage());
-                }
-            }
+        try {
+            $path = $file->store("informes/{$informe->id}/{$fase}", 'public');
+
+            Imagen::create([
+                'informe_id'  => $informe->id,
+                'fase'        => $fase,
+                'ruta'        => $path,
+                'descripcion' => $descripcion,
+                'zoom'        => $zoom,
+                'obligatoria' => $obligatoria
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error("Error al guardar imagen de fase $fase: " . $e->getMessage());
         }
     }
 }
