@@ -17,23 +17,41 @@ class InformeController extends Controller
     /**
      * Elimina una imagen del sistema y del almacenamiento.
      */
-    public function destroyImagen(Imagen $imagen): RedirectResponse
+    public function destroyImagen(Imagen $imagen)
     {
-        // Borrar archivo físico
-        if (Storage::disk('public')->exists($imagen->ruta)) {
-            Storage::disk('public')->delete($imagen->ruta);
+        Log::info("Solicitud de borrado para imagen ID: " . $imagen->id);
+
+        try {
+            // Borrar archivo físico si existe
+            if ($imagen->ruta && Storage::disk('public')->exists($imagen->ruta)) {
+                Storage::disk('public')->delete($imagen->ruta);
+            }
+
+            // Borrar registro DB
+            $imagen->delete();
+
+            // Si la petición viene por AJAX (JS), devolver JSON
+            if (request()->wantsJson()) {
+                return response()->json(['success' => true, 'message' => 'Imagen eliminada']);
+            }
+
+            return redirect()->back()->with('success', 'Imagen eliminada correctamente.');
+
+        } catch (\Exception $e) {
+            Log::error("Error al borrar imagen ID {$imagen->id}: " . $e->getMessage());
+
+            if (request()->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Error del servidor'], 500);
+            }
+
+            return redirect()->back()->with('error', 'Error al eliminar la imagen.');
         }
-
-        // Borrar registro DB
-        $imagen->delete();
-
-        return redirect()->back()->with('success', 'Imagen eliminada correctamente.');
     }
 
     /**
      * Muestra el listado de informes.
      */
-    public function index(): View
+    public function index()
     {
         $informes = Informe::with('tipo')->orderBy('created_at', 'desc')->get();
 
@@ -49,7 +67,7 @@ class InformeController extends Controller
     /**
      * Muestra el formulario para crear un nuevo informe.
      */
-    public function create(): View
+    public function create()
     {
         return view('nuevoinforme', [
             'informe' => null,
@@ -65,7 +83,7 @@ class InformeController extends Controller
     /**
      * Almacena un nuevo informe en la base de datos.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'tipo_muestra' => 'required|string',
@@ -98,7 +116,7 @@ class InformeController extends Controller
     /**
      * Muestra el formulario de edición de un informe.
      */
-    public function edit(Informe $informe): View
+    public function edit(Informe $informe)
     {
         $numeroFase = request('fase') ?: $this->getFaseInfo($informe)['numero'];
         
@@ -121,7 +139,7 @@ class InformeController extends Controller
     /**
      * Actualiza un informe existente.
      */
-    public function update(Request $request, Informe $informe): RedirectResponse
+    public function update(Request $request, Informe $informe)
     {
         // Validación estricta para Fase 4 (Microscopio)
         if ($errores = $this->validarRequisitosMicroscopio($request, $informe)) {
@@ -172,7 +190,7 @@ class InformeController extends Controller
 
     // --- Métodos Privados y Auxiliares ---
 
-    private function getFaseInfo($informe): array
+    private function getFaseInfo($informe)
     {
         if (empty($informe->recepcion_observaciones)) return ['nombre' => 'Recepción', 'numero' => 1];
         if (empty($informe->procesamiento_tipo)) return ['nombre' => 'Procesamiento', 'numero' => 2];
@@ -182,7 +200,7 @@ class InformeController extends Controller
         return ['nombre' => 'Finalizado', 'numero' => 4];
     }
 
-    private function obtenerExpedienteId(Request $request): ?int
+    private function obtenerExpedienteId(Request $request)
     {
         if ($request->filled('paciente_correo')) {
             $expediente = Expediente::firstOrCreate(
@@ -194,7 +212,7 @@ class InformeController extends Controller
         return null;
     }
 
-    private function validarRequisitosMicroscopio(Request $request, Informe $informe): ?array
+    private function validarRequisitosMicroscopio(Request $request, Informe $informe)
     {
         if (!$request->has('citodiagnostico')) {
             return null;
@@ -225,7 +243,7 @@ class InformeController extends Controller
         return null;
     }
 
-    private function procesarImagenes(Request $request, Informe $informe): void
+    private function procesarImagenes(Request $request, Informe $informe)
     {
         Log::info(">>> PROCESAR IMAGENES INFORME #{$informe->id}");
 
@@ -291,7 +309,7 @@ class InformeController extends Controller
         }
     }
 
-    private function guardarGrupoImagenes(Request $request, Informe $informe, string $fase, string $inputImg, string $inputDesc, ?string $inputZoom = null): void
+    private function guardarGrupoImagenes(Request $request, Informe $informe, string $fase, string $inputImg, string $inputDesc, ?string $inputZoom = null)
     {
         $files = $request->file($inputImg);
         if (!is_array($files)) $files = [$files];
