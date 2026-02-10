@@ -51,9 +51,24 @@ class InformeController extends Controller
     /**
      * Muestra el listado de informes.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $informes = Informe::with('tipo')->orderBy('created_at', 'desc')->get();
+        $query = Informe::with('tipo')->orderBy('created_at', 'desc');
+
+        // Lógica de filtrado:
+        // 1. Si usuario pide 'mostrar_todos', no filtramos por fecha.
+        // 2. Si usuario selecciona fecha específica, filtramos por ella.
+        // 3. Por defecto (sin params), mostramos solo los de HOY.
+        
+        if ($request->has('mostrar_todos')) {
+            // Sin filtro (histórico completo)
+        } elseif ($request->filled('fecha')) {
+            $query->whereDate('created_at', $request->fecha);
+        } else {
+            $query->whereDate('created_at', now());
+        }
+
+        $informes = $query->get();
 
         foreach ($informes as $informe) {
             $faseInfo = $this->getFaseInfo($informe);
