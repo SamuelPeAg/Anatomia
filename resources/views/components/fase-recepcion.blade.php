@@ -43,7 +43,7 @@
             <label class="etiqueta-campo" for="tipo_muestra">
                 Tipo de muestra <span class="obligatorio">*</span>
             </label>
-            <select class="control-campo" id="tipo_muestra" name="tipo_muestra" required>
+            <select class="control-campo" id="tipo_muestra" name="tipo_muestra" required data-url-patron="{{ route('tipos.siguienteCodigo', 'PREFIX') }}">
                 <option value="">Selecciona un tipo</option>
                 <option value="B" {{ $informe && $informe->tipo && $informe->tipo->prefijo == 'B' ? 'selected' : '' }}>Biopsia</option>
                 <option value="E" {{ $informe && $informe->tipo && $informe->tipo->prefijo == 'E' ? 'selected' : '' }}>Esputo</option>

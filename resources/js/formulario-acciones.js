@@ -18,20 +18,51 @@ document.addEventListener("DOMContentLoaded", () => {
         el.addEventListener('input', () => { hayCambiosSinGuardar = true; });
     });
 
-    // Navegación entre pasos
+    // Navegación entre pasos con protección de cambios
     const botonesPasos = document.querySelectorAll(".paso");
     botonesPasos.forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (e) => {
+            if (hayCambiosSinGuardar) {
+                const confirmar = confirm(
+                    "Tienes cambios sin guardar en esta fase.\n\n" +
+                    "Si cambias de pestaña ahora, los archivos seleccionados y los textos escritos se PERDERÁN.\n\n" +
+                    "¿Estás seguro de que quieres salir sin guardar?"
+                );
+
+                if (!confirmar) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                // Si acepta salir, reseteamos la bandera para que no pregunte otra vez inmediatamente
+                hayCambiosSinGuardar = false;
+            }
+
             const n = parseInt(btn.dataset.paso);
             cambiarAFase(n);
         });
+    });
+
+    // Resetear cambios al enviar formularios
+    document.querySelectorAll('form').forEach(f => {
+        f.addEventListener('submit', () => {
+            hayCambiosSinGuardar = false;
+        });
+    });
+
+    // Advertencia al cerrar/recargar la página
+    window.addEventListener('beforeunload', (e) => {
+        if (hayCambiosSinGuardar) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
     });
 
     // Autogeneración de Código ID según tipo de muestra
     const selMuestra = document.getElementById("tipo_muestra");
     const inpCodigo = document.getElementById("codigo_identificador");
 
-    if (selMuestra) {
+    if (selMuestra && inpCodigo) {
         selMuestra.addEventListener("change", async () => {
             const prefijo = selMuestra.value;
             const divOrg = document.getElementById("campoOrgano");
@@ -41,16 +72,37 @@ document.addEventListener("DOMContentLoaded", () => {
             if (divOrg) divOrg.classList.toggle("oculto", prefijo !== "B");
             if (inpOrg) inpOrg.required = (prefijo === "B");
 
-            if (!prefijo) { inpCodigo.value = ""; return; }
+            if (!prefijo) {
+                inpCodigo.value = "";
+                return;
+            }
 
             try {
-                const res = await fetch(`/tipos/${prefijo}/siguiente-codigo`);
+                inpCodigo.value = "Generando...";
+                inpCodigo.disabled = true;
+
+                // Usar la ruta generada por Laravel para evitar problemas de subdirectorios
+                const urlPatron = selMuestra.dataset.urlPatron;
+                if (!urlPatron) throw new Error("Ruta de API no definida");
+
+                const url = urlPatron.replace('PREFIX', prefijo);
+
+                const res = await fetch(url);
                 if (res.ok) {
                     const data = await res.json();
                     inpCodigo.value = data.codigo;
+                    // También disparamos evento change por si acaso hay validación
+                    inpCodigo.dispatchEvent(new Event('change'));
+                } else {
+                    inpCodigo.value = "Error";
+                    console.error("Error al obtener código", res.status);
+                    alert("No se pudo generar el código automáticamente. Por favor recarga la página.");
                 }
             } catch (e) {
-                console.error("Error al obtener código", e);
+                console.error("Excepción al obtener código", e);
+                inpCodigo.value = "Error";
+            } finally {
+                inpCodigo.disabled = false;
             }
         });
     }

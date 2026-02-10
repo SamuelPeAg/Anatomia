@@ -147,6 +147,8 @@ class InformeController extends Controller
     private function procesarImagenes(Request $request, Informe $informe)
     {
         Log::info('Inicio procesarImagenes Informe ID: ' . $informe->id);
+        Log::info('Datos Request:', $request->all());
+        Log::info('Archivos Request:', $request->allFiles());
         
         // 1. Recepción
         if ($request->hasFile('recepcion_img')) {
@@ -157,19 +159,25 @@ class InformeController extends Controller
 
             foreach ($archivos as $index => $file) {
                 if ($file && $file->isValid()) {
-                    $path = $file->store("informes/{$informe->id}/recepcion", 'public');
-                    
-                    Imagen::create([
-                        'informe_id' => $informe->id,
-                        'fase' => 'recepcion',
-                        'ruta' => $path,
-                        'descripcion' => $descripciones[$index] ?? null,
-                    ]);
-                    Log::info("Imagen guardada en: $path");
+                    try {
+                        $path = $file->store("informes/{$informe->id}/recepcion", 'public');
+                        
+                        Imagen::create([
+                            'informe_id' => $informe->id,
+                            'fase' => 'recepcion',
+                            'ruta' => $path,
+                            'descripcion' => $descripciones[$index] ?? null,
+                        ]);
+                        Log::info("Imagen recepción guardada en DB: $path");
+                    } catch (\Exception $e) {
+                         Log::error("Error guardando imagen recepción: " . $e->getMessage());
+                    }
                 } else {
-                    Log::warning("Archivo inválido en índice $index: " . ($file ? $file->getErrorMessage() : 'NULL'));
+                    Log::warning("Archivo inválido en índice $index recepción: " . ($file ? $file->getErrorMessage() : 'NULL'));
                 }
             }
+        } else {
+            Log::info("No se detectaron imágenes de recepción.");
         }
 
         // 2. Procesamiento
@@ -177,17 +185,25 @@ class InformeController extends Controller
             $archivos = $request->file('procesamiento_img');
             $descripciones = $request->input('procesamiento_desc', []);
 
+            Log::info('Imágenes procesamiento detectadas: ' . count($archivos));
+
             foreach ($archivos as $index => $file) {
-                if ($file && $file->isValid()) {
-                    $path = $file->store("informes/{$informe->id}/procesamiento", 'public');
-                    
-                    Imagen::create([
-                        'informe_id' => $informe->id,
-                        'fase' => 'procesamiento',
-                        'ruta' => $path,
-                        'descripcion' => $descripciones[$index] ?? null,
-                    ]);
-                    Log::info("Imagen procesamiento guardada en: $path");
+                 if ($file && $file->isValid()) {
+                    try {
+                        $path = $file->store("informes/{$informe->id}/procesamiento", 'public');
+                        
+                        Imagen::create([
+                            'informe_id' => $informe->id,
+                            'fase' => 'procesamiento',
+                            'ruta' => $path,
+                            'descripcion' => $descripciones[$index] ?? null,
+                        ]);
+                        Log::info("Imagen procesamiento guardada en DB: $path");
+                    } catch (\Exception $e) {
+                        Log::error("Error guardando imagen procesamiento: " . $e->getMessage());
+                    }
+                } else {
+                    Log::warning("Archivo inválido en índice $index procesamiento.");
                 }
             }
         }
@@ -197,17 +213,25 @@ class InformeController extends Controller
             $archivos = $request->file('tincion_img');
             $descripciones = $request->input('tincion_desc', []);
 
+            Log::info('Imágenes tinción detectadas: ' . count($archivos));
+
             foreach ($archivos as $index => $file) {
-                if ($file && $file->isValid()) {
-                    $path = $file->store("informes/{$informe->id}/tincion", 'public');
-                    
-                    Imagen::create([
-                        'informe_id' => $informe->id,
-                        'fase' => 'tincion',
-                        'ruta' => $path,
-                        'descripcion' => $descripciones[$index] ?? null,
-                    ]);
-                    Log::info("Imagen tinción guardada en: $path");
+                 if ($file && $file->isValid()) {
+                    try {
+                        $path = $file->store("informes/{$informe->id}/tincion", 'public');
+                        
+                        Imagen::create([
+                            'informe_id' => $informe->id,
+                            'fase' => 'tincion',
+                            'ruta' => $path,
+                            'descripcion' => $descripciones[$index] ?? null,
+                        ]);
+                        Log::info("Imagen tinción guardada en DB: $path");
+                    } catch (\Exception $e) {
+                         Log::error("Error guardando imagen tinción: " . $e->getMessage());
+                    }
+                } else {
+                     Log::warning("Archivo inválido en índice $index tinción.");
                 }
             }
         }
@@ -217,44 +241,58 @@ class InformeController extends Controller
             $archivos = $request->file('micros_required_img');
             $descripciones = $request->input('micros_required_desc', []);
             
+            Log::info('Imágenes micro obligatorias detectadas.');
+
             foreach ($archivos as $zoom => $file) {
                  if ($file && $file->isValid()) {
-                    $path = $file->store("informes/{$informe->id}/microscopio", 'public');
-                    
-                    Imagen::updateOrCreate(
-                        [
-                            'informe_id' => $informe->id,
-                            'fase' => 'microscopio',
-                            'zoom' => $zoom,
-                            'obligatoria' => true
-                        ],
-                        [
-                            'ruta' => $path,
-                            'descripcion' => $descripciones[$zoom] ?? null
-                        ]
-                    );
+                    try {
+                        $path = $file->store("informes/{$informe->id}/microscopio", 'public');
+                        
+                        Imagen::updateOrCreate(
+                            [
+                                'informe_id' => $informe->id,
+                                'fase' => 'microscopio',
+                                'zoom' => $zoom,
+                                'obligatoria' => true
+                            ],
+                            [
+                                'ruta' => $path,
+                                'descripcion' => $descripciones[$zoom] ?? null
+                            ]
+                        );
+                        Log::info("Imagen micro obligatoria ($zoom) guardada.");
+                    } catch (\Exception $e) {
+                         Log::error("Error guardando imagen micro obligatoria: " . $e->getMessage());
+                    }
                  }
             }
         }
         
-        // 3. Micro Extras
+        // 3. Micro Extras (Nota: índice corregido a 5, aunque comentario dice 3)
         if ($request->hasFile('micros_extra_img')) {
              $archivos = $request->file('micros_extra_img');
              $descripciones = $request->input('micros_extra_desc', []);
              $zooms = $request->input('micros_extra_zoom', []);
 
+             Log::info('Imágenes micro extras detectadas: ' . count($archivos));
+
              foreach ($archivos as $index => $file) {
                 if ($file && $file->isValid()) {
-                    $path = $file->store("informes/{$informe->id}/microscopio", 'public');
-                    
-                    Imagen::create([
-                        'informe_id' => $informe->id,
-                        'fase' => 'microscopio',
-                        'ruta' => $path,
-                        'zoom' => $zooms[$index] ?? null,
-                        'descripcion' => $descripciones[$index] ?? null,
-                        'obligatoria' => false
-                    ]);
+                    try {
+                        $path = $file->store("informes/{$informe->id}/microscopio", 'public');
+                        
+                        Imagen::create([
+                            'informe_id' => $informe->id,
+                            'fase' => 'microscopio',
+                            'ruta' => $path,
+                            'zoom' => $zooms[$index] ?? null,
+                            'descripcion' => $descripciones[$index] ?? null,
+                            'obligatoria' => false
+                        ]);
+                        Log::info("Imagen micro extra guardada.");
+                    } catch (\Exception $e) {
+                        Log::error("Error guardando imagen micro extra: " . $e->getMessage());
+                    }
                 }
              }
         }
