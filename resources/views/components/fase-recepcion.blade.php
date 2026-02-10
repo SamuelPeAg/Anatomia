@@ -98,79 +98,11 @@
     </div>
 
     <!-- IMÁGENES RECEPCIÓN -->
-    <div class="subtarjeta">
-        <div class="subtarjeta-cabecera">
-            <h3 class="subtarjeta-titulo">Imágenes de recepción (opcional)</h3>
-            <p class="subtarjeta-ayuda">Puedes adjuntar 0 o más imágenes.</p>
-        </div>
-
-        <div class="subtarjeta-cuerpo">
-            <!-- Imágenes Guardadas -->
-            @if($informe && $informe->imagenes->where('fase', 'recepcion')->count() > 0)
-                <div class="imagenes-existentes">
-                    @foreach($informe->imagenes->where('fase', 'recepcion') as $img)
-                        <div class="imagen-item">
-                            <img src="{{ asset('storage/' . $img->ruta) }}" 
-                                 alt="Imagen guardada" 
-                                 class="imagen-guardada-img">
-                            <div class="info-img">
-                                <p><strong>Descripción:</strong> {{ $img->descripcion ?: 'Sin descripción' }}</p>
-                            </div>
-                            <button type="button" class="boton boton-peligro btn-eliminar-ajustado" onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">
-                                Eliminar
-                            </button>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-
-            <div class="lista-imagenes" data-lista-imagenes="recepcion">
-                <div class="fila-imagen">
-                    <div class="archivo-imagen">
-                        <label class="etiqueta-campo">Imagen</label>
-                        <input class="control-campo" type="file" name="recepcion_img[]" accept="image/*" />
-                    </div>
-
-                    <div class="descripcion-imagen">
-                        <label class="etiqueta-campo">Descripción (opcional)</label>
-                        <input class="control-campo" type="text" name="recepcion_desc[]" placeholder="Descripción..." />
-                    </div>
-
-                    <div class="acciones-imagen">
-                        <button class="boton boton-peligro" type="button" data-eliminar-fila>
-                            Eliminar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="acciones-imagenes">
-                <button class="boton boton-secundario" type="button" data-anadir-fila="recepcion">
-                    Añadir imagen
-                </button>
-            </div>
-
-            <template id="plantilla-recepcion">
-                <div class="fila-imagen">
-                    <div class="archivo-imagen">
-                        <label class="etiqueta-campo">Imagen</label>
-                        <input class="control-campo" type="file" name="recepcion_img[]" accept="image/*" />
-                    </div>
-
-                    <div class="descripcion-imagen">
-                        <label class="etiqueta-campo">Descripción (opcional)</label>
-                        <input class="control-campo" type="text" name="recepcion_desc[]" placeholder="Descripción..." />
-                    </div>
-
-                    <div class="acciones-imagen">
-                        <button class="boton boton-peligro" type="button" data-eliminar-fila>
-                            Eliminar
-                        </button>
-                    </div>
-                </div>
-            </template>
-        </div>
-    </div>
+    <x-upload-imagenes 
+        :informe="$informe" 
+        fase="recepcion" 
+        titulo="Imágenes de recepción (opcional)"
+    />
 
     <div class="acciones">
         <div class="acciones-izquierda">

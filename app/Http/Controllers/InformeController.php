@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expediente;
+use App\Models\Imagen;
 use App\Models\Informe;
 use App\Models\TipoMuestra;
-use App\Models\Imagen;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class InformeController extends Controller
 {
-    public function destroyImagen(Imagen $imagen)
+    /**
+     * Elimina una imagen del sistema y del almacenamiento.
+     */
+    public function destroyImagen(Imagen $imagen): RedirectResponse
     {
         // Borrar archivo físico
         if (Storage::disk('public')->exists($imagen->ruta)) {
@@ -26,12 +30,15 @@ class InformeController extends Controller
         return redirect()->back()->with('success', 'Imagen eliminada correctamente.');
     }
 
-    public function index()
+    /**
+     * Muestra el listado de informes.
+     */
+    public function index(): View
     {
         $informes = Informe::with('tipo')->orderBy('created_at', 'desc')->get();
 
         foreach ($informes as $informe) {
-            $faseInfo = $this->getSiguienteFaseInfo($informe);
+            $faseInfo = $this->getFaseInfo($informe);
             $informe->siguiente_fase = $faseInfo['nombre'];
             $informe->fase_n = $faseInfo['numero'];
         }
@@ -39,7 +46,26 @@ class InformeController extends Controller
         return view('revision', compact('informes'));
     }
 
-    public function store(Request $request)
+    /**
+     * Muestra el formulario para crear un nuevo informe.
+     */
+    public function create(): View
+    {
+        return view('nuevoinforme', [
+            'informe' => null,
+            'esEdicion' => false,
+            'faseActual' => 1,
+            'numeroFase' => 1,
+            'fasesCompletas' => [1 => false, 2 => false, 3 => false, 4 => false],
+            'imagenesMicroExtras' => collect([]),
+            'tiposMuestra' => TipoMuestra::all()
+        ]);
+    }
+
+    /**
+     * Almacena un nuevo informe en la base de datos.
+     */
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'tipo_muestra' => 'required|string',
@@ -50,15 +76,7 @@ class InformeController extends Controller
         ]);
 
         $tipo = TipoMuestra::where('prefijo', $request->tipo_muestra)->firstOrFail();
-        
-        $expedienteId = null;
-        if ($request->filled('paciente_correo')) {
-            $expediente = \App\Models\Expediente::firstOrCreate(
-                ['correo' => $request->paciente_correo],
-                ['nombre' => $request->paciente_nombre ?? 'Paciente sin nombre']
-            );
-            $expedienteId = $expediente->id;
-        }
+        $expedienteId = $this->obtenerExpedienteId($request);
 
         $informe = Informe::create([
             'expediente_id' => $expedienteId,
@@ -73,33 +91,52 @@ class InformeController extends Controller
 
         $this->procesarImagenes($request, $informe);
 
-        return redirect()->route('informes.edit', $informe)
-            ->with('success', 'Recepción guardada correctamente.');
+        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => 1])
+            ->with('success', 'Recepción guardada. Verifica las imágenes adjuntas.');
     }
 
-    public function edit(Informe $informe)
+    /**
+     * Muestra el formulario de edición de un informe.
+     */
+    public function edit(Informe $informe): View
     {
-        $numeroFase = request('fase') ?: $this->getSiguienteFaseInfo($informe)['numero'];
+        $numeroFase = request('fase') ?: $this->getFaseInfo($informe)['numero'];
         
-        return view('nuevoinforme', compact('informe', 'numeroFase'));
+        return view('nuevoinforme', [
+            'informe' => $informe,
+            'numeroFase' => $numeroFase,
+            'faseActual' => $numeroFase,
+            'imagenesMicroExtras' => $informe->imagenes->where('fase', 'microscopio')->where('obligatoria', 0),
+            'esEdicion' => true,
+            'fasesCompletas' => [
+                1 => !empty($informe->recepcion_observaciones),
+                2 => !empty($informe->procesamiento_tipo),
+                3 => !empty($informe->tincion_tipo),
+                4 => !empty($informe->citodiagnostico)
+            ],
+            'tiposMuestra' => TipoMuestra::all()
+        ]);
     }
 
-    public function update(Request $request, Informe $informe)
+    /**
+     * Actualiza un informe existente.
+     */
+    public function update(Request $request, Informe $informe): RedirectResponse
     {
+        // Validación estricta para Fase 4 (Microscopio)
+        if ($errores = $this->validarRequisitosMicroscopio($request, $informe)) {
+            return back()->withErrors($errores)->withInput()->with('error', 'Faltan imágenes obligatorias.');
+        }
+
         $data = [];
 
-        // Mapeo de campos por fase detectada en el request
+        // Mapeo dinámico de campos según fase
         if ($request->has('observaciones_llegada')) {
             $data['recepcion_observaciones'] = $request->observaciones_llegada;
             $data['recepcion_organo'] = $request->organo;
-
-            // Vincular/Actualizar expediente si se envían datos
-            if ($request->filled('paciente_correo')) {
-                $expediente = \App\Models\Expediente::firstOrCreate(
-                    ['correo' => $request->paciente_correo],
-                    ['nombre' => $request->paciente_nombre ?? 'Paciente sin nombre']
-                );
-                $data['expediente_id'] = $expediente->id;
+            
+            if ($id = $this->obtenerExpedienteId($request)) {
+                $data['expediente_id'] = $id;
             }
         }
 
@@ -120,7 +157,6 @@ class InformeController extends Controller
         }
 
         $informe->update($data);
-        
         $this->procesarImagenes($request, $informe);
 
         if ($request->input('stay') == '1') {
@@ -134,7 +170,9 @@ class InformeController extends Controller
             ->with('success', 'Información actualizada.');
     }
 
-    private function getSiguienteFaseInfo($informe): array
+    // --- Métodos Privados y Auxiliares ---
+
+    private function getFaseInfo($informe): array
     {
         if (empty($informe->recepcion_observaciones)) return ['nombre' => 'Recepción', 'numero' => 1];
         if (empty($informe->procesamiento_tipo)) return ['nombre' => 'Procesamiento', 'numero' => 2];
@@ -144,157 +182,139 @@ class InformeController extends Controller
         return ['nombre' => 'Finalizado', 'numero' => 4];
     }
 
-    private function procesarImagenes(Request $request, Informe $informe)
+    private function obtenerExpedienteId(Request $request): ?int
     {
-        Log::info('Inicio procesarImagenes Informe ID: ' . $informe->id);
-        Log::info('Datos Request:', $request->all());
-        Log::info('Archivos Request:', $request->allFiles());
+        if ($request->filled('paciente_correo')) {
+            $expediente = Expediente::firstOrCreate(
+                ['correo' => $request->paciente_correo],
+                ['nombre' => $request->paciente_nombre ?? 'Paciente sin nombre']
+            );
+            return $expediente->id;
+        }
+        return null;
+    }
+
+    private function validarRequisitosMicroscopio(Request $request, Informe $informe): ?array
+    {
+        if (!$request->has('citodiagnostico')) {
+            return null;
+        }
+
+        $zooms = ['x4', 'x10', 'x40', 'x100'];
+        $faltantes = [];
         
-        // 1. Recepción
-        if ($request->hasFile('recepcion_img')) {
-            $archivos = $request->file('recepcion_img');
-            $descripciones = $request->input('recepcion_desc', []);
+        $imagenesExistentes = $informe->imagenes()
+            ->where('fase', 'microscopio')
+            ->whereIn('zoom', $zooms)
+            ->pluck('zoom')
+            ->toArray();
+
+        foreach ($zooms as $zoom) {
+            $existe = in_array($zoom, $imagenesExistentes);
+            $viene = $request->hasFile("micro_{$zoom}_img");
             
-            Log::info('Imágenes recepción detectadas: ' . count($archivos));
-
-            foreach ($archivos as $index => $file) {
-                if ($file && $file->isValid()) {
-                    try {
-                        $path = $file->store("informes/{$informe->id}/recepcion", 'public');
-                        
-                        Imagen::create([
-                            'informe_id' => $informe->id,
-                            'fase' => 'recepcion',
-                            'ruta' => $path,
-                            'descripcion' => $descripciones[$index] ?? null,
-                        ]);
-                        Log::info("Imagen recepción guardada en DB: $path");
-                    } catch (\Exception $e) {
-                         Log::error("Error guardando imagen recepción: " . $e->getMessage());
-                    }
-                } else {
-                    Log::warning("Archivo inválido en índice $index recepción: " . ($file ? $file->getErrorMessage() : 'NULL'));
-                }
-            }
-        } else {
-            Log::info("No se detectaron imágenes de recepción.");
-        }
-
-        // 2. Procesamiento
-        if ($request->hasFile('procesamiento_img')) {
-            $archivos = $request->file('procesamiento_img');
-            $descripciones = $request->input('procesamiento_desc', []);
-
-            Log::info('Imágenes procesamiento detectadas: ' . count($archivos));
-
-            foreach ($archivos as $index => $file) {
-                 if ($file && $file->isValid()) {
-                    try {
-                        $path = $file->store("informes/{$informe->id}/procesamiento", 'public');
-                        
-                        Imagen::create([
-                            'informe_id' => $informe->id,
-                            'fase' => 'procesamiento',
-                            'ruta' => $path,
-                            'descripcion' => $descripciones[$index] ?? null,
-                        ]);
-                        Log::info("Imagen procesamiento guardada en DB: $path");
-                    } catch (\Exception $e) {
-                        Log::error("Error guardando imagen procesamiento: " . $e->getMessage());
-                    }
-                } else {
-                    Log::warning("Archivo inválido en índice $index procesamiento.");
-                }
+            if (!$existe && !$viene) {
+                $faltantes[] = $zoom;
             }
         }
 
-        // 3. Tinción
-        if ($request->hasFile('tincion_img')) {
-            $archivos = $request->file('tincion_img');
-            $descripciones = $request->input('tincion_desc', []);
-
-            Log::info('Imágenes tinción detectadas: ' . count($archivos));
-
-            foreach ($archivos as $index => $file) {
-                 if ($file && $file->isValid()) {
-                    try {
-                        $path = $file->store("informes/{$informe->id}/tincion", 'public');
-                        
-                        Imagen::create([
-                            'informe_id' => $informe->id,
-                            'fase' => 'tincion',
-                            'ruta' => $path,
-                            'descripcion' => $descripciones[$index] ?? null,
-                        ]);
-                        Log::info("Imagen tinción guardada en DB: $path");
-                    } catch (\Exception $e) {
-                         Log::error("Error guardando imagen tinción: " . $e->getMessage());
-                    }
-                } else {
-                     Log::warning("Archivo inválido en índice $index tinción.");
-                }
-            }
+        if (!empty($faltantes)) {
+            return ['imagenes' => 'Es obligatorio adjuntar imágenes para los aumentos: ' . implode(', ', $faltantes)];
         }
 
-        // 4. Micro Obligatorias
-        if ($request->hasFile('micros_required_img')) {
-            $archivos = $request->file('micros_required_img');
-            $descripciones = $request->input('micros_required_desc', []);
+        return null;
+    }
+
+    private function procesarImagenes(Request $request, Informe $informe): void
+    {
+        Log::info(">>> PROCESAR IMAGENES INFORME #{$informe->id}");
+
+        // 1. Fases Regulares (Grupo simple) y Extras
+        $fases = [
+            'recepcion' => ['img' => 'recepcion_img', 'desc' => 'recepcion_desc'],
+            'procesamiento' => ['img' => 'procesamiento_img', 'desc' => 'procesamiento_desc'],
+            'tincion' => ['img' => 'tincion_img', 'desc' => 'tincion_desc'],
+            'microscopio' => ['img' => 'micros_extra_img', 'desc' => 'micros_extra_desc', 'zoom' => 'micros_extra_zoom']
+        ];
+
+        foreach ($fases as $faseName => $config) {
+            // Fase BD es 'microscopio' incluso para extras
+            $faseBD = ($faseName === 'microscopio') ? 'microscopio' : $faseName;
             
-            Log::info('Imágenes micro obligatorias detectadas.');
+            if ($request->hasFile($config['img'])) {
+                $this->guardarGrupoImagenes(
+                    $request, 
+                    $informe, 
+                    $faseBD, 
+                    $config['img'], 
+                    $config['desc'], 
+                    $config['zoom'] ?? null
+                );
+            }
+        }
 
-            foreach ($archivos as $zoom => $file) {
-                 if ($file && $file->isValid()) {
+        // 2. Microscopio OBLIGATORIAS (Inputs específicos planos)
+        $zoomsObligatorios = ['x4', 'x10', 'x40', 'x100'];
+
+        foreach ($zoomsObligatorios as $zoom) {
+            $inputImg = "micro_{$zoom}_img";
+            $inputDesc = "micro_{$zoom}_desc";
+
+            if ($request->hasFile($inputImg)) {
+                $files = $request->file($inputImg);
+                if (!is_array($files)) $files = [$files];
+                
+                $descs = $request->input($inputDesc, []);
+
+                foreach ($files as $index => $file) {
+                    if (!$file || !$file->isValid()) {
+                        Log::warning("Archivo inválido Micro $zoom index $index");
+                        continue;
+                    }
+
                     try {
                         $path = $file->store("informes/{$informe->id}/microscopio", 'public');
-                        
-                        Imagen::updateOrCreate(
-                            [
-                                'informe_id' => $informe->id,
-                                'fase' => 'microscopio',
-                                'zoom' => $zoom,
-                                'obligatoria' => true
-                            ],
-                            [
-                                'ruta' => $path,
-                                'descripcion' => $descripciones[$zoom] ?? null
-                            ]
-                        );
-                        Log::info("Imagen micro obligatoria ($zoom) guardada.");
-                    } catch (\Exception $e) {
-                         Log::error("Error guardando imagen micro obligatoria: " . $e->getMessage());
-                    }
-                 }
-            }
-        }
-        
-        // 3. Micro Extras (Nota: índice corregido a 5, aunque comentario dice 3)
-        if ($request->hasFile('micros_extra_img')) {
-             $archivos = $request->file('micros_extra_img');
-             $descripciones = $request->input('micros_extra_desc', []);
-             $zooms = $request->input('micros_extra_zoom', []);
-
-             Log::info('Imágenes micro extras detectadas: ' . count($archivos));
-
-             foreach ($archivos as $index => $file) {
-                if ($file && $file->isValid()) {
-                    try {
-                        $path = $file->store("informes/{$informe->id}/microscopio", 'public');
-                        
                         Imagen::create([
                             'informe_id' => $informe->id,
                             'fase' => 'microscopio',
                             'ruta' => $path,
-                            'zoom' => $zooms[$index] ?? null,
-                            'descripcion' => $descripciones[$index] ?? null,
-                            'obligatoria' => false
+                            'descripcion' => $descs[$index] ?? null,
+                            'zoom' => $zoom,
+                            'obligatoria' => true
                         ]);
-                        Log::info("Imagen micro extra guardada.");
+                        Log::info("GUARDADA: Micro $zoom ($path)");
                     } catch (\Exception $e) {
-                        Log::error("Error guardando imagen micro extra: " . $e->getMessage());
+                         Log::error("Error guardando Micro $zoom: " . $e->getMessage());
                     }
                 }
-             }
+            }
+        }
+    }
+
+    private function guardarGrupoImagenes(Request $request, Informe $informe, string $fase, string $inputImg, string $inputDesc, ?string $inputZoom = null): void
+    {
+        $files = $request->file($inputImg);
+        if (!is_array($files)) $files = [$files];
+        
+        $descs = $request->input($inputDesc, []);
+        $zooms = $inputZoom ? $request->input($inputZoom, []) : [];
+
+        foreach ($files as $index => $file) {
+            if ($file && $file->isValid()) {
+                try {
+                    $path = $file->store("informes/{$informe->id}/{$fase}", 'public');
+                    Imagen::create([
+                        'informe_id' => $informe->id,
+                        'fase' => $fase,
+                        'ruta' => $path,
+                        'descripcion' => $descs[$index] ?? null,
+                        'zoom' => $zooms[$index] ?? null,
+                        'obligatoria' => false
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Error guardando imagen grupo $fase: " . $e->getMessage());
+                }
+            }
         }
     }
 }

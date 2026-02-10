@@ -212,7 +212,8 @@ window.borrarImagen = async function (e, url) {
         if (respuesta.ok) {
             const btn = e.target.closest('button');
             if (btn) {
-                const item = btn.closest('.imagen-item, .img-preview-container');
+                // Actualizado a .imagen-card (nuevo componente unificado)
+                const item = btn.closest('.imagen-card');
                 if (item) {
                     item.style.transition = 'opacity 0.3s, transform 0.3s';
                     item.style.opacity = '0';

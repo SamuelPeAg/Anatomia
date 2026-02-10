@@ -1,4 +1,4 @@
-@props(['informe' => null])
+@props(['informe' => null, 'imagenesExtras' => collect([])])
 <section class="fase" id="fase-4" data-fase="4">
   <form action="{{ $informe ? route('informes.update', $informe) : '#' }}" method="POST" enctype="multipart/form-data">
     @if(!$informe)
@@ -27,62 +27,35 @@
                 <p class="subtarjeta-ayuda">Debes adjuntar 4 imágenes: x4, x10, x40 y x100.</p>
             </div>
 
-            @php
-                $imgsMicro = $informe ? $informe->imagenes->where('fase', 'microscopio') : collect(); 
-                $obl = $imgsMicro->where('obligatoria', 1)->keyBy('zoom');
-                $ext = $imgsMicro->where('obligatoria', 0);
-            @endphp
-
             <div class="subtarjeta-cuerpo">
-                <div class="lista-imagenes" id="listaImagenesObligatorias">
-                    @foreach(['x4', 'x10', 'x40', 'x100'] as $zoom)
-                        <div class="fila-imagen fila-obligatoria">
-                            <div class="archivo-imagen">
-                                <label class="etiqueta-campo">Imagen {{ $zoom }}</label>
-                                <input class="control-campo" type="file" name="micros_required_img[{{ $zoom }}]" accept="image/*" />
-                                @if($img = $obl->get($zoom))
-                                    <div class="img-preview-container img-preview-container-margin">
-                                         <img src="{{ asset('storage/' . $img->ruta) }}" class="imagen-guardada-img">
-                                         <div class="estado-guardada-container">
-                                            <span>✓ Guardada</span>
-                                            <button type="button" class="boton boton-peligro btn-eliminar-ajustado" onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">Eliminar</button>
-                                         </div>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="zoom-imagen">
-                                <label class="etiqueta-campo">Zoom</label>
-                                <input class="control-campo" type="text" value="{{ $zoom }}" readonly />
-                            </div>
-                            <div class="descripcion-imagen">
-                                <label class="etiqueta-campo">Descripción (opcional)</label>
-                                <input class="control-campo" type="text" name="micros_required_desc[{{ $zoom }}]" 
-                                       placeholder="Qué se ve..." 
-                                       value="{{ $obl->get($zoom)->descripcion ?? '' }}" />
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+                <x-upload-imagenes :informe="$informe" fase="microscopio" zoom="x4" titulo="Aumento 4x (Obligatorio)" :required="true" input-name="micro_x4_img[]" input-name-desc="micro_x4_desc[]" />
+                
+                <x-upload-imagenes :informe="$informe" fase="microscopio" zoom="x10" titulo="Aumento 10x (Obligatorio)" :required="true" input-name="micro_x10_img[]" input-name-desc="micro_x10_desc[]" />
+                
+                <x-upload-imagenes :informe="$informe" fase="microscopio" zoom="x40" titulo="Aumento 40x (Obligatorio)" :required="true" input-name="micro_x40_img[]" input-name-desc="micro_x40_desc[]" />
+                
+                <x-upload-imagenes :informe="$informe" fase="microscopio" zoom="x100" titulo="Aumento 100x (Obligatorio)" :required="true" input-name="micro_x100_img[]" input-name-desc="micro_x100_desc[]" />
 
                 <h3 class="subtarjeta-titulo titulo-extra">Imágenes extra (opcional)</h3>
 
                 <!-- Imágenes Extra Guardadas -->
-                @if($ext->count() > 0)
-                    <div class="imagenes-existentes">
-                        @foreach($ext as $img)
-                            <div class="imagen-item">
-                                <div class="wrapper-relativo">
-                                    <img src="{{ asset('storage/' . $img->ruta) }}" 
-                                         alt="Imagen extra" 
-                                         class="imagen-guardada-img">
+                @if($imagenesExtras->count() > 0)
+                    <div class="imagenes-existentes-grid">
+                        @foreach($imagenesExtras as $img)
+                            <div class="imagen-card">
+                                <div class="imagen-card-thumb">
+                                    <img src="{{ asset('storage/' . $img->ruta) }}" alt="Imagen extra">
                                 </div>
-                                <div class="info-img">
-                                    <span class="etiqueta-zoom">{{ $img->zoom }}</span>
-                                    <p><strong>Descripción:</strong> {{ $img->descripcion ?: 'Sin descripción' }}</p>
+                                <div class="imagen-card-info">
+                                    <div style="font-weight:bold; font-size:0.8em; margin-bottom:2px; color:#4b5563;">
+                                        Zoom: {{ $img->zoom }}
+                                    </div>
+                                    <p class="imagen-desc" title="{{ $img->descripcion }}">{{ $img->descripcion ?: 'Sin descripción' }}</p>
+                                    <button type="button" class="btn-link-peligro" 
+                                        onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">
+                                        Eliminar
+                                    </button>
                                 </div>
-                                <button type="button" class="boton boton-peligro btn-eliminar-ajustado" onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">
-                                    Eliminar
-                                </button>
                             </div>
                         @endforeach
                     </div>
@@ -166,13 +139,40 @@
             <div class="acciones-derecha">
                 <input type="hidden" name="fase_origen" value="4">
                 <input type="hidden" name="stay" value="1" id="stayFase4">
-                <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase4').value='1'">
+                <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase4').value='1'; if(!validarFase4()) { event.preventDefault(); }">
                     Guardar citodiagnóstico
                 </button>
-                <button class="boton boton-principal" type="submit" onclick="document.getElementById('stayFase4').value='0'">
+                <button class="boton boton-principal" type="submit" onclick="document.getElementById('stayFase4').value='0'; if(!validarFase4()) { event.preventDefault(); }">
                     Finalizar y enviar
                 </button>
             </div>
         </div>
     </form>
+    <script>
+        function validarFase4() {
+            const zooms = ['x4', 'x10', 'x40', 'x100'];
+            let faltantes = [];
+
+            zooms.forEach(zoom => {
+                // Buscamos el input por su name exacto
+                const input = document.querySelector(`input[name="micro_${zoom}_img[]"]`);
+                if (input) {
+                    const container = input.closest('.subtarjeta-cuerpo');
+                    if (container) {
+                        // Contamos imágenes existentes (.imagen-card) y nuevas (.nueva-imagen-fila)
+                        const count = container.querySelectorAll('.imagen-card, .nueva-imagen-fila').length;
+                        if (count === 0) {
+                            faltantes.push(zoom);
+                        }
+                    }
+                }
+            });
+
+            if (faltantes.length > 0) {
+                alert('Es obligatorio adjuntar imágenes para los aumentos: ' + faltantes.join(', ') + '. \n\nPor favor, añade al menos una imagen por aumento.');
+                return false;
+            }
+            return true;
+        }
+    </script>
 </section>

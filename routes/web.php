@@ -32,9 +32,7 @@ Route::middleware(['auth'])->group(function () {
         return view('inicio');
     })->name("home");
 
-    Route::get("/nuevo_informe", function () {
-        return view("nuevoinforme", ['informe' => null]);
-    })->name("nuevo informe");
+    Route::get("/nuevo_informe", [InformeController::class, "create"])->name("nuevo informe");
 
     Route::post("/guardar_informe", [InformeController::class, "store"])->name("guardar_informe");
 

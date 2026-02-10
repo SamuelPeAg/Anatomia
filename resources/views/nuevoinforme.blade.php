@@ -1,13 +1,4 @@
-@php
-    $esEdicion = isset($informe);
-    $faseActual = request('fase') ?? ($numeroFase ?? 1);
-    $fasesCompletas = [
-        1 => $esEdicion && !empty($informe->recepcion_observaciones),
-        2 => $esEdicion && !empty($informe->procesamiento_tipo),
-        3 => $esEdicion && !empty($informe->tincion_tipo),
-        4 => $esEdicion && !empty($informe->citodiagnostico)
-    ];
-@endphp
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -86,7 +77,7 @@
                     <x-fase-recepcion :informe="$informe" />
                     <x-fase-procesamiento :informe="$informe" />
                     <x-fase-tincion :informe="$informe" />
-                    <x-fase-citodiagnostico :informe="$informe" />
+                    <x-fase-citodiagnostico :informe="$informe" :imagenes-extras="$imagenesMicroExtras ?? collect([])" />
                 </div>
             </article>
         </section>
