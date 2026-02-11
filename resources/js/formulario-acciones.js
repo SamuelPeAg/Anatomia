@@ -140,20 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Manejo de botones con acciones específicas (para evitar onclick en HTML)
+    // Manejo de botones con acciones específicas
     document.addEventListener("click", e => {
-        // Botón "Siguiente" o "Guardar" que cambia el input 'stay'
-        const btnStay = e.target.closest('[data-set-stay]');
-        if (btnStay) {
-            const container = btnStay.closest('.fase');
-            if (container) {
-                const inputStay = container.querySelector('input[name="stay"]');
-                if (inputStay) {
-                    inputStay.value = btnStay.dataset.setStay;
-                }
-            }
-        }
-
         // Botón "Volver" (navegación entre pasos)
         const btnVolver = e.target.closest('[data-volver-paso]');
         if (btnVolver) {
@@ -265,15 +253,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!window.validarFase4()) return;
             }
 
-            const inputStay = form.querySelector('input[name="stay"]');
-            if (inputStay) inputStay.value = '0';
-
             const confirmado = await pedirConfirmacion(
                 '¿Finalizar informe?',
                 'Revisa que todos los datos e imágenes sean correctos. Una vez finalizado pasará a revisión.'
             );
 
             if (confirmado) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'stay';
+                hiddenInput.value = '0';
+                form.appendChild(hiddenInput);
                 form.submit();
             }
         });

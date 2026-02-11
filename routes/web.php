@@ -5,10 +5,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\InformeController;
 use App\Http\Controllers\ExpedienteController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+
 // Página Principal
-Route::get('/', function () {
-    return view('inicio');
-})->name("inicio");
+Route::get('/', [DashboardController::class, 'index'])->name("inicio");
 
 // Autenticación
 Route::get('/login', function () {
@@ -28,9 +28,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 // Rutas Protegidas
 Route::middleware(['auth'])->group(function () {
     
-    Route::get('/home', function () {
-        return view('inicio');
-    })->name("home");
+    Route::get('/home', [DashboardController::class, 'index'])->name("home");
 
     Route::get("/nuevo_informe", [InformeController::class, "create"])->name("nuevo informe");
 
@@ -45,6 +43,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'siguienteCodigo'])
         ->name('tipos.siguienteCodigo');
+
+    // Gestión de Expedientes (Administración)
+    Route::get('/expedientes', [ExpedienteController::class, 'index'])->name('expedientes.index');
+    Route::get('/expedientes/search', [ExpedienteController::class, 'search'])->name('expedientes.search');
+    Route::get('/expedientes/{expediente}', [ExpedienteController::class, 'show'])->name('expedientes.show');
 });
 
 // Portal de Pacientes (Acceso Público con Email)

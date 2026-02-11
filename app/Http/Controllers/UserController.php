@@ -40,7 +40,14 @@ class UserController extends Controller
     {
         $data = $request->validate([
             'name'     => 'required|string|max:70',
-            'email'    => 'required|email|max:70|unique:users,email',
+            'email'    => [
+                'required', 'email', 'max:70', 'unique:users,email',
+                function ($attribute, $value, $fail) {
+                    if (!str_ends_with($value, '@alu.medac.es') && !str_ends_with($value, '@doc.medac.es')) {
+                        $fail('El correo electrónico debe ser corporativo de MEDAC (@alu.medac.es o @doc.medac.es).');
+                    }
+                },
+            ],
             'password' => 'required|string|min:6',
         ]);
 

@@ -20,5 +20,5 @@ class Informe extends Model
 
     public function expediente() { return $this->belongsTo(Expediente::class); }
     public function tipo() { return $this->belongsTo(TipoMuestra::class, 'tipo_id'); }
-    public function imagenes() { return $this->hasMany(Imagenes::class, 'informe_id'); }
+    public function imagenes() { return $this->hasMany(Imagen::class, 'informe_id'); }
 }

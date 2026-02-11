@@ -15,7 +15,8 @@ export default defineConfig({
                 'login': 'resources/css/login.css',
                 'formulario': 'resources/js/formulario.js',
                 'alerts': 'resources/css/alerts.css',
-                'revision': 'resources/css/revision.css'
+                'revision': 'resources/css/revision.css',
+                'dashboard': 'resources/css/dashboard.css'
             },
             refresh: true,
         }),

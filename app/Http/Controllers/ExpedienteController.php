@@ -59,4 +59,45 @@ class ExpedienteController extends Controller
 
         return view('paciente.informes', compact('expediente', 'informes'));
     }
+    /**
+     * [ADMIN] Muestra el listado de todos los expedientes registrados.
+     */
+    public function index()
+    {
+        // Obtener expedientes que tengan al menos un informe, ordenados por recientes
+        $expedientes = Expediente::withCount('informes')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(12);
+
+        return view('expedientes.index', compact('expedientes'));
+    }
+
+    /**
+     * [ADMIN] Muestra el detalle de un expediente y sus informes.
+     */
+    public function show(Expediente $expediente)
+    {
+        $expediente->load(['informes' => function($q) {
+            $q->orderBy('created_at', 'desc');
+        }, 'informes.tipo']);
+        
+        return view('expedientes.show', compact('expediente'));
+    }
+    /**
+     * [API] Busca expedientes por nombre para el autocompletado via AJAX.
+     */
+    public function search(Request $request)
+    {
+        $term = $request->get('term');
+        
+        if (strlen($term) < 2) {
+            return response()->json([]);
+        }
+
+        $expedientes = Expediente::where('nombre', 'LIKE', "%{$term}%")
+            ->limit(10)
+            ->get(['nombre', 'correo']); // Retornamos nombre y correo
+
+        return response()->json($expedientes);
+    }
 }

@@ -109,7 +109,7 @@ class InformeController extends Controller
         $request->validate([
             'tipo_muestra' => 'required|string',
             'codigo_identificador' => 'required|string|unique:informes,codigo_identificador',
-            'observaciones_llegada' => 'required|string',
+            'observaciones_llegada' => 'nullable|string',
             'paciente_nombre' => 'nullable|string|max:255',
             'paciente_correo' => 'nullable|email|max:255',
         ]);
@@ -130,8 +130,13 @@ class InformeController extends Controller
 
         $this->procesarImagenes($request, $informe);
 
-        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => 1])
-            ->with('success', 'Recepción guardada. Verifica las imágenes adjuntas.');
+        if ($request->input('stay') == '1') {
+            return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => 1])
+                ->with('success', 'Recepción guardada. Verifica las imágenes adjuntas.');
+        }
+
+        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => 2])
+            ->with('success', 'Recepción completada. Continuando a Procesamiento.');
     }
 
     /**

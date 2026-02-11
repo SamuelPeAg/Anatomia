@@ -6,7 +6,7 @@
         <title>Anatomía MEDAC — Gestión Patológica Premium</title>
 
         <!-- Estilos y Scripts con Vite -->
-        @vite(['resources/css/principal.css', 'resources/js/principal.js'])
+        @vite(['resources/css/principal.css', 'resources/css/dashboard.css', 'resources/js/principal.js'])
     </head>
     <body>
         <x-header />
@@ -20,8 +20,14 @@
                     Optimiza el procesado de muestras y la generación de informes técnicos con una plataforma diseñada para laboratorios modernos.
                 </p>
                 <div class="hero-btns">
-                    <a href="{{ route('login') }}" class="btn-premium">Comenzar Ahora</a>
-                    <a href="#proceso" class="btn-outline">Ver Funcionamiento</a>
+                    @auth
+                        <a href="{{ route('nuevo informe') }}" class="btn-premium">Nuevo Informe</a>
+                        <a href="{{ route('revision') }}" class="btn-outline">Ver Mis Informes</a>
+                        <a href="{{ route('expedientes.index') }}" class="btn-outline">Ver Expedientes</a>
+                    @else
+                        <a href="{{ route('login') }}" class="btn-premium">Comenzar Ahora</a>
+                        <a href="#proceso" class="btn-outline">Ver Funcionamiento</a>
+                    @endauth
                 </div>
             </section>
 
@@ -58,7 +64,7 @@
                     </div>
                     <div class="benefit-visual">
                         <div class="visual-placeholder">
-                            <img src="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
                         </div>
                     </div>
                 </div>

@@ -60,11 +60,10 @@
 
             <div class="acciones-derecha">
                 <input type="hidden" name="fase_origen" value="3">
-                <input type="hidden" name="stay" value="1">
-                <button class="boton boton-secundario" type="submit" data-set-stay="1">
+                <button class="boton boton-secundario" type="submit" name="stay" value="1">
                     Guardar tinción (incompleto)
                 </button>
-                <button class="boton boton-principal" type="submit" data-set-stay="0">
+                <button class="boton boton-principal" type="submit" name="stay" value="0">
                     Siguiente fase
                 </button>
             </div>

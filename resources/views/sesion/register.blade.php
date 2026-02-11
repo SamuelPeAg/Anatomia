@@ -53,7 +53,10 @@
                         <i class="bi bi-envelope"></i>
                     </span>
                     <input type="email" name="email" class="form-control"
-                        placeholder="Correo electrónico" value="{{ old('email') }}" maxlength="70" required>
+                        placeholder="ejemplo@alu.medac.es" value="{{ old('email') }}" maxlength="70" required>
+                </div>
+                <div class="form-text text-muted mb-3" style="font-size: 0.8rem;">
+                    Usa tu correo corporativo: @alu.medac.es o @doc.medac.es
                 </div>
                 @error('email')
                     <div class="alert alert-danger p-1">{{ $message }}</div>
