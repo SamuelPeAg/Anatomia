@@ -56,7 +56,7 @@
                         placeholder="ejemplo@alu.medac.es" value="{{ old('email') }}" maxlength="70" required>
                 </div>
                 <div class="form-text text-muted mb-3" style="font-size: 0.8rem;">
-                    Usa tu correo corporativo: @alu.medac.es o @doc.medac.es
+                    El correo electrónico debe ser corporativo de MEDAC
                 </div>
                 @error('email')
                     <div class="alert alert-danger p-1">{{ $message }}</div>

@@ -44,7 +44,7 @@ class UserController extends Controller
                 'required', 'email', 'max:70', 'unique:users,email',
                 function ($attribute, $value, $fail) {
                     if (!str_ends_with($value, '@alu.medac.es') && !str_ends_with($value, '@doc.medac.es')) {
-                        $fail('El correo electrónico debe ser corporativo de MEDAC (@alu.medac.es o @doc.medac.es).');
+                        $fail('El correo electrónico debe ser corporativo de MEDAC');
                     }
                 },
             ],
