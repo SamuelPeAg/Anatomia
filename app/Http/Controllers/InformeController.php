@@ -15,6 +15,15 @@ use Illuminate\View\View;
 class InformeController extends Controller
 {
     /**
+     * Maneja intentos de guardar fases posteriores sin haber guardado la Fase 1.
+     */
+    public function errorSinFase()
+    {
+        return redirect()->back()
+            ->with('error', 'No se puede guardar esta fase porque el informe aún no ha sido creado. Por favor, ve a la "Fase 1 (Recepción)", completa los datos obligatorios y pulsa en "Guardar y Continuar".');
+    }
+
+    /**
      * Elimina una imagen del sistema y del almacenamiento.
      */
     public function destroyImagen(Imagen $imagen)

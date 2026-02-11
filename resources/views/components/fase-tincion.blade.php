@@ -1,14 +1,14 @@
 @props(['informe' => null])
 <section class="fase" id="fase-3" data-fase="3">
 
-  <form action="{{ $informe ? route('informes.update', $informe) : '#' }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ $informe ? route('informes.update', $informe) : route('informes.sin-fase') }}" method="POST" enctype="multipart/form-data">
     @if(!$informe)
       <div class="alert alert-warning">
           Para guardar esta fase, primero debes completar y guardar la <strong>Fase 1 (Recepción)</strong>.
       </div>
     @endif
         @csrf
-        @method('PUT')
+        @if($informe) @method('PUT') @endif
         <div class="campo">
             <label class="etiqueta-campo" for="tipo_tincion">
                 Tipo de tinción <span class="obligatorio">*</span>
@@ -55,16 +55,16 @@
 
         <div class="acciones">
             <div class="acciones-izquierda">
-                <button class="boton boton-fantasma" type="button" onclick="document.querySelector('.paso[data-paso=\'2\']').click()">Volver</button>
+                <button class="boton boton-fantasma" type="button" data-volver-paso="2">Volver</button>
             </div>
 
             <div class="acciones-derecha">
                 <input type="hidden" name="fase_origen" value="3">
-                <input type="hidden" name="stay" value="1" id="stayFase3">
-                <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase3').value='1'">
+                <input type="hidden" name="stay" value="1">
+                <button class="boton boton-secundario" type="submit" data-set-stay="1">
                     Guardar tinción (incompleto)
                 </button>
-                <button class="boton boton-principal" type="submit" onclick="document.getElementById('stayFase3').value='0'">
+                <button class="boton boton-principal" type="submit" data-set-stay="0">
                     Siguiente fase
                 </button>
             </div>

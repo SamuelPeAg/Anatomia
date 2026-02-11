@@ -1,13 +1,13 @@
 @props(['informe' => null, 'imagenesExtras' => collect([])])
 <section class="fase" id="fase-4" data-fase="4">
-  <form action="{{ $informe ? route('informes.update', $informe) : '#' }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ $informe ? route('informes.update', $informe) : route('informes.sin-fase') }}" method="POST" enctype="multipart/form-data">
     @if(!$informe)
       <div class="alert alert-warning">
           Para guardar esta fase, primero debes completar y guardar la <strong>Fase 1 (Recepción)</strong>.
       </div>
     @endif
         @csrf
-        @method('PUT')
+        @if($informe) @method('PUT') @endif
         <div class="campo">
             <label class="etiqueta-campo" for="citodiagnostico">
                 Citodiagnóstico <span class="obligatorio">*</span>
@@ -52,8 +52,8 @@
                                     </div>
                                     <p class="imagen-desc" title="{{ $img->descripcion }}">{{ $img->descripcion ?: 'Sin descripción' }}</p>
                                     <button type="button" class="btn-link-peligro" 
-                                        onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">
-                                        Eliminar
+                                        data-borrar-imagen-url="{{ route('imagen.destroy', $img->id) }}">
+                                        Eliminar Imagen
                                     </button>
                                 </div>
                             </div>
@@ -133,16 +133,16 @@
 
         <div class="acciones">
             <div class="acciones-izquierda">
-                <button class="boton boton-fantasma" type="button" onclick="document.querySelector('.paso[data-paso=\'3\']').click()">Volver</button>
+                <button class="boton boton-fantasma" type="button" data-volver-paso="3">Volver</button>
             </div>
 
             <div class="acciones-derecha">
                 <input type="hidden" name="fase_origen" value="4">
-                <input type="hidden" name="stay" value="1" id="stayFase4">
-                <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase4').value='1'; if(!validarFase4()) { event.preventDefault(); }">
+                <input type="hidden" name="stay" value="1">
+                <button class="boton boton-secundario" type="submit" data-set-stay="1">
                     Guardar citodiagnóstico
                 </button>
-                <button class="boton boton-principal" type="submit" onclick="document.getElementById('stayFase4').value='0'; if(!validarFase4()) { event.preventDefault(); }">
+                <button class="boton boton-principal btn-finalizar-informe" type="submit">
                     Finalizar y enviar
                 </button>
             </div>

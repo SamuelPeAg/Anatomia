@@ -1,13 +1,13 @@
 @props(['informe' => null])
 <section class="fase" id="fase-2" data-fase="2">
-  <form action="{{ $informe ? route('informes.update', $informe) : '#' }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ $informe ? route('informes.update', $informe) : route('informes.sin-fase') }}" method="POST" enctype="multipart/form-data">
     @if(!$informe)
       <div class="alert alert-warning">
           Para guardar esta fase, primero debes completar y guardar la <strong>Fase 1 (Recepción)</strong>.
       </div>
     @endif
         @csrf
-        @method('PUT')
+        @if($informe) @method('PUT') @endif
         <div class="campo">
             <label class="etiqueta-campo" for="tipo_procesamiento">
                 Tipo de procesamiento <span class="obligatorio">*</span>
@@ -51,16 +51,16 @@
 
         <div class="acciones">
             <div class="acciones-izquierda">
-                <button class="boton boton-fantasma" type="button" onclick="document.querySelector('.paso[data-paso=\'1\']').click()">Volver</button>
+                <button class="boton boton-fantasma" type="button" data-volver-paso="1">Volver</button>
             </div>
 
             <div class="acciones-derecha">
                 <input type="hidden" name="fase_origen" value="2">
-                <input type="hidden" name="stay" value="1" id="stayFase2">
-                <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase2').value='1'">
+                <input type="hidden" name="stay" value="1">
+                <button class="boton boton-secundario" type="submit" data-set-stay="1">
                     Guardar procesamiento (incompleto)
                 </button>
-                <button class="boton boton-principal" type="submit" onclick="document.getElementById('stayFase2').value='0'">
+                <button class="boton boton-principal" type="submit" data-set-stay="0">
                     Siguiente fase
                 </button>
             </div>

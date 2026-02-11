@@ -111,11 +111,11 @@
 
         <div class="acciones-derecha">
             <input type="hidden" name="fase_origen" value="1">
-            <input type="hidden" name="stay" value="1" id="stayFase1">
-            <button class="boton boton-secundario" type="submit" onclick="document.getElementById('stayFase1').value='1'">
+            <input type="hidden" name="stay" value="1">
+            <button class="boton boton-secundario" type="submit" data-set-stay="1">
                 Guardar recepción (incompleto)
             </button>
-            <button class="boton boton-principal" type="submit" onclick="document.getElementById('stayFase1').value='0'">
+            <button class="boton boton-principal" type="submit" data-set-stay="0">
                 Siguiente fase
             </button>
         </div>

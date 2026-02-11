@@ -3,7 +3,7 @@
 <div class="subtarjeta">
     <div class="subtarjeta-cabecera">
         <h3 class="subtarjeta-titulo">{{ $titulo }} @if($required) <span class="obligatorio">*</span> @endif</h3>
-        <button type="button" class="boton boton-pequeno boton-secundario" onclick="document.getElementById('input-{{ $fase }}-{{ $zoom ?? 'gn' }}').click()">
+        <button type="button" class="boton boton-pequeno boton-secundario" data-trigger-upload="input-{{ $fase }}-{{ $zoom ?? 'gn' }}">
             + Nueva Imagen
         </button>
     </div>
@@ -14,16 +14,16 @@
         @if($imagenes->count() > 0)
             <div class="imagenes-existentes-grid">
                 @foreach($imagenes as $img)
-                    <div class="imagen-card">
+                    <div class="imagen-card" id="imagen-{{ $img->id }}">
                         <div class="imagen-card-thumb">
                             <img src="{{ asset('storage/' . $img->ruta) }}" alt="Imagen {{ $fase }}" loading="lazy">
                         </div>
                         <div class="imagen-card-info">
                             <p class="imagen-desc">{{ $img->descripcion ?: 'Sin descripción' }}</p>
-                            <button type="button" class="btn-link-peligro" 
-                                onclick="borrarImagen(event, '{{ route('imagen.destroy', $img->id) }}')">
-                                Eliminar
-                            </button>
+                                <button type="button" class="btn-link-peligro" 
+                                    data-borrar-imagen-url="{{ route('imagen.destroy', $img->id) }}">
+                                    Eliminar Imagen
+                                </button>
                         </div>
                     </div>
                 @endforeach
@@ -43,87 +43,15 @@
                name="{{ $inputName }}" 
                accept="image/*" 
                multiple
-               class="input-file-oculto"
-               onchange="previsualizarNuevasImagenes(this, '{{ $fase }}', '{{ $zoom ?? 'gn' }}', '{{ $inputNameDesc }}')"
+               class="input-file-oculto input-previsualizable"
+               data-fase="{{ $fase }}"
+               data-zoom="{{ $zoom ?? 'gn' }}"
+               data-name-desc="{{ $inputNameDesc }}"
                style="display: none;">
                
         <small class="ayuda-campo">Formatos aceptados: JPG, PNG. Máx 5MB.</small>
     </div>
 </div>
-
-<script>
-    if (typeof window.previsualizarNuevasImagenes === 'undefined') {
-        window.previsualizarNuevasImagenes = function(input, fase, zoom, nameDesc) {
-            const containerId = `container-${fase}-${zoom}`;
-            const container = document.getElementById(containerId);
-            
-            if (input.files && input.files.length > 0) {
-                const loteId = 'lote-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                
-                // Generar previews
-                Array.from(input.files).forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.className = 'nueva-imagen-fila';
-                        div.dataset.lote = loteId;
-                        // Vinculamos el input al elemento visual
-                        div._inputSource = input;
-                        
-                        div.innerHTML = `
-                            <div class="preview-thumb">
-                                <img src="${e.target.result}" title="${file.name}">
-                            </div>
-                            <div class="preview-inputs">
-                                <span class="badge-nueva">NUEVA</span>
-                                <input type="text" 
-                                       name="${nameDesc}" 
-                                       placeholder="Descripción..." 
-                                       class="control-campo control-sm">
-                                <span class="nombre-archivo">${file.name}</span>
-                            </div>
-                            <button type="button" class="boton-icono" onclick="eliminarLoteImagenes(this)" title="Eliminar imagen (y su lote de subida)">
-                                ✕
-                            </button>
-                        `;
-                        container.appendChild(div);
-                    }
-                    reader.readAsDataURL(file);
-                });
-
-                // ROTACIÓN DE INPUTS
-                // 1. Clonar input para crear el nuevo trigger vacío
-                const newInput = input.cloneNode(true);
-                newInput.value = ''; 
-                
-                // 2. Modificar input actual (lleno)
-                input.removeAttribute('id'); // ID para el nuevo
-                input.style.display = 'none';
-                input.classList.add('input-lleno-oculto');
-                input.dataset.lote = loteId; // Marcar input con el lote
-                
-                // 3. Insertar nuevo input en el DOM
-                input.parentNode.insertBefore(newInput, input.nextSibling);
-            }
-        }
-
-        window.eliminarLoteImagenes = function(btn) {
-            const fila = btn.closest('.nueva-imagen-fila');
-            const loteId = fila.dataset.lote;
-            const input = fila._inputSource;
-            
-            if (confirm('¿Eliminar esta imagen? (Si subiste varias a la vez se eliminarán todas las de ese grupo)')) {
-                // Borrar visualmente todas las del lote
-                document.querySelectorAll(`.nueva-imagen-fila[data-lote="${loteId}"]`).forEach(el => el.remove());
-                
-                // Borrar el input del DOM
-                if (input && input.parentNode) {
-                    input.remove();
-                }
-            }
-        }
-    }
-</script>
 
 <style>
     /* Estilos encapsulados para el componente */
@@ -165,12 +93,22 @@
     }
     .btn-link-peligro {
         color: #ef4444;
-        background: none;
-        border: none;
-        padding: 0;
-        font-size: 0.8rem;
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
         cursor: pointer;
-        text-decoration: underline;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 500;
+        margin-top: 5px;
+    }
+    .btn-link-peligro:hover {
+        background: #ef4444;
+        color: white;
+        border-color: #ef4444;
     }
     
     .nueva-imagen-fila {

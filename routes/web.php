@@ -36,6 +36,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post("/guardar_informe", [InformeController::class, "store"])->name("guardar_informe");
 
+    Route::post("/informe/sin-fase", [InformeController::class, "errorSinFase"])->name("informes.sin-fase");
+
     Route::get("/revision", [InformeController::class, "index"])->name("revision");
     Route::get("/revision/{informe}/editar", [InformeController::class, "edit"])->name("informes.edit");
     Route::put("/informe/{informe}/actualizar", [InformeController::class, "update"])->name("informes.update");

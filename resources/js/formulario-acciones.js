@@ -140,38 +140,133 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Previsualización de imágenes
-    document.addEventListener('change', (e) => {
-        if (e.target.matches('input[type="file"]')) {
-            const input = e.target;
-            const file = input.files[0];
-            const contenedor = input.closest('.archivo-imagen');
-
-            // Eliminar preview anterior si existe
-            let oldPreview = contenedor.querySelector('.img-preview');
-            if (oldPreview) oldPreview.remove();
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'img-preview';
-                    // Nota: Estilos ahora estarán en CSS
-                    img.classList.add('imagen-previsualizada');
-                    contenedor.appendChild(img);
+    // Manejo de botones con acciones específicas (para evitar onclick en HTML)
+    document.addEventListener("click", e => {
+        // Botón "Siguiente" o "Guardar" que cambia el input 'stay'
+        const btnStay = e.target.closest('[data-set-stay]');
+        if (btnStay) {
+            const container = btnStay.closest('.fase');
+            if (container) {
+                const inputStay = container.querySelector('input[name="stay"]');
+                if (inputStay) {
+                    inputStay.value = btnStay.dataset.setStay;
                 }
-                reader.readAsDataURL(file);
+            }
+        }
+
+        // Botón "Volver" (navegación entre pasos)
+        const btnVolver = e.target.closest('[data-volver-paso]');
+        if (btnVolver) {
+            const pasoDestino = btnVolver.dataset.volverPaso;
+            const btnPaso = document.querySelector(`.paso[data-paso="${pasoDestino}"]`);
+            if (btnPaso) btnPaso.click();
+        }
+
+        // Trigger de input file oculto
+        const btnSubir = e.target.closest('[data-trigger-upload]');
+        if (btnSubir) {
+            const targetId = btnSubir.dataset.triggerUpload;
+            const input = document.getElementById(targetId);
+            if (input) input.click();
+        }
+
+        // Botón de borrar imagen (el que antes era onclick="borrarImagen...")
+        const btnBorrar = e.target.closest('[data-borrar-imagen-url]');
+        if (btnBorrar) {
+            window.borrarImagen(e, btnBorrar.dataset.borrarImagenUrl);
+        }
+    });
+
+    // Previsualización y gestión de subida de imágenes (Antes en upload-imagenes.blade.php)
+    document.addEventListener('change', (e) => {
+        if (e.target.matches('.input-previsualizable')) {
+            const input = e.target;
+            const { fase, zoom, nameDesc } = input.dataset;
+            const containerId = `container-${fase}-${zoom}`;
+            const container = document.getElementById(containerId);
+
+            if (input.files && input.files.length > 0 && container) {
+                const loteId = 'lote-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+
+                // Generar previews
+                Array.from(input.files).forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function (ev) {
+                        const div = document.createElement('div');
+                        div.className = 'nueva-imagen-fila';
+                        div.dataset.lote = loteId;
+                        div._inputSource = input; // Vinculamos para poder borrar el input luego
+
+                        div.innerHTML = `
+                            <div class="preview-thumb">
+                                <img src="${ev.target.result}" title="${file.name}">
+                            </div>
+                            <div class="preview-inputs">
+                                <span class="badge-nueva">NUEVA</span>
+                                <input type="text" 
+                                       name="${nameDesc}" 
+                                       placeholder="Descripción..." 
+                                       class="control-campo control-sm">
+                                <span class="nombre-archivo">${file.name}</span>
+                            </div>
+                            <button type="button" class="boton-icono btn-eliminar-lote" title="Eliminar imagen (y su lote de subida)">
+                                ✕
+                            </button>
+                        `;
+                        container.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                });
+
+                // ROTACIÓN DE INPUTS (Para permitir multiselección sucesiva)
+                const newInput = input.cloneNode(true);
+                newInput.value = '';
+
+                input.removeAttribute('id');
+                input.style.display = 'none';
+                input.classList.remove('input-previsualizable'); // Evitar que el viejo re-dispare
+                input.dataset.lote = loteId;
+
+                input.parentNode.insertBefore(newInput, input.nextSibling);
+                hayCambiosSinGuardar = true;
             }
         }
     });
 
-    // Confirmación al finalizar informe
-    const btnFinalizar = document.querySelector('button[onclick*="stayFase4"][onclick*="0"]');
+    // Delegación para eliminar lotes de imágenes nuevas
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-eliminar-lote');
+        if (btn) {
+            const fila = btn.closest('.nueva-imagen-fila');
+            const loteId = fila?.dataset.lote;
+            const input = fila?._inputSource;
+
+            if (confirm('¿Eliminar esta imagen? (Si subiste varias a la vez se eliminarán todas las de ese grupo)')) {
+                // Borrar visualmente todas las del lote
+                document.querySelectorAll(`.nueva-imagen-fila[data-lote="${loteId}"]`).forEach(el => el.remove());
+                // Borrar el input oculto asociado
+                if (input) input.remove();
+                hayCambiosSinGuardar = true;
+            }
+        }
+    });
+
+    // Confirmación al finalizar informe (Actualizado para no depender de onclick)
+    const btnFinalizar = document.querySelector('.btn-finalizar-informe');
     if (btnFinalizar) {
         btnFinalizar.addEventListener('click', async (e) => {
+            const form = btnFinalizar.closest('form');
+            if (!form) return;
+
             e.preventDefault();
-            document.getElementById('stayFase4').value = '0';
+
+            // Validar si es fase 4
+            if (typeof window.validarFase4 === 'function') {
+                if (!window.validarFase4()) return;
+            }
+
+            const inputStay = form.querySelector('input[name="stay"]');
+            if (inputStay) inputStay.value = '0';
 
             const confirmado = await pedirConfirmacion(
                 '¿Finalizar informe?',
@@ -179,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             if (confirmado) {
-                btnFinalizar.closest('form').submit();
+                form.submit();
             }
         });
     }
@@ -188,8 +283,8 @@ document.addEventListener("DOMContentLoaded", () => {
     cambiarAFase(config.faseInicial);
 });
 
-// Función global para borrar imágenes sin recargar forms
-window.borrarImagen = async function (e, url) {
+// Función global para borrar imágenes (forma tradicional con recarga)
+window.borrarImagen = function (e, url) {
     if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -197,40 +292,29 @@ window.borrarImagen = async function (e, url) {
 
     if (!confirm('¿Seguro que quieres borrar esta imagen permanentemente?')) return;
 
-    try {
-        const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-        const token = tokenMeta ? tokenMeta.content : '';
-        const respuesta = await fetch(url, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': token,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        });
+    // Crear un formulario dinámico para realizar la petición DELETE
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.style.display = 'none';
 
-        if (respuesta.ok) {
-            const btn = e.target.closest('button');
-            if (btn) {
-                // Actualizado a .imagen-card (nuevo componente unificado)
-                const item = btn.closest('.imagen-card');
-                if (item) {
-                    item.style.transition = 'opacity 0.3s, transform 0.3s';
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.9)';
-                    setTimeout(() => item.remove(), 300);
-                } else {
-                    window.location.reload();
-                }
-            } else {
-                window.location.reload();
-            }
-        } else {
-            console.error('Error del servidor', respuesta);
-            alert('No se pudo eliminar la imagen. Inténtalo de nuevo.');
-        }
-    } catch (error) {
-        console.error('Error de red:', error);
-        alert('Error de conexión al intentar borrar.');
+    // Token CSRF
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    if (csrfToken) {
+        const inputCsrf = document.createElement('input');
+        inputCsrf.type = 'hidden';
+        inputCsrf.name = '_token';
+        inputCsrf.value = csrfToken;
+        form.appendChild(inputCsrf);
     }
+
+    // Método spoofing para DELETE
+    const inputMethod = document.createElement('input');
+    inputMethod.type = 'hidden';
+    inputMethod.name = '_method';
+    inputMethod.value = 'DELETE';
+    form.appendChild(inputMethod);
+
+    document.body.appendChild(form);
+    form.submit();
 };
