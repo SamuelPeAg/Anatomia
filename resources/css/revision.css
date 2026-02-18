@@ -199,51 +199,65 @@
     align-items: flex-start;
 }
 
+/* Botón Validar (dentro de la celda de Estado) */
 .btn-validar-mini {
-    display: inline-flex;
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex !important;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
-    padding: 0.3rem 0.6rem;
-    background: #EEF2FF;
-    color: #4338CA;
-    border: 1px solid #C7D2FE;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    padding: 4px 10px !important;
+    background: #EEF2FF !important;
+    color: #4338CA !important;
+    border: 1px solid #C7D2FE !important;
+    border-radius: 6px !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
     cursor: pointer;
     transition: all 0.2s ease;
+    margin-top: 4px;
+    height: auto;
+    line-height: 1;
 }
 
 .btn-validar-mini:hover {
-    background: #4338CA;
-    color: white;
+    background: #4338CA !important;
+    color: white !important;
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(67, 56, 202, 0.2);
 }
 
 /* Layout de Acciones Horizontal */
 .acciones-celda {
-    width: 100px;
+    width: 120px !important;
     text-align: right;
+    white-space: nowrap;
 }
 
 .acciones-horizontal {
-    display: flex;
-    gap: 0.5rem;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
     justify-content: flex-end;
+    align-items: center;
 }
 
 .btn-icon {
-    display: flex;
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid transparent;
-    color: #64748b;
-    background: #f8fafc;
+    border: 1px solid #E2E8F0 !important;
+    color: #64748b !important;
+    background: #f8fafc !important;
+    cursor: pointer;
+    padding: 0 !important;
 }
 
 .btn-icon:hover {
@@ -252,26 +266,40 @@
 }
 
 .btn-icon.btn-edit:hover {
-    background: #EFF6FF;
-    color: #2563EB;
-    border-color: #DBEAFE;
+    background: #EFF6FF !important;
+    color: #2563EB !important;
+    border-color: #DBEAFE !important;
 }
 
 .btn-icon.btn-view:hover {
-    background: #F8FAFC;
-    color: #334155;
-    border-color: #E2E8F0;
+    background: #F8FAFC !important;
+    color: #334155 !important;
+    border-color: #E2E8F0 !important;
 }
 
 .btn-icon.btn-delete:hover {
-    background: #FEF2F2;
-    color: #DC2626;
-    border-color: #FECACA;
+    background: #FEF2F2 !important;
+    color: #DC2626 !important;
+    border-color: #FECACA !important;
+}
+
+.btn-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+}
+
+.btn-validar-mini svg {
+    display: block;
+    width: 14px;
+    height: 14px;
 }
 
 .inline-form {
-    display: inline-block;
-    margin: 0;
+    display: inline-flex !important;
+    vertical-align: middle;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 
