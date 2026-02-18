@@ -47,9 +47,9 @@ class DatabaseSeeder extends Seeder
         );
 
         // 1) TIPOS FIJOS (catalogo)
-        TipoMuestra::query()->delete();
+        Tipomuestra::query()->delete();
 
-        TipoMuestra::insert([
+        Tipomuestra::insert([
             ['nombre'=>'Biopsia',               'prefijo'=>'B',   'contador_actual'=>0, 'requiere_organo'=>1, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
             ['nombre'=>'Biopsia veterinaria',   'prefijo'=>'BV',  'contador_actual'=>0, 'requiere_organo'=>1, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
             ['nombre'=>'Cavidad bucal',         'prefijo'=>'CB',  'contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
