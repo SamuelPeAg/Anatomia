@@ -135,8 +135,8 @@
                                                     <form action="{{ route('informes.revisar', $informe) }}" method="POST" style="display:inline;" class="form-revisar">
                                                         @csrf @method('PATCH')
                                                         <button type="submit" class="btn-action btn-review-confirm">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                                            <span>Revisar</span>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                                            <span>Sellar Informe</span>
                                                         </button>
                                                     </form>
                                                 @endif
@@ -168,19 +168,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Confirmación para REVISAR
+            // Confirmación para SELLAR (antes Revisar)
             document.querySelectorAll('.form-revisar').forEach(form => {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     Swal.fire({
-                        title: '¿Marcar como REVISADO?',
-                        text: "Esto bloqueará cualquier edición futura del informe permanentemente.",
+                        title: '¿Sellar informe permanentemente?',
+                        text: "Una vez sellado, el informe quedará bloqueado y no podrá ser modificado bajo ninguna circunstancia.",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#16A34A',
                         cancelButtonColor: '#94a3b8',
-                        confirmButtonText: 'Sí, revisar y bloquear',
-                        cancelButtonText: 'Cancelar'
+                        confirmButtonText: 'Sí, sellar y finalizar',
+                        cancelButtonText: 'Volver'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             form.submit();
@@ -194,8 +194,8 @@
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     Swal.fire({
-                        title: '¿Estás seguro de borrar?',
-                        text: "Esta acción es irreversible y eliminará también todas las imágenes asociadas.",
+                        title: '¿Eliminar informe completamente?',
+                        text: "Esta acción es irreversible: se perderán todos los datos y las imágenes subidas.",
                         icon: 'error',
                         showCancelButton: true,
                         confirmButtonColor: '#DC2626',
