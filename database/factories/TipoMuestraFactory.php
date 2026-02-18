@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\TipoMuestra;
+use App\Models\Tipomuestra;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class TipoMuestraFactory extends Factory
+class TipomuestraFactory extends Factory
 {
-    protected $model = TipoMuestra::class;
+    protected $model = Tipomuestra::class;
 
     public function definition(): array
     {

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\TipoMuestra;
+use App\Models\Tipomuestra;
 use App\Models\Expediente;
 use App\Models\Informe;
 use App\Models\Imagen;
@@ -79,7 +79,7 @@ class DatabaseSeeder extends Seeder
                 
                 // Crear 2 informes por paciente
                 for ($i = 1; $i <= 2; $i++) {
-                    $tipo = TipoMuestra::inRandomOrder()->first();
+                    $tipo = Tipomuestra::inRandomOrder()->first();
                     $codigo = $tipo->prefijo . str_pad($tipo->contador_actual + 1, 5, '0', STR_PAD_LEFT);
                     
                     $informe = Informe::create([

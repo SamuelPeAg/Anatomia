@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Expediente;
 use App\Models\Imagen;
 use App\Models\Informe;
-use App\Models\TipoMuestra;
+use App\Models\Tipomuestra;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -149,7 +149,7 @@ class InformeController extends Controller
             'numeroFase' => 1,
             'fasesCompletas' => [1 => false, 2 => false, 3 => false, 4 => false],
             'imagenesMicroExtras' => collect([]),
-            'tiposMuestra' => TipoMuestra::all()
+            'tiposMuestra' => Tipomuestra::all()
         ]);
     }
 
@@ -166,7 +166,7 @@ class InformeController extends Controller
             'paciente_correo' => 'nullable|email|max:255',
         ]);
 
-        $tipo = TipoMuestra::where('prefijo', $request->tipo_muestra)->firstOrFail();
+        $tipo = Tipomuestra::where('prefijo', $request->tipo_muestra)->firstOrFail();
         $expedienteId = $this->obtenerExpedienteId($request);
 
         $informe = Informe::create([
@@ -214,7 +214,7 @@ class InformeController extends Controller
                 3 => !empty($informe->tincion_tipo),
                 4 => !empty($informe->citodiagnostico)
             ],
-            'tiposMuestra' => TipoMuestra::all()
+            'tiposMuestra' => Tipomuestra::all()
         ]);
     }
 

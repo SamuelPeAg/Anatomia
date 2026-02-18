@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TipoMuestra;
+use App\Models\Tipomuestra;
 use App\Models\Informe;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ class TipoMuestraController extends Controller
 {
     public function siguienteCodigo(string $prefijo)
     {
-        $tipo = TipoMuestra::where('prefijo', $prefijo)->firstOrFail();
+        $tipo = Tipomuestra::where('prefijo', $prefijo)->firstOrFail();
         
         $ultimo = Informe::where('tipo_id', $tipo->id)
             ->where('anio', now()->year)

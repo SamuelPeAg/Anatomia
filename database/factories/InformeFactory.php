@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Informe;
-use App\Models\TipoMuestra;
+use App\Models\Tipomuestra;
 use App\Models\Expediente;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,8 +14,8 @@ class InformeFactory extends Factory
     public function definition(): array
     {
         // Asegura que exista un tipo
-        $tipo = TipoMuestra::inRandomOrder()->first()
-            ?? TipoMuestra::factory()->create();
+        $tipo = Tipomuestra::inRandomOrder()->first()
+            ?? Tipomuestra::factory()->create();
 
         // Expediente opcional (si no quieres expediente aún, ponlo siempre null)
         $expedienteId = $this->faker->boolean(60)
