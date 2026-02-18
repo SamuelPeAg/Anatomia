@@ -427,10 +427,17 @@ class InformeController extends Controller
      */
     private function guardarImagen($file, Informe $informe, string $fase, ?string $descripcion, ?string $zoom, bool $obligatoria)
     {
-        if (!$file || !$file->isValid()) return;
+        if (!$file || !$file->isValid()) {
+            \Log::warning("Archivo de imagen no válido para informe {$informe->id} en fase $fase");
+            return;
+        }
 
         try {
             $path = $file->store("informes/{$informe->id}/{$fase}", 'public');
+
+            if (!$path) {
+                throw new \Exception("El almacenamiento falló y no devolvió una ruta.");
+            }
 
             Imagen::create([
                 'informe_id'  => $informe->id,
@@ -441,8 +448,10 @@ class InformeController extends Controller
                 'obligatoria' => $obligatoria
             ]);
             
+            \Log::info("Imagen guardada correctamente: $path");
+            
         } catch (\Exception $e) {
-            Log::error("Error al guardar imagen de fase $fase: " . $e->getMessage());
+            \Log::error("ERROR CRÍTICO EN PRODUCCIÓN AL GUARDAR IMAGEN: " . $e->getMessage());
         }
     }
 }
