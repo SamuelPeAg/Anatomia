@@ -45,6 +45,46 @@
             cursor: pointer !important;
             margin-top: 5px !important;
         }
+
+        /* Arreglo para paginación */
+        .pagination-premium {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            background: white !important;
+            padding: 0.5rem !important;
+            border-radius: 16px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+            border: 1px solid #e2e8f0 !important;
+            margin-top: 2rem !important;
+        }
+        .pagination-premium .page-numbers {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 0.25rem !important;
+        }
+        .pagination-premium .page-link {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 36px !important;
+            height: 36px !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            color: #1e293b !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            border: 1px solid transparent !important;
+        }
+        .pagination-premium .page-link.active {
+            background: #0234AB !important;
+            color: white !important;
+        }
+        .pagination-premium a.page-link:hover {
+            background: #f1f5f9 !important;
+        }
     </style>
 </head>
 <body>
