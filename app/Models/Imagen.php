@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Imagen extends Model
 {
@@ -23,5 +24,17 @@ class Imagen extends Model
     public function informe()
     {
         return $this->belongsTo(Informe::class);
+    }
+
+    /**
+     * Genera la URL de la imagen de forma segura.
+     * Si no existe el enlace simbólico en producción, esto ayuda a depurar.
+     */
+    public function getUrlAttribute()
+    {
+        if (!$this->ruta) return asset('img/placeholder.png');
+        
+        // En Plesk/Producción, esto asegura que usemos la URL correcta del disco public
+        return \Storage::disk('public')->url($this->ruta);
     }
 }

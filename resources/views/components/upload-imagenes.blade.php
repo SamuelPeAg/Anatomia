@@ -16,7 +16,7 @@
                 @foreach($imagenes as $img)
                     <div class="imagen-card" id="imagen-{{ $img->id }}">
                         <div class="imagen-card-thumb">
-                            <img src="{{ asset('storage/' . $img->ruta) }}" alt="Imagen {{ $fase }}" loading="lazy">
+                            <img src="{{ $img->url }}" alt="Imagen {{ $fase }}" loading="lazy">
                         </div>
                         <div class="imagen-card-info">
                             <p class="imagen-desc">{{ $img->descripcion ?: 'Sin descripción' }}</p>
