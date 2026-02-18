@@ -77,11 +77,26 @@ class InformeController extends Controller
                   });
             });
         } 
-        // 2. Si NO hay búsqueda, aplicamos filtros de fecha (a menos que se pida "mostrar_todos")
+        // 2. Si NO hay búsqueda, aplicamos otros filtros
         elseif (!$request->has('mostrar_todos')) {
+            // Filtro por Fase
+            if ($request->filled('fase')) {
+                $fase = $request->fase;
+                if ($fase == 1) {
+                    $query->whereNull('recepcion_observaciones');
+                } elseif ($fase == 2) {
+                    $query->whereNotNull('recepcion_observaciones')->whereNull('procesamiento_tipo');
+                } elseif ($fase == 3) {
+                    $query->whereNotNull('procesamiento_tipo')->whereNull('tincion_tipo');
+                } elseif ($fase == 4) {
+                    $query->whereNotNull('tincion_tipo')->whereNull('citodiagnostico');
+                }
+            }
+
             if ($request->filled('fecha')) {
                 $query->whereDate('created_at', $request->fecha);
-            } else {
+            } elseif (!$request->filled('fase')) {
+                // Solo por defecto "hoy" si no hay fase ni búsqueda
                 $query->whereDate('created_at', now());
             }
         }
