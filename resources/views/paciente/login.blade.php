@@ -4,33 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso Pacientes — Anatomía MEDAC</title>
-    @vite(['resources/css/principal.css', 'resources/css/alerts.css', 'resources/css/paciente-login.css'])
+    @vite(['resources/css/principal.css', 'resources/css/alerts.css', 'resources/css/paciente-login.css', 'resources/js/app-alerts.js'])
 
 </head>
-<body class="login-body">
+<body class="login-body" 
+      data-error="{{ ($errors->any() || session('error')) ? implode('\n', $errors->all()) . session('error') : '' }}" 
+      data-error-title="Acceso Denegado">
     <div class="login-card">
         <header class="login-header">
             <h1>Acceso Pacientes</h1>
             <p>Consulte sus resultados médicos de forma segura.</p>
         </header>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @if($errors->any() || session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                let msg = '';
-                @foreach($errors->all() as $error) msg += '• {{ $error }}\n'; @endforeach
-                @if(session('error')) msg += '{{ session("error") }}'; @endif
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Acceso Denegado',
-                    text: msg,
-                    confirmButtonColor: '#0234AB'
-                });
-            });
-        </script>
-    @endif
 
         <form action="{{ route('paciente.login') }}" method="POST" class="login-form">
             @csrf

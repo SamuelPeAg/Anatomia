@@ -10,13 +10,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Estilos y Scripts con Vite -->
-    @vite(['resources/css/principal.css', 'resources/css/login.css'])
+    @vite(['resources/css/principal.css', 'resources/css/login.css', 'resources/js/app-alerts.js'])
 
     <!-- Iconos Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
-<body>
+<body data-error="{{ $errors->has('login') ? $errors->first('login') : '' }}" data-error-title="¡Error de acceso!">
     <!-- Header Integrado -->
     <header class="main-header">
         <a href="{{ url('/') }}" class="brand">
@@ -60,19 +60,6 @@
                 <button class="btn-login mt-3">INICIAR SESIÓN</button>
             </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            @if ($errors->has('login'))
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Error de acceso!',
-                    text: "{{ $errors->first('login') }}",
-                    confirmButtonColor: '#0234AB'
-                });
-            @endif
-        });
-    </script>
 
             <div class="login-footer">
                 @if (Route::has('register'))

@@ -896,3 +896,19 @@ input::-webkit-calendar-picker-indicator {
 .modo-lectura .acciones-derecha { display: none !important; }
 .modo-lectura .acciones-izquierda { pointer-events: all; }
 
+
+/* Extra styles from Blade */
+.swal2-toast-left { margin-left: 1rem !important; }
+.pagina { padding-top: 1rem !important; margin-top: 0 !important; }
+.contenedor { margin-top: 0 !important; padding-top: 0 !important; }
+.cabecera-pagina { margin-bottom: 1.5rem !important; }
+.paso-completado { background-color: #10b981 !important; color: white !important; border-color: #059669 !important; }
+.paso-completado .paso-numero { background-color: rgba(255, 255, 255, 0.3) !important; color: white !important; }
+.paso-completado:hover { background-color: #059669 !important; }
+.paso-completado .paso-texto, .paso-activo .paso-texto { display: inline-block !important; color: white !important; margin-left: 8px; font-weight: 600; }
+.oculto { display: none !important; }
+.autocomplete-items { position: absolute; border: 1px solid #d4d4d4; border-bottom: none; border-top: none; z-index: 99; top: 100%; left: 0; right: 0; background-color: #fff; list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; border-radius: 0 0 5px 5px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+.autocomplete-items li { padding: 10px; cursor: pointer; border-bottom: 1px solid #d4d4d4; font-size: 0.9rem; }
+.autocomplete-items li:hover { background-color: #f1f5f9; }
+.autocomplete-items li strong { color: #0234AB; }
+

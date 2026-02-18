@@ -10,13 +10,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Estilos y Scripts con Vite -->
-    @vite(['resources/css/principal.css', 'resources/css/login.css'])
+    @vite(['resources/css/principal.css', 'resources/css/login.css', 'resources/js/app-alerts.js'])
 
     <!-- Iconos Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
-<body>
+<body data-error="{{ $errors->any() ? implode('\n', $errors->all()) : '' }}" data-error-title="Error en el registro">
     <!-- Header Integrado -->
     <header class="main-header">
         <a href="{{ url('/') }}" class="brand">
@@ -100,27 +100,6 @@
         </div>
     </footer>
 
-    <!-- Scripts de Alerta -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            @if ($errors->any())
-                let errors = [];
-                @foreach ($errors->all() as $error)
-                    errors.push("{{ $error }}");
-                @endforeach
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error en el registro',
-                    html: '<div style="text-align: left; padding: 0 10px;">' + 
-                          errors.map(e => '• ' + e).join('<br>') + 
-                          '</div>',
-                    confirmButtonColor: '#0234AB'
-                });
-            @endif
-        });
-    </script>
 </body>
 
 </html>

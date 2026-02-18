@@ -8,100 +8,8 @@
     <!-- Estilos y Scripts con Vite -->
     @vite(['resources/css/principal.css', 'resources/css/revision.css', 'resources/css/alerts.css'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        .swal2-toast-left { margin-left: 1rem !important; }
-        
-        /* Arreglo de emergencia para botones amontonados */
-        .acciones-horizontal {
-            display: flex !important;
-            flex-direction: row !important;
-            gap: 10px !important;
-            align-items: center !important;
-            justify-content: flex-end !important;
-        }
-        .btn-icon {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 32px !important;
-            height: 32px !important;
-            border-radius: 8px !important;
-            background: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
-            color: #64748b !important;
-            padding: 0 !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
-        }
-        .btn-edit:hover {
-            background: #EFF6FF !important;
-            color: #0234AB !important;
-            border-color: #BFDBFE !important;
-            transform: translateY(-2px) !important;
-        }
-        .btn-delete:hover {
-            background: #FEF2F2 !important;
-            color: #DC2626 !important;
-            border-color: #FECACA !important;
-            transform: translateY(-2px) !important;
-        }
-        .btn-validar-mini {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 5px !important;
-            background: #eef2ff !important;
-            color: #4338ca !important;
-            border: 1px solid #c7d2fe !important;
-            padding: 4px 8px !important;
-            font-size: 11px !important;
-            font-weight: bold !important;
-            border-radius: 4px !important;
-            cursor: pointer !important;
-            margin-top: 5px !important;
-        }
-
-        /* Arreglo para paginación */
-        .pagination-premium {
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 0.5rem !important;
-            background: white !important;
-            padding: 0.5rem !important;
-            border-radius: 16px !important;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
-            border: 1px solid #e2e8f0 !important;
-            margin-top: 2rem !important;
-        }
-        .pagination-premium .page-numbers {
-            display: flex !important;
-            flex-direction: row !important;
-            gap: 0.25rem !important;
-        }
-        .pagination-premium .page-link {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            min-width: 36px !important;
-            height: 36px !important;
-            border-radius: 8px !important;
-            text-decoration: none !important;
-            color: #1e293b !important;
-            font-weight: 600 !important;
-            font-size: 0.85rem !important;
-            border: 1px solid transparent !important;
-        }
-        .pagination-premium .page-link.active {
-            background: #0234AB !important;
-            color: white !important;
-        }
-        .pagination-premium a.page-link:hover {
-            background: #f1f5f9 !important;
-        }
-    </style>
 </head>
-<body>
+<body data-success="{{ session('success') }}">
     <x-header />
 
     <main>
@@ -111,24 +19,6 @@
                 <a href="{{ route('nuevo informe') }}" class="btn-premium">Nuevo Informe</a>
             </div>
 
-            @if(session('success'))
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-start',
-                            showConfirmButton: false,
-                            timer: 5000,
-                            timerProgressBar: true,
-                            customClass: { container: 'swal2-toast-left' }
-                        });
-                        Toast.fire({
-                            icon: 'success',
-                            title: "{{ session('success') }}"
-                        });
-                    });
-                </script>
-            @endif
 
             <!-- Barra de Filtros -->
             <div class="filters-bar">
@@ -254,50 +144,6 @@
 
     <x-footer />
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Confirmación para VALIDAR
-            document.querySelectorAll('.form-revisar').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: '¿Validar este informe?',
-                        text: "Una vez validado, el informe quedará cerrado y no podrá ser editado.",
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#0234AB',
-                        cancelButtonColor: '#94a3b8',
-                        confirmButtonText: 'Sí, validar ahora',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
-                });
-            });
-
-            // Confirmación para BORRAR
-            document.querySelectorAll('.form-borrar').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: '¿Eliminar informe?',
-                        text: "Esta acción no se puede deshacer.",
-                        icon: 'error',
-                        showCancelButton: true,
-                        confirmButtonColor: '#DC2626',
-                        cancelButtonColor: '#94a3b8',
-                        confirmButtonText: 'Eliminar',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
-                });
-            });
-        });
-    </script>
+    @vite(['resources/js/app-alerts.js', 'resources/js/revision.js'])
 </body>
 </html>
