@@ -22,22 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const botonesPasos = document.querySelectorAll(".paso");
     botonesPasos.forEach(btn => {
         btn.addEventListener("click", (e) => {
-            if (hayCambiosSinGuardar) {
-                const confirmar = confirm(
-                    "Tienes cambios sin guardar en esta fase.\n\n" +
-                    "Si cambias de pestaña ahora, los archivos seleccionados y los textos escritos se PERDERÁN.\n\n" +
-                    "¿Estás seguro de que quieres salir sin guardar?"
-                );
-
-                if (!confirmar) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return;
-                }
-                // Si acepta salir, reseteamos la bandera para que no pregunte otra vez inmediatamente
-                hayCambiosSinGuardar = false;
-            }
-
             const n = parseInt(btn.dataset.paso);
             cambiarAFase(n);
         });
@@ -50,13 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Advertencia al cerrar/recargar la página
-    window.addEventListener('beforeunload', (e) => {
-        if (hayCambiosSinGuardar) {
-            e.preventDefault();
-            e.returnValue = '';
-        }
-    });
 
     // Autogeneración de Código ID según tipo de muestra
     const selMuestra = document.getElementById("tipo_muestra");
@@ -91,12 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (res.ok) {
                     const data = await res.json();
                     inpCodigo.value = data.codigo;
-
-                    // ACTUALIZACIÓN: Reflejar el código en el header de la página
-                    const displayValor = document.getElementById('display-codigo-valor');
-                    const displayCont = document.getElementById('display-codigo-container');
-                    if (displayValor) displayValor.textContent = data.codigo;
-                    if (displayCont) displayCont.classList.remove('oculto');
+                    // También disparamos evento change por si acaso hay validación
+                    inpCodigo.dispatchEvent(new Event('change'));
 
                     // También disparamos evento change por si acaso hay validación
                     inpCodigo.dispatchEvent(new Event('change'));
@@ -181,6 +154,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const container = document.getElementById(containerId);
 
             if (input.files && input.files.length > 0 && container) {
+                if (input.files.length > 10) {
+                    mostrarToast("Máximo 10 imágenes por selección.", 'warning');
+                    input.value = ''; // Limpiar
+                    return;
+                }
                 const loteId = 'lote-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 
                 // Generar previews
@@ -249,30 +227,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // Confirmación al finalizar informe (Actualizado para no depender de onclick)
     const btnFinalizar = document.querySelector('.btn-finalizar-informe');
     if (btnFinalizar) {
-        btnFinalizar.addEventListener('click', async (e) => {
+        btnFinalizar.addEventListener('click', (e) => {
             const form = btnFinalizar.closest('form');
             if (!form) return;
 
-            e.preventDefault();
-
             // Validar si es fase 4
             if (typeof window.validarFase4 === 'function') {
-                if (!window.validarFase4()) return;
+                if (!window.validarFase4()) {
+                    e.preventDefault();
+                    return;
+                }
             }
 
-            const confirmado = await pedirConfirmacion(
-                '¿Finalizar informe?',
-                'Revisa que todos los datos e imágenes sean correctos. Una vez finalizado pasará a revisión.'
-            );
-
-            if (confirmado) {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'stay';
-                hiddenInput.value = '0';
-                form.appendChild(hiddenInput);
-                form.submit();
-            }
+            // Ya no pedimos confirmación, enviamos directamente
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'stay';
+            hiddenInput.value = '0';
+            form.appendChild(hiddenInput);
+            // El submit ocurrirá de forma natural tras el click si no prevenimos el default
         });
     }
 

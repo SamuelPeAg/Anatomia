@@ -213,6 +213,49 @@
     border-color: var(--secondary);
 }
 
+.btn-view {
+    background: #F1F5F9;
+    color: #475569;
+    border-color: #E2E8F0;
+}
+
+.btn-view:hover {
+    background: #475569;
+    color: white;
+    border-color: #475569;
+}
+
+.btn-review-confirm {
+    background: #F0FDF4;
+    color: #16A34A;
+    border-color: #BBF7D0;
+    cursor: pointer;
+}
+
+.btn-review-confirm:hover {
+    background: #16A34A;
+    color: white;
+}
+
+.btn-delete-report {
+    background: #FEF2F2;
+    color: #DC2626;
+    border-color: #FECACA;
+    cursor: pointer;
+}
+
+.btn-delete-report:hover {
+    background: #DC2626;
+    color: white;
+}
+
+.acciones-layout {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
 .empty-state {
     padding: 6rem 2rem;
     text-align: center;
@@ -222,4 +265,64 @@
 .empty-state p {
     font-size: 1.1rem;
     margin-bottom: 1.5rem;
+}
+
+.pagination-wrapper {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 2rem;
+}
+
+.pagination-premium {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+}
+
+.pagination-premium .page-numbers {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.pagination-premium .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 0.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.pagination-premium a.page-link:hover {
+    background: #F1F5F9;
+    color: var(--secondary);
+}
+
+.pagination-premium .page-link.active {
+    background: var(--secondary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(2, 52, 171, 0.2);
+}
+
+.pagination-premium .page-link.disabled {
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.pagination-premium .page-link.dots {
+    color: #94a3b8;
+    cursor: default;
 }

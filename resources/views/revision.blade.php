@@ -7,6 +7,10 @@
 
     <!-- Estilos y Scripts con Vite -->
     @vite(['resources/css/principal.css', 'resources/css/revision.css', 'resources/css/alerts.css'])
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .swal2-toast-left { margin-left: 1rem !important; }
+    </style>
 </head>
 <body>
     <x-header />
@@ -19,20 +23,44 @@
             </div>
 
             @if(session('success'))
-                <div class="alert alert-success mt-2 mb-4">
-                    {{ session('success') }}
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-start',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                            customClass: { container: 'swal2-toast-left' }
+                        });
+                        Toast.fire({
+                            icon: 'success',
+                            title: "{{ session('success') }}"
+                        });
+                    });
+                </script>
             @endif
 
             <!-- Barra de Filtros -->
             <div class="filters-bar">
                 <form action="{{ route('revision') }}" method="GET" class="filters-form">
-                    <label for="fecha" class="filters-label">Filtrar por fecha:</label>
-                    <input type="date" name="fecha" id="fecha" 
-                           value="{{ request('fecha', \Carbon\Carbon::now()->format('Y-m-d')) }}" 
-                           class="filters-input">
+                    <div class="filter-group">
+                        <label for="fecha" class="filters-label">Fecha:</label>
+                        <input type="date" name="fecha" id="fecha" 
+                               value="{{ request('fecha', \Carbon\Carbon::now()->format('Y-m-d')) }}" 
+                               class="filters-input">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="search" class="filters-label">Buscador:</label>
+                        <input type="text" name="search" id="search" 
+                               value="{{ request('search') }}" 
+                               placeholder="Nombre, ID o Código..."
+                               class="filters-input">
+                    </div>
+
                     <button type="submit" class="filters-btn">
-                        Ver día
+                        Filtrar
                     </button>
                 </form>
 
@@ -63,6 +91,7 @@
                         <thead>
                             <tr>
                                 <th>Código</th>
+                                <th>Paciente</th>
                                 <th>Tipo</th>
                                 <th>Fecha</th>
                                 <th>Estado</th>
@@ -73,6 +102,10 @@
                             @foreach($informes as $informe)
                                 <tr>
                                     <td><strong>{{ $informe->codigo_identificador }}</strong></td>
+                                    <td>
+                                        <div style="font-weight: 600;">{{ $informe->expediente->nombre ?? 'Anónimo' }}</div>
+                                        <div style="font-size: 0.8rem; color: #64748b;">ID: {{ $informe->expediente->id ?? 'N/A' }}</div>
+                                    </td>
                                     <td>{{ $informe->tipo->nombre ?? 'N/A' }}</td>
                                     <td>{{ $informe->created_at->format('d/m/Y') }}</td>
                                     <td>
@@ -84,10 +117,39 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('informes.edit', $informe) }}?fase={{ $informe->fase_n }}" class="btn-action btn-edit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                                            <span>Editar Fases</span>
-                                        </a>
+                                        <div class="acciones-layout">
+                                            @if($informe->estado !== 'revisado')
+                                                <a href="{{ route('informes.edit', $informe) }}?fase={{ $informe->fase_n }}" class="btn-action btn-edit">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                    <span>Editar Fases</span>
+                                                </a>
+                                            @else
+                                                <a href="{{ route('informes.edit', $informe) }}?fase=1" class="btn-action btn-view">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                    <span>Ver Informe</span>
+                                                </a>
+                                            @endif
+
+                                            @if(auth()->user()->isAdmin())
+                                                @if($informe->estado === 'completo')
+                                                    <form action="{{ route('informes.revisar', $informe) }}" method="POST" style="display:inline;" class="form-revisar">
+                                                        @csrf @method('PATCH')
+                                                        <button type="submit" class="btn-action btn-review-confirm">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                            <span>Revisar</span>
+                                                        </button>
+                                                    </form>
+                                                @endif
+
+                                                <form action="{{ route('informes.destroy', $informe) }}" method="POST" style="display:inline;" class="form-borrar">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="btn-action btn-delete-report">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m5 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                        <span>Borrar</span>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -95,9 +157,59 @@
                     </table>
                 @endif
             </div>
+
+            <div class="pagination-wrapper">
+                {{ $informes->links('vendor.pagination.premium') }}
+            </div>
         </div>
     </main>
 
     <x-footer />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Confirmación para REVISAR
+            document.querySelectorAll('.form-revisar').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: '¿Marcar como REVISADO?',
+                        text: "Esto bloqueará cualquier edición futura del informe permanentemente.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#16A34A',
+                        cancelButtonColor: '#94a3b8',
+                        confirmButtonText: 'Sí, revisar y bloquear',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // Confirmación para BORRAR
+            document.querySelectorAll('.form-borrar').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: '¿Estás seguro de borrar?',
+                        text: "Esta acción es irreversible y eliminará también todas las imágenes asociadas.",
+                        icon: 'error',
+                        showCancelButton: true,
+                        confirmButtonColor: '#DC2626',
+                        cancelButtonColor: '#94a3b8',
+                        confirmButtonText: 'Sí, borrar permanentemente',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

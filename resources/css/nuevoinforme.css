@@ -887,3 +887,12 @@ input::-webkit-calendar-picker-indicator {
     position: relative;
 }
 
+
+.modo-lectura { pointer-events: none; opacity: 0.9; }
+.modo-lectura .acciones, .modo-lectura .acciones-imagenes, .modo-lectura .btn-link-peligro, .modo-lectura .btn-eliminar-lote, .modo-lectura [data-anadir-fila], .modo-lectura [data-eliminar-fila], .modo-lectura .boton-icono { display: none !important; }
+.lock-notice { pointer-events: all; background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; margin-bottom: 20px; padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; font-size: 0.95rem; }
+
+
+.modo-lectura .acciones-derecha { display: none !important; }
+.modo-lectura .acciones-izquierda { pointer-events: all; }
+

@@ -8,7 +8,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $esEdicion ? 'Editar' : 'Nuevo' }} informe — DAVANTE</title>
     @vite(['resources/css/nuevoinforme.css', 'resources/css/principal.css', 'resources/css/alerts.css'])
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        /* Estilo para SweetAlert desde la izquierda */
+        .swal2-toast-left {
+            margin-left: 1rem !important;
+        }
+
         /* Mover el formulario hacia arriba */
         .pagina {
             padding-top: 1rem !important;
@@ -91,27 +97,13 @@
 
             <header class="cabecera-pagina">
                 <div class="cabecera-izquierda">
-                    <h1 class="titulo-pagina">
-                        @if(isset($informe))
-                            Continuar Informe <span class="codigo-referencia">#{{ $informe->codigo_identificador }}</span>
-                        @else
-                            Nuevo Informe
-                        @endif
-                    </h1>
-                    <p class="subtitulo-pagina">
-                        @if(isset($informe))
-                            Completando el registro iniciado el {{ $informe->created_at->format('d/m/Y') }}.
-                        @else
-                            Inicia un nuevo registro secuencial.
-                        @endif
-                    </p>
+                    <h1 class="titulo-pagina">Registro de Informe</h1>
+                    <p class="subtitulo-pagina">Completa todas las fases del proceso citológico.</p>
                 </div>
 
                 <div class="cabecera-derecha">
                     @if(isset($informe))
                         <span class="etiqueta etiqueta-edicion">Modo Edición</span>
-                    @else
-                        <span class="etiqueta etiqueta-aviso">Borrador Nuevo</span>
                     @endif
                 </div>
             </header>
@@ -129,11 +121,30 @@
                     <p class="tarjeta-ayuda">Los campos con <span class="obligatorio">*</span> son obligatorios.</p>
                 </div>
 
-                <div class="tarjeta-cuerpo">
-                    @if(session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
+                <div class="tarjeta-cuerpo {{ (isset($informe) && $informe->estado === 'revisado') ? 'modo-lectura' : '' }}">
+                    @if(isset($informe) && $informe->estado === 'revisado')
+                        <div class="alert alert-info lock-notice">
+                            <strong><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Informe Revisado</strong>: Este informe está bloqueado para ediciones.
                         </div>
+                    @endif
+
+                    @if(session('success'))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'top-start',
+                                    showConfirmButton: false,
+                                    timer: 5000,
+                                    timerProgressBar: true,
+                                    customClass: { container: 'swal2-toast-left' }
+                                });
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: "{{ session('success') }}"
+                                });
+                            });
+                        </script>
                     @endif
 
                     @if($errors->any())

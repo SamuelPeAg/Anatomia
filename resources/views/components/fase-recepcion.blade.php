@@ -36,6 +36,20 @@
         </div>
     </div>
 
+    <div class="campo">
+        <label class="etiqueta-campo" for="observaciones_llegada">
+            Observaciones de la llegada <span class="obligatorio">*</span>
+        </label>
+        <textarea
+            class="control-campo"
+            id="observaciones_llegada"
+            name="observaciones_llegada"
+            rows="4"
+            placeholder="Estado del recipiente, incidencias, cantidad, etc."
+            required
+        >{{ $informe->recepcion_observaciones ?? '' }}</textarea>
+    </div>
+
     <div class="rejilla">
         <div class="campo">
             <label class="etiqueta-campo" for="paciente_nombre">
@@ -76,20 +90,6 @@
             />
             <small class="ayuda-campo">Vínculo de informes al mismo paciente.</small>
         </div>
-    </div>
-
-    <div class="campo">
-        <label class="etiqueta-campo" for="observaciones_llegada">
-            Observaciones de la llegada <span class="obligatorio">*</span>
-        </label>
-        <textarea
-            class="control-campo"
-            id="observaciones_llegada"
-            name="observaciones_llegada"
-            rows="4"
-            placeholder="Estado del recipiente, incidencias, cantidad, etc."
-            required
-        >{{ $informe->recepcion_observaciones ?? '' }}</textarea>
     </div>
 
     <!-- IMÁGENES RECEPCIÓN -->

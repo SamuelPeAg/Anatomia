@@ -168,7 +168,12 @@
             });
 
             if (faltantes.length > 0) {
-                alert('Es obligatorio adjuntar imágenes para los aumentos: ' + faltantes.join(', ') + '. \n\nPor favor, añade al menos una imagen por aumento.');
+                Swal.fire({
+                    title: 'Imágenes faltantes',
+                    text: 'Es obligatorio adjuntar imágenes para los aumentos: ' + faltantes.join(', ') + '.',
+                    icon: 'error',
+                    confirmButtonColor: '#0234AB'
+                });
                 return false;
             }
             return true;

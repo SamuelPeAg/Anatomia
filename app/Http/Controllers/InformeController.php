@@ -62,11 +62,23 @@ class InformeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Informe::with('tipo')->orderBy('created_at', 'desc');
+        $query = Informe::with(['tipo', 'expediente'])->orderBy('created_at', 'desc');
 
         // Lógica de filtrado:
-        // 1. Mostrar todos o filtrar por fecha
-        if (!$request->has('mostrar_todos')) {
+        // 1. Prioridad: Si hay búsqueda (search), mostramos todos los resultados que coincidan
+        // independientemente de la fecha.
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('codigo_identificador', 'like', "%$search%")
+                  ->orWhereHas('expediente', function($qe) use ($search) {
+                      $qe->where('nombre', 'like', "%$search%")
+                         ->orWhere('id', 'like', "%$search%");
+                  });
+            });
+        } 
+        // 2. Si NO hay búsqueda, aplicamos filtros de fecha (a menos que se pida "mostrar_todos")
+        elseif (!$request->has('mostrar_todos')) {
             if ($request->filled('fecha')) {
                 $query->whereDate('created_at', $request->fecha);
             } else {
@@ -74,15 +86,55 @@ class InformeController extends Controller
             }
         }
 
-        $informes = $query->get();
+        $informes = $query->paginate(10)->withQueryString();
 
-        foreach ($informes as $informe) {
+        $informes->getCollection()->transform(function ($informe) {
             $faseInfo = $this->getFaseInfo($informe);
             $informe->siguiente_fase = $faseInfo['nombre'];
             $informe->fase_n = $faseInfo['numero'];
-        }
+            return $informe;
+        });
 
         return view('revision', compact('informes'));
+    }
+
+    /**
+     * Marca un informe como revisado (solo Admin).
+     */
+    public function revisar(Informe $informe)
+    {
+        if (!auth()->user()->isAdmin()) {
+            return back()->with('error', 'No tienes permisos para realizar esta acción.');
+        }
+
+        if ($informe->estado !== 'completo') {
+            return back()->with('error', 'No se puede revisar un informe que no está marcado como COMPLETO (debe finalizarse la Fase 4).');
+        }
+
+        $informe->update(['estado' => 'revisado']);
+
+        return back()->with('success', 'El informe ha sido marcado como REVISADO y bloqueado.');
+    }
+
+    /**
+     * Elimina el informe y sus imágenes (solo Admin).
+     */
+    public function destroy(Informe $informe)
+    {
+        if (!auth()->user()->isAdmin()) {
+            return back()->with('error', 'No tienes permisos para borrar informes.');
+        }
+
+        // Primero borrar imágenes del disco
+        foreach ($informe->imagenes as $img) {
+            if ($img->ruta && Storage::disk('public')->exists($img->ruta)) {
+                Storage::disk('public')->delete($img->ruta);
+            }
+        }
+
+        $informe->delete();
+
+        return redirect()->route('revision')->with('success', 'Informe eliminado permanentemente.');
     }
 
     /**
@@ -171,6 +223,10 @@ class InformeController extends Controller
      */
     public function update(Request $request, Informe $informe)
     {
+        if ($informe->estado === 'revisado') {
+            return back()->with('error', 'Este informe ya ha sido revisado y no puede ser modificado.');
+        }
+
         // Validación estricta para Fase 4 (Microscopio)
         if ($errores = $this->validarRequisitosMicroscopio($request, $informe)) {
             return back()->withErrors($errores)->withInput()->with('error', 'Faltan imágenes obligatorias.');

@@ -39,15 +39,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get("/revision", [InformeController::class, "index"])->name("revision");
     Route::get("/revision/{informe}/editar", [InformeController::class, "edit"])->name("informes.edit");
     Route::put("/informe/{informe}/actualizar", [InformeController::class, "update"])->name("informes.update");
+    Route::patch("/informe/{informe}/revisar", [InformeController::class, "revisar"])->name("informes.revisar");
+    Route::delete("/informe/{informe}", [InformeController::class, "destroy"])->name("informes.destroy");
     Route::delete("/informes/imagen/{imagen}", [InformeController::class, "destroyImagen"])->name("imagen.destroy");
 
     Route::get('/tipos/{tipo}/siguiente-codigo', [TipoMuestraController::class, 'siguienteCodigo'])
         ->name('tipos.siguienteCodigo');
 
-    // Gestión de Expedientes (Administración)
-    Route::get('/expedientes', [ExpedienteController::class, 'index'])->name('expedientes.index');
-    Route::get('/expedientes/search', [ExpedienteController::class, 'search'])->name('expedientes.search');
-    Route::get('/expedientes/{expediente}', [ExpedienteController::class, 'show'])->name('expedientes.show');
 });
 
 // Portal de Pacientes (Acceso Público con Email)

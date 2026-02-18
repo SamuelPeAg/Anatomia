@@ -15,12 +15,31 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 0) USUARIO POR DEFECTO
+        // 0) USUARIOS POR DEFECTO
+        User::updateOrCreate(
+            ['email' => 'javier.ruiz@doc.medac.es'],
+            [
+                'name' => 'Javi Admin',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
+
         User::updateOrCreate(
             ['email' => 'admin@medac.es'],
             [
-                'name' => 'admin',
-                'password' => Hash::make('admin'),
+                'name' => 'Admin Medac',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'user@medac.es'],
+            [
+                'name' => 'Usuario Normal',
+                'password' => Hash::make('password'),
+                'role' => 'user',
             ]
         );
 
@@ -54,40 +73,32 @@ class DatabaseSeeder extends Seeder
 
         foreach ($informes as $informe) {
 
-            // Opcionales por fase (0-2)
-            Imagen::factory()->count(rand(0,2))->create([
+            // Opcionales por fase (0-1)
+            Imagen::factory()->count(rand(0,1))->create([
                 'informe_id' => $informe->id,
                 'fase' => 'recepcion',
                 'zoom' => null,
                 'obligatoria' => false,
             ]);
 
-            Imagen::factory()->count(rand(0,2))->create([
+            Imagen::factory()->count(rand(0,1))->create([
                 'informe_id' => $informe->id,
                 'fase' => 'procesamiento',
                 'zoom' => null,
                 'obligatoria' => false,
             ]);
 
-            Imagen::factory()->count(rand(0,2))->create([
-                'informe_id' => $informe->id,
-                'fase' => 'tincion',
-                'zoom' => null,
-                'obligatoria' => false,
-            ]);
-
-            // En algunos informes, metemos las 4 obligatorias del microscopio
-            if (rand(0, 1) === 1) {
-                Imagen::factory()->microsObligatoria('x4')->create(['informe_id' => $informe->id]);
-                Imagen::factory()->microsObligatoria('x10')->create(['informe_id' => $informe->id]);
-                Imagen::factory()->microsObligatoria('x40')->create(['informe_id' => $informe->id]);
-                Imagen::factory()->microsObligatoria('x100')->create(['informe_id' => $informe->id]);
-            } else {
-                // Si no, alguna microscópica suelta
-                Imagen::factory()->count(rand(0,2))->create([
-                    'informe_id' => $informe->id,
-                    'fase' => 'microscopio',
-                ]);
+            // Microscopio: En el 70% de los casos creamos las 4 obligatorias
+            if (rand(1, 100) <= 70) {
+                foreach (['x4', 'x10', 'x40', 'x100'] as $z) {
+                    Imagen::factory()->create([
+                        'informe_id' => $informe->id,
+                        'fase' => 'microscopio',
+                        'zoom' => $z,
+                        'obligatoria' => true,
+                        'descripcion' => "Vista microscópica $z"
+                    ]);
+                }
             }
         }
     }
