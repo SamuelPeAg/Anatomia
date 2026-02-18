@@ -3,16 +3,19 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-
 use App\Models\TipoMuestra;
 use App\Models\Expediente;
 use App\Models\Informe;
 use App\Models\Imagen;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Seed the application's database.
+     */
     public function run(): void
     {
         // 0) USUARIOS POR DEFECTO
@@ -43,8 +46,8 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 1) TIPOS FIJOS (catalogo) -> sin duplicados de prefijo
-        TipoMuestra::query()->delete(); // por si ya hay algo
+        // 1) TIPOS FIJOS (catalogo)
+        TipoMuestra::query()->delete();
 
         TipoMuestra::insert([
             ['nombre'=>'Biopsia',               'prefijo'=>'B',   'contador_actual'=>0, 'requiere_organo'=>1, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
@@ -60,44 +63,36 @@ class DatabaseSeeder extends Seeder
             ['nombre'=>'Otro',                  'prefijo'=>'OTRO','contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
         ]);
 
-        // 2) EXPEDIENTES (si los estás usando)
-        Expediente::factory()->count(10)->create();
+        // 2) SEEDING DE DATOS DE PRUEBA (Expedientes e Informes)
+        // Solo si no hay datos ya para no duplicar demasiado en cada seed (opcional)
+        if (Informe::count() < 5) {
+            $pacientes = [
+                ['nombre' => 'Juan Pérez', 'correo' => 'juan@ejemplo.com'],
+                ['nombre' => 'María García', 'correo' => 'maria@ejemplo.com'],
+                ['nombre' => 'Carlos López', 'correo' => 'carlos@ejemplo.com'],
+                ['nombre' => 'Ana Martínez', 'correo' => 'ana@ejemplo.com'],
+                ['nombre' => 'Roberto Gómez', 'correo' => 'roberto@ejemplo.com'],
+            ];
 
-        // 3) INFORMES
-        //    Ojo: tu InformeFactory debe usar 'prefijo' (no 'codigo')
-        Informe::factory()->count(20)->create();
-
-        // 4) IMÁGENES (colgando de informes)
-        //    Creamos algunas fotos por fases y para algunos informes las 4 obligatorias del microscopio
-        $informes = Informe::all();
-
-        foreach ($informes as $informe) {
-
-            // Opcionales por fase (0-1)
-            Imagen::factory()->count(rand(0,1))->create([
-                'informe_id' => $informe->id,
-                'fase' => 'recepcion',
-                'zoom' => null,
-                'obligatoria' => false,
-            ]);
-
-            Imagen::factory()->count(rand(0,1))->create([
-                'informe_id' => $informe->id,
-                'fase' => 'procesamiento',
-                'zoom' => null,
-                'obligatoria' => false,
-            ]);
-
-            // Microscopio: En el 70% de los casos creamos las 4 obligatorias
-            if (rand(1, 100) <= 70) {
-                foreach (['x4', 'x10', 'x40', 'x100'] as $z) {
-                    Imagen::factory()->create([
-                        'informe_id' => $informe->id,
-                        'fase' => 'microscopio',
-                        'zoom' => $z,
-                        'obligatoria' => true,
-                        'descripcion' => "Vista microscópica $z"
+            foreach ($pacientes as $p) {
+                $exp = Expediente::create($p);
+                
+                // Crear 2 informes por paciente
+                for ($i = 1; $i <= 2; $i++) {
+                    $tipo = TipoMuestra::inRandomOrder()->first();
+                    $codigo = $tipo->prefijo . str_pad($tipo->contador_actual + 1, 5, '0', STR_PAD_LEFT);
+                    
+                    $informe = Informe::create([
+                        'expediente_id' => $exp->id,
+                        'tipo_id' => $tipo->id,
+                        'anio' => now()->year,
+                        'correlativo' => $tipo->contador_actual + 1,
+                        'codigo_identificador' => $codigo,
+                        'estado' => $i % 2 == 0 ? 'completo' : 'incompleto',
+                        'recepcion_observaciones' => 'Observaciones de prueba para ' . $p['nombre'],
                     ]);
+
+                    $tipo->increment('contador_actual');
                 }
             }
         }
