@@ -91,6 +91,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (res.ok) {
                     const data = await res.json();
                     inpCodigo.value = data.codigo;
+
+                    // ACTUALIZACIÓN: Reflejar el código en el header de la página
+                    const displayValor = document.getElementById('display-codigo-valor');
+                    const displayCont = document.getElementById('display-codigo-container');
+                    if (displayValor) displayValor.textContent = data.codigo;
+                    if (displayCont) displayCont.classList.remove('oculto');
+
                     // También disparamos evento change por si acaso hay validación
                     inpCodigo.dispatchEvent(new Event('change'));
                 } else {

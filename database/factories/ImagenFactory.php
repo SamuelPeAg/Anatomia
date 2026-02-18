@@ -3,13 +3,13 @@
 namespace Database\Factories;
 
 
-use App\Models\Imagenes;
+use App\Models\Imagen;
 use App\Models\Informe;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class ImagenesFactory extends Factory
+class ImagenFactory extends Factory
 {
-    protected $model = Imagenes::class;
+    protected $model = Imagen::class;
 
     public function definition(): array
     {

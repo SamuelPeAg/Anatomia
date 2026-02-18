@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\TipoMuestra;
 use App\Models\Expediente;
 use App\Models\Informe;
-use App\Models\Imagenes;
+use App\Models\Imagen;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -55,21 +55,21 @@ class DatabaseSeeder extends Seeder
         foreach ($informes as $informe) {
 
             // Opcionales por fase (0-2)
-            Imagenes::factory()->count(rand(0,2))->create([
+            Imagen::factory()->count(rand(0,2))->create([
                 'informe_id' => $informe->id,
                 'fase' => 'recepcion',
                 'zoom' => null,
                 'obligatoria' => false,
             ]);
 
-            Imagenes::factory()->count(rand(0,2))->create([
+            Imagen::factory()->count(rand(0,2))->create([
                 'informe_id' => $informe->id,
                 'fase' => 'procesamiento',
                 'zoom' => null,
                 'obligatoria' => false,
             ]);
 
-            Imagenes::factory()->count(rand(0,2))->create([
+            Imagen::factory()->count(rand(0,2))->create([
                 'informe_id' => $informe->id,
                 'fase' => 'tincion',
                 'zoom' => null,
@@ -78,13 +78,13 @@ class DatabaseSeeder extends Seeder
 
             // En algunos informes, metemos las 4 obligatorias del microscopio
             if (rand(0, 1) === 1) {
-                Imagenes::factory()->microsObligatoria('x4')->create(['informe_id' => $informe->id]);
-                Imagenes::factory()->microsObligatoria('x10')->create(['informe_id' => $informe->id]);
-                Imagenes::factory()->microsObligatoria('x40')->create(['informe_id' => $informe->id]);
-                Imagenes::factory()->microsObligatoria('x100')->create(['informe_id' => $informe->id]);
+                Imagen::factory()->microsObligatoria('x4')->create(['informe_id' => $informe->id]);
+                Imagen::factory()->microsObligatoria('x10')->create(['informe_id' => $informe->id]);
+                Imagen::factory()->microsObligatoria('x40')->create(['informe_id' => $informe->id]);
+                Imagen::factory()->microsObligatoria('x100')->create(['informe_id' => $informe->id]);
             } else {
                 // Si no, alguna microscópica suelta
-                Imagenes::factory()->count(rand(0,2))->create([
+                Imagen::factory()->count(rand(0,2))->create([
                     'informe_id' => $informe->id,
                     'fase' => 'microscopio',
                 ]);

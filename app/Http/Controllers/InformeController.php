@@ -130,9 +130,13 @@ class InformeController extends Controller
 
         $this->procesarImagenes($request, $informe);
 
+        if ($request->input('stay') == '2') {
+            return redirect()->route('revision')->with('success', 'Informe creado y guardado.');
+        }
+
         if ($request->input('stay') == '1') {
             return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => 1])
-                ->with('success', 'Recepción guardada. Verifica las imágenes adjuntas.');
+                ->with('success', 'Recepción guardada.');
         }
 
         return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => 2])
@@ -203,15 +207,24 @@ class InformeController extends Controller
         $informe->update($data);
         $this->procesarImagenes($request, $informe);
 
+        if ($request->input('stay') == '2') {
+            return redirect()->route('revision')->with('success', 'Progreso guardado correctamente.');
+        }
+
         if ($request->input('stay') == '1') {
             return back()->with('success', 'Progreso guardado.');
         }
 
         $faseActual = (int) $request->input('fase_origen', 1);
+
+        if ($faseActual == 4) {
+            return redirect()->route('revision')->with('success', 'Informe finalizado correctamente.');
+        }
+
         $siguienteFase = ($faseActual < 4) ? $faseActual + 1 : 4;
 
         return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $siguienteFase])
-            ->with('success', 'Información actualizada.');
+            ->with('success', 'Fase completada. Continuando...');
     }
 
     // --- Métodos Privados y Auxiliares ---
@@ -280,15 +293,27 @@ class InformeController extends Controller
         ];
 
         foreach ($configuraciones as $faseKey => $conf) {
-            // Fase BD es 'microscopio' incluso para extras, sino el nombre de la key
             $faseBD = ($faseKey === 'microscopio') ? 'microscopio' : $faseKey;
 
             if ($request->hasFile($conf['img'])) {
-                $files = $request->file($conf['img']);
-                if (!is_array($files)) $files = [$files];
+                $rawFiles = $request->file($conf['img']);
                 
+                // Aplanamos el array de archivos (por si vienen de varios inputs file[])
+                $files = [];
+                if (is_array($rawFiles)) {
+                    foreach ($rawFiles as $item) {
+                        if (is_array($item)) {
+                            $files = array_merge($files, $item);
+                        } else {
+                            $files[] = $item;
+                        }
+                    }
+                } else {
+                    $files = [$rawFiles];
+                }
+
                 $descs = $request->input($conf['desc'], []);
-                $zooms = isset($conf['zoom']) ? $request->input($conf['zoom'], []) : [];
+                $zoomsInput = isset($conf['zoom']) ? $request->input($conf['zoom'], []) : [];
 
                 foreach ($files as $i => $file) {
                     $this->guardarImagen(
@@ -296,8 +321,8 @@ class InformeController extends Controller
                         $informe, 
                         $faseBD, 
                         $descs[$i] ?? null, 
-                        $zooms[$i] ?? null, 
-                        false // No obligatoria
+                        $zoomsInput[$i] ?? null, 
+                        false 
                     );
                 }
             }
@@ -308,8 +333,22 @@ class InformeController extends Controller
             $inputImg = "micro_{$zoom}_img";
             
             if ($request->hasFile($inputImg)) {
-                $files = $request->file($inputImg);
-                if (!is_array($files)) $files = [$files];
+                $rawFiles = $request->file($inputImg);
+                
+                // Aplanamos también aquí por si acaso
+                $files = [];
+                if (is_array($rawFiles)) {
+                    foreach ($rawFiles as $item) {
+                        if (is_array($item)) {
+                            $files = array_merge($files, $item);
+                        } else {
+                            $files[] = $item;
+                        }
+                    }
+                } else {
+                    $files = [$rawFiles];
+                }
+
                 $descs = $request->input("micro_{$zoom}_desc", []);
 
                 foreach ($files as $i => $file) {
@@ -319,7 +358,7 @@ class InformeController extends Controller
                         'microscopio', 
                         $descs[$i] ?? null, 
                         $zoom, 
-                        true // Obligatoria
+                        true 
                     );
                 }
             }

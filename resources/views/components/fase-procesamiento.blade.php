@@ -56,8 +56,8 @@
 
             <div class="acciones-derecha">
                 <input type="hidden" name="fase_origen" value="2">
-                <button class="boton boton-secundario" type="submit" name="stay" value="1">
-                    Guardar procesamiento (incompleto)
+                <button class="boton boton-secundario" type="submit" name="stay" value="2">
+                    Revisión
                 </button>
                 <button class="boton boton-principal" type="submit" name="stay" value="0">
                     Siguiente fase
