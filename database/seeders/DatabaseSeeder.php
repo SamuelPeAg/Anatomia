@@ -66,7 +66,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 2) SEEDING MASIVO CON FACTORÍAS (30 Pacientes con Informes e Imágenes)
-        echo "Generando 30 pacientes y sus informes...\n";
 
         Expediente::factory()
             ->count(30)
@@ -90,6 +89,5 @@ class DatabaseSeeder extends Seeder
                     });
             });
 
-        echo "Seed completado con éxito.\n";
     }
 }

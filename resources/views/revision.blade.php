@@ -107,7 +107,7 @@
     <main>
         <div class="revision-container">
             <div class="revision-header">
-                <h1 class="revision-title">Revisión de Informes</h1>
+                <h1 class="revision-title">Informes</h1>
                 <a href="{{ route('nuevo informe') }}" class="btn-premium">Nuevo Informe</a>
             </div>
 
@@ -144,7 +144,7 @@
                         <label for="search" class="filters-label">Buscador:</label>
                         <input type="text" name="search" id="search" 
                                value="{{ request('search') }}" 
-                               placeholder="Nombre, ID o Código..."
+                               placeholder="Nombre..."
                                class="filters-input">
                     </div>
 

@@ -118,34 +118,82 @@
     }
     
     .nueva-imagen-fila {
-        display: flex;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
         align-items: center;
-        gap: 10px;
-        padding: 10px;
-        background: #eff6ff;
-        border: 1px dashed #3b82f6;
-        border-radius: 6px;
-        margin-top: 10px;
+        gap: 1.25rem;
+        padding: 1rem 1.25rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        margin-top: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .nueva-imagen-fila:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.1);
+        transform: translateY(-2px);
+    }
+    .preview-thumb {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .preview-thumb img {
-        width: 50px;
-        height: 50px;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-        border-radius: 4px;
     }
     .preview-inputs {
-        flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        justify-content: center;
     }
     .badge-nueva {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
+        font-weight: 800;
         background: #3b82f6;
         color: white;
-        padding: 2px 6px;
+        padding: 2px 8px;
         border-radius: 4px;
         width: fit-content;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+    .nombre-archivo {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 4px;
+        font-family: monospace;
+    }
+    .control-campo {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        font-size: 0.9rem !important;
+        transition: border-color 0.2s;
+        width: 100%;
+    }
+    .control-campo:focus {
+        border-color: #3b82f6 !important;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .btn-eliminar-lote {
+        color: #94a3b8;
+        font-size: 1.25rem;
+        padding: 8px;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .btn-eliminar-lote:hover {
+        background: #fee2e2;
+        color: #ef4444;
     }
     .boton-icono {
         background: none;

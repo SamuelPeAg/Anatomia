@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <span class="badge-nueva">NUEVA</span>
                                 <input type="text" 
                                        name="${nameDesc}" 
-                                       placeholder="Descripción..." 
+                                       placeholder="Nombre" 
                                        class="control-campo control-sm">
                                 <span class="nombre-archivo">${file.name}</span>
                             </div>
