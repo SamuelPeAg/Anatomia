@@ -2,14 +2,14 @@
     <div class="subtarjeta-cabecera">
         <div class="subtarjeta-info-grupo">
             <h3 class="subtarjeta-titulo">{{ $titulo }} @if($required) <span class="obligatorio">*</span> @endif</h3>
-            <span class="contador-imagenes {{ $imagenes->count() >= 12 ? 'limite-alcanzado' : '' }}">
-                {{ $imagenes->count() }} / 12
+            <span class="contador-imagenes {{ $imagenes->count() >= 6 ? 'limite-alcanzado' : '' }}">
+                {{ $imagenes->count() }} / 6
             </span>
         </div>
         <button type="button" 
-                class="boton boton-pequeno boton-secundario {{ $imagenes->count() >= 12 ? 'boton-deshabilitado' : '' }}" 
+                class="boton boton-pequeno boton-secundario {{ $imagenes->count() >= 6 ? 'boton-deshabilitado' : '' }}" 
                 data-trigger-upload="input-{{ $fase }}-{{ $zoom ?? 'gn' }}"
-                {{ $imagenes->count() >= 12 ? 'disabled' : '' }}>
+                {{ $imagenes->count() >= 6 ? 'disabled' : '' }}>
             + Nueva Imagen
         </button>
     </div>
