@@ -1,5 +1,5 @@
 
-import { pedirConfirmacion, cambiarAFase } from './formulario-ui.js';
+import { pedirConfirmacion, cambiarAFase, mostrarToast } from './formulario-ui.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     // Configuración desde el DOM
@@ -172,10 +172,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         mostrarToast(`Solo puedes añadir ${disponibles} imágenes más para no superar el límite de 12.`, 'warning');
                     }
                     input.value = '';
-                    return;
+                    return; // IMPORTANTE: Bloquear la ejecución
                 }
 
                 const loteId = 'lote-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                actualizarContador(container); // Actualizar tras añadir
+                // ... (rest of the reader.onload logic is fine)
 
                 // Generar previews
                 Array.from(input.files).forEach((file) => {
@@ -308,3 +310,50 @@ window.borrarImagen = function (e, url) {
         form.submit();
     });
 };
+
+/**
+ * Helper para actualizar el contador visual y deshabilitar botones si se llega al límite
+ */
+function actualizarContador(container) {
+    if (!container) return;
+    const parent = container.closest('.subtarjeta');
+    if (!parent) return;
+
+    const existingCount = parent.querySelectorAll('.imagen-card').length;
+    const newQueuedCount = container.querySelectorAll('.nueva-imagen-fila').length;
+    const total = existingCount + newQueuedCount;
+
+    const counterEl = parent.querySelector('.contador-imagenes');
+    const btnUpload = parent.querySelector('[data-trigger-upload]');
+
+    if (counterEl) {
+        counterEl.textContent = `${total} / 12`;
+        if (total >= 12) {
+            counterEl.classList.add('limite-alcanzado');
+        } else {
+            counterEl.classList.remove('limite-alcanzado');
+        }
+    }
+
+    if (btnUpload) {
+        if (total >= 12) {
+            btnUpload.classList.add('boton-deshabilitado');
+            btnUpload.disabled = true;
+        } else {
+            btnUpload.classList.remove('boton-deshabilitado');
+            btnUpload.disabled = false;
+        }
+    }
+}
+
+// Escuchar eliminación de filas nuevas para actualizar contador
+document.addEventListener('click', (e) => {
+    const btnEliminar = e.target.closest('.btn-eliminar-lote');
+    if (btnEliminar) {
+        // Esperar un pequeño momento para que la fila se elimine del DOM
+        setTimeout(() => {
+            const container = document.querySelector('.nuevas-imagenes-container');
+            if (container) actualizarContador(container);
+        }, 50);
+    }
+});

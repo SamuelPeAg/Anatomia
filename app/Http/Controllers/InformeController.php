@@ -371,15 +371,20 @@ class InformeController extends Controller
                 $descs = $request->input($conf['desc'], []);
                 $zoomsInput = isset($conf['zoom']) ? $request->input($conf['zoom'], []) : [];
 
+                // Contar cuántas hay ya en esta fase
+                $countExistentes = $informe->imagenes()->where('fase', $faseBD)->count();
+
                 foreach ($files as $i => $file) {
-                    $this->guardarImagen(
-                        $file, 
-                        $informe, 
-                        $faseBD, 
-                        $descs[$i] ?? null, 
-                        $zoomsInput[$i] ?? null, 
-                        false 
-                    );
+                    if (($countExistentes + $i) < 12) {
+                        $this->guardarImagen(
+                            $file, 
+                            $informe, 
+                            $faseBD, 
+                            $descs[$i] ?? null, 
+                            $zoomsInput[$i] ?? null, 
+                            false 
+                        );
+                    }
                 }
             }
         }
@@ -406,16 +411,24 @@ class InformeController extends Controller
                 }
 
                 $descs = $request->input("micro_{$zoom}_desc", []);
+                
+                // Contar ya existentes para este ZOOM específico
+                $countExistentes = $informe->imagenes()
+                    ->where('fase', 'microscopio')
+                    ->where('zoom', $zoom)
+                    ->count();
 
                 foreach ($files as $i => $file) {
-                    $this->guardarImagen(
-                        $file, 
-                        $informe, 
-                        'microscopio', 
-                        $descs[$i] ?? null, 
-                        $zoom, 
-                        true 
-                    );
+                    if (($countExistentes + $i) < 12) {
+                        $this->guardarImagen(
+                            $file, 
+                            $informe, 
+                            'microscopio', 
+                            $descs[$i] ?? null, 
+                            $zoom, 
+                            true 
+                        );
+                    }
                 }
             }
         }

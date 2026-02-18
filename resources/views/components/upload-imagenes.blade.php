@@ -1,9 +1,16 @@
-
-
+```
 <div class="subtarjeta">
     <div class="subtarjeta-cabecera">
-        <h3 class="subtarjeta-titulo">{{ $titulo }} @if($required) <span class="obligatorio">*</span> @endif</h3>
-        <button type="button" class="boton boton-pequeno boton-secundario" data-trigger-upload="input-{{ $fase }}-{{ $zoom ?? 'gn' }}">
+        <div class="subtarjeta-info-grupo">
+            <h3 class="subtarjeta-titulo">{{ $titulo }} @if($required) <span class="obligatorio">*</span> @endif</h3>
+            <span class="contador-imagenes {{ $imagenes->count() >= 12 ? 'limite-alcanzado' : '' }}">
+                {{ $imagenes->count() }} / 12
+            </span>
+        </div>
+        <button type="button" 
+                class="boton boton-pequeno boton-secundario {{ $imagenes->count() >= 12 ? 'boton-deshabilitado' : '' }}" 
+                data-trigger-upload="input-{{ $fase }}-{{ $zoom ?? 'gn' }}"
+                {{ $imagenes->count() >= 12 ? 'disabled' : '' }}>
             + Nueva Imagen
         </button>
     </div>
@@ -155,5 +162,27 @@
         padding: 20px;
         border: 1px dashed #e5e7eb;
         border-radius: 8px;
+    }
+    .subtarjeta-info-grupo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .contador-imagenes {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 2px 8px;
+        border-radius: 999px;
+    }
+    .contador-imagenes.limite-alcanzado {
+        color: #ef4444;
+        background: #fee2e2;
+    }
+    .boton-deshabilitado {
+        opacity: 0.5;
+        cursor: not-allowed !important;
+        pointer-events: none;
     }
 </style>
