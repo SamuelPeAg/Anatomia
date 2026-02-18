@@ -14,19 +14,23 @@
             <p>Consulte sus resultados médicos de forma segura.</p>
         </header>
 
-        @if($errors->any())
-            <div class="alert alert-danger alert-container-login">
-                @foreach($errors->all() as $error)
-                    <div>{{ $error }}</div>
-                @endforeach
-            </div>
-        @endif
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if($errors->any() || session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                let msg = '';
+                @foreach($errors->all() as $error) msg += '• {{ $error }}\n'; @endforeach
+                @if(session('error')) msg += '{{ session("error") }}'; @endif
 
-        @if(session('error'))
-            <div class="alert alert-danger alert-container-login">
-                {{ session('error') }}
-            </div>
-        @endif
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Acceso Denegado',
+                    text: msg,
+                    confirmButtonColor: '#0234AB'
+                });
+            });
+        </script>
+    @endif
 
         <form action="{{ route('paciente.login') }}" method="POST" class="login-form">
             @csrf

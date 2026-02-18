@@ -60,11 +60,19 @@
                 <button class="btn-login mt-3">INICIAR SESIÓN</button>
             </form>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
             @if ($errors->has('login'))
-                <div class="alert alert-danger mt-3">
-                    {{ $errors->first('login') }}
-                </div>
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error de acceso!',
+                    text: "{{ $errors->first('login') }}",
+                    confirmButtonColor: '#0234AB'
+                });
             @endif
+        });
+    </script>
 
             <div class="login-footer">
                 @if (Route::has('register'))

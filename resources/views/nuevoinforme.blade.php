@@ -148,11 +148,21 @@
                     @endif
 
                     @if($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach($errors->all() as $error) <li>{{ $error }}</li> @endforeach
-                            </ul>
-                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                let errorList = '';
+                                @foreach($errors->all() as $error)
+                                    errorList += '• {{ $error }}\n';
+                                @endforeach
+                                
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Revisa los campos',
+                                    text: errorList,
+                                    confirmButtonColor: '#0234AB'
+                                });
+                            });
+                        </script>
                     @endif
 
                     <x-fase-recepcion :informe="$informe" />

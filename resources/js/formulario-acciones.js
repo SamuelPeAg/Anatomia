@@ -76,7 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     inpCodigo.value = "Error";
                     console.error("Error al obtener código", res.status);
-                    alert("No se pudo generar el código automáticamente. Por favor recarga la página.");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de Generación',
+                        text: 'No se pudo generar el código automáticamente. Por favor recarga la página.',
+                        confirmButtonColor: '#0234AB'
+                    });
                 }
             } catch (e) {
                 console.error("Excepción al obtener código", e);
@@ -214,13 +219,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const loteId = fila?.dataset.lote;
             const input = fila?._inputSource;
 
-            if (confirm('¿Eliminar esta imagen? (Si subiste varias a la vez se eliminarán todas las de ese grupo)')) {
-                // Borrar visualmente todas las del lote
-                document.querySelectorAll(`.nueva-imagen-fila[data-lote="${loteId}"]`).forEach(el => el.remove());
-                // Borrar el input oculto asociado
-                if (input) input.remove();
-                hayCambiosSinGuardar = true;
-            }
+            pedirConfirmacion('¿Eliminar esta imagen?', 'Si subiste varias a la vez se eliminarán todas las de ese grupo.').then(confirmado => {
+                if (confirmado) {
+                    // Borrar visualmente todas las del lote
+                    document.querySelectorAll(`.nueva-imagen-fila[data-lote="${loteId}"]`).forEach(el => el.remove());
+                    // Borrar el input oculto asociado
+                    if (input) input.remove();
+                    hayCambiosSinGuardar = true;
+                }
+            });
         }
     });
 
@@ -260,31 +267,33 @@ window.borrarImagen = function (e, url) {
         e.stopPropagation();
     }
 
-    if (!confirm('¿Seguro que quieres borrar esta imagen permanentemente?')) return;
+    pedirConfirmacion('¿Borrar imagen permanentemente?', 'Esta acción no se puede deshacer.').then(confirmado => {
+        if (!confirmado) return;
 
-    // Crear un formulario dinámico para realizar la petición DELETE
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = url;
-    form.style.display = 'none';
+        // Crear un formulario dinámico para realizar la petición DELETE
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        form.style.display = 'none';
 
-    // Token CSRF
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-    if (csrfToken) {
-        const inputCsrf = document.createElement('input');
-        inputCsrf.type = 'hidden';
-        inputCsrf.name = '_token';
-        inputCsrf.value = csrfToken;
-        form.appendChild(inputCsrf);
-    }
+        // Token CSRF
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        if (csrfToken) {
+            const inputCsrf = document.createElement('input');
+            inputCsrf.type = 'hidden';
+            inputCsrf.name = '_token';
+            inputCsrf.value = csrfToken;
+            form.appendChild(inputCsrf);
+        }
 
-    // Método spoofing para DELETE
-    const inputMethod = document.createElement('input');
-    inputMethod.type = 'hidden';
-    inputMethod.name = '_method';
-    inputMethod.value = 'DELETE';
-    form.appendChild(inputMethod);
+        // Método spoofing para DELETE
+        const inputMethod = document.createElement('input');
+        inputMethod.type = 'hidden';
+        inputMethod.name = '_method';
+        inputMethod.value = 'DELETE';
+        form.appendChild(inputMethod);
 
-    document.body.appendChild(form);
-    form.submit();
+        document.body.appendChild(form);
+        form.submit();
+    });
 };

@@ -28,7 +28,6 @@
             <span class="brand-name">Anatomía MEDAC</span>
         </a>
         <nav class="nav-actions">
-            {{-- <a href="{{ url('/') }}" class="btn-ghost">Volver Atrás</a> --}}
             <a href="{{ route('login') }}" class="btn-premium">Iniciar Sesión</a>
         </nav>
     </header>
@@ -48,12 +47,9 @@
                     <input type="text" name="name" class="form-control"
                         placeholder="Nombre completo" value="{{ old('name') }}" maxlength="70" required>
                 </div>
-                @error('name')
-                    <div class="alert alert-danger p-1">{{ $message }}</div>
-                @enderror
 
                 {{-- EMAIL --}}
-                <div class="input-group">
+                <div class="input-group mt-3">
                     <span class="input-group-text">
                         <i class="bi bi-envelope"></i>
                     </span>
@@ -61,11 +57,8 @@
                         placeholder="ejemplo@alu.medac.es" value="{{ old('email') }}" maxlength="70" required>
                 </div>
                 <div class="form-text text-muted mb-3" style="font-size: 0.8rem;">
-                    El correo electrónico debe ser corporativo de MEDAC
+                    El correo electrónico debe ser corporativo de MEDAC (@alu.medac.es o @doc.medac.es)
                 </div>
-                @error('email')
-                    <div class="alert alert-danger p-1">{{ $message }}</div>
-                @enderror
 
                 {{-- PASSWORD --}}
                 <div class="input-group">
@@ -73,14 +66,11 @@
                         <i class="bi bi-key"></i>
                     </span>
                     <input type="password" name="password" class="form-control"
-                        placeholder="Contraseña" minlength="6" required>
+                        placeholder="Contraseña (mínimo 6 caracteres)" minlength="6" required>
                 </div>
-                @error('password')
-                    <div class="alert alert-danger p-1">{{ $message }}</div>
-                @enderror
 
                 {{-- CONFIRM PASSWORD --}}
-                <div class="input-group">
+                <div class="input-group mt-3">
                     <span class="input-group-text">
                         <i class="bi bi-shield-check"></i>
                     </span>
@@ -88,7 +78,7 @@
                         placeholder="Confirmar contraseña" minlength="6" required>
                 </div>
 
-                <button class="btn-login mt-3">CREAR USUARIO</button>
+                <button class="btn-login mt-4">CREAR USUARIO</button>
             </form>
 
             <div class="login-footer">
@@ -109,6 +99,28 @@
             &copy; {{ date('Y') }} Anatomía MEDAC. Todos los derechos reservados.
         </div>
     </footer>
+
+    <!-- Scripts de Alerta -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            @if ($errors->any())
+                let errors = [];
+                @foreach ($errors->all() as $error)
+                    errors.push("{{ $error }}");
+                @endforeach
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error en el registro',
+                    html: '<div style="text-align: left; padding: 0 10px;">' + 
+                          errors.map(e => '• ' + e).join('<br>') + 
+                          '</div>',
+                    confirmButtonColor: '#0234AB'
+                });
+            @endif
+        });
+    </script>
 </body>
 
 </html>
