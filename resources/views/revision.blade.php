@@ -10,6 +10,41 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .swal2-toast-left { margin-left: 1rem !important; }
+        
+        /* Arreglo de emergencia para botones amontonados */
+        .acciones-horizontal {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 10px !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+        }
+        .btn-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 8px !important;
+            background: #f1f5f9 !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 0 !important;
+            cursor: pointer !important;
+        }
+        .btn-validar-mini {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            background: #eef2ff !important;
+            color: #4338ca !important;
+            border: 1px solid #c7d2fe !important;
+            padding: 4px 8px !important;
+            font-size: 11px !important;
+            font-weight: bold !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            margin-top: 5px !important;
+        }
     </style>
 </head>
 <body>
