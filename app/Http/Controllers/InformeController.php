@@ -375,7 +375,7 @@ class InformeController extends Controller
                 $countExistentes = $informe->imagenes()->where('fase', $faseBD)->count();
 
                 foreach ($files as $i => $file) {
-                    if (($countExistentes + $i) < 12) {
+                    if (($countExistentes + $i) < 6) {
                         $this->guardarImagen(
                             $file, 
                             $informe, 
@@ -419,7 +419,7 @@ class InformeController extends Controller
                     ->count();
 
                 foreach ($files as $i => $file) {
-                    if (($countExistentes + $i) < 12) {
+                    if (($countExistentes + $i) < 6) {
                         $this->guardarImagen(
                             $file, 
                             $informe, 

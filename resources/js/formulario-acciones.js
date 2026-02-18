@@ -164,12 +164,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const newQueuedCount = container.querySelectorAll('.nueva-imagen-fila').length;
                 const totalCurrent = existingCount + newQueuedCount;
 
-                if (totalCurrent + input.files.length > 12) {
-                    const disponibles = 12 - totalCurrent;
+                if (totalCurrent + input.files.length > 6) {
+                    const disponibles = 6 - totalCurrent;
                     if (disponibles <= 0) {
-                        mostrarToast("Ya has alcanzado el límite de 12 imágenes.", 'error');
+                        mostrarToast("Ya has alcanzado el límite de 6 imágenes.", 'error');
                     } else {
-                        mostrarToast(`Solo puedes añadir ${disponibles} imágenes más para no superar el límite de 12.`, 'warning');
+                        mostrarToast(`Solo puedes añadir ${disponibles} imágenes más para no superar el límite de 6.`, 'warning');
                     }
                     input.value = '';
                     return; // IMPORTANTE: Bloquear la ejecución
@@ -326,8 +326,8 @@ function actualizarContador(container) {
     const btnUpload = parent.querySelector('[data-trigger-upload]');
 
     if (counterEl) {
-        counterEl.textContent = `${total} / 12`;
-        if (total >= 12) {
+        counterEl.textContent = `${total} / 6`;
+        if (total >= 6) {
             counterEl.classList.add('limite-alcanzado');
         } else {
             counterEl.classList.remove('limite-alcanzado');
@@ -335,7 +335,7 @@ function actualizarContador(container) {
     }
 
     if (btnUpload) {
-        if (total >= 12) {
+        if (total >= 6) {
             btnUpload.classList.add('boton-deshabilitado');
             btnUpload.disabled = true;
         } else {
