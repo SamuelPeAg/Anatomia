@@ -89,9 +89,16 @@ class InformeController extends Controller
         $informes = $query->paginate(10)->withQueryString();
 
         $informes->getCollection()->transform(function ($informe) {
-            $faseInfo = $this->getFaseInfo($informe);
-            $informe->siguiente_fase = $faseInfo['nombre'];
-            $informe->fase_n = $faseInfo['numero'];
+            $numIncompleta = $this->getPrimeraFaseIncompleta($informe);
+            
+            if ($numIncompleta === null) {
+                $informe->siguiente_fase = 'Finalizado'; 
+                $informe->fase_n = 4;
+            } else {
+                $nombres = [1 => 'Recepción', 2 => 'Procesamiento', 3 => 'Tinción', 4 => 'Citodiagnóstico'];
+                $informe->siguiente_fase = $nombres[$numIncompleta];
+                $informe->fase_n = $numIncompleta;
+            }
             return $informe;
         });
 
@@ -182,40 +189,25 @@ class InformeController extends Controller
 
         $this->procesarImagenes($request, $informe);
 
-        if ($request->input('stay') == '2') {
-            return redirect()->route('revision')->with('success', 'Informe creado y guardado.');
-        }
-
-        if ($request->input('stay') == '1') {
-            return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => 1])
-                ->with('success', 'Recepción guardada.');
-        }
-
-        // Buscar la siguiente fase incompleta
-        $siguiente = $this->getPrimeraFaseIncompleta($informe) ?: 2;
-
-        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $siguiente])
-            ->with('success', 'Recepción guardada. Continuando...');
+        return $this->redirectAfterSave($request, $informe, 'Informe creado.');
     }
 
-    /**
-     * Muestra el formulario de edición de un informe.
-     */
     public function edit(Informe $informe)
     {
-        $numeroFase = request('fase') ?: $this->getFaseInfo($informe)['numero'];
+        $fase = request('fase') ?: ($this->getPrimeraFaseIncompleta($informe) ?: 4);
         
         return view('nuevoinforme', [
             'informe' => $informe,
-            'numeroFase' => $numeroFase,
-            'faseActual' => $numeroFase,
+            'numeroFase' => $fase,
+            'faseActual' => $fase,
             'imagenesMicroExtras' => $informe->imagenes->where('fase', 'microscopio')->where('obligatoria', 0),
             'esEdicion' => true,
             'fasesCompletas' => [
                 1 => !empty($informe->recepcion_observaciones),
                 2 => !empty($informe->procesamiento_tipo),
                 3 => !empty($informe->tincion_tipo),
-                4 => !empty($informe->citodiagnostico)
+                4 => !empty($informe->citodiagnostico) && 
+                     $informe->imagenes()->where('fase', 'microscopio')->where('obligatoria', 1)->count() >= 4
             ],
             'tiposMuestra' => Tipomuestra::all()
         ]);
@@ -265,49 +257,33 @@ class InformeController extends Controller
         $informe->update($data);
         $this->procesarImagenes($request, $informe);
 
-        // Calcular estado final
-        $primeraIncompleta = $this->getPrimeraFaseIncompleta($informe);
-        if ($primeraIncompleta === null) {
-            $informe->update(['estado' => 'completo']);
-        } else {
-            $informe->update(['estado' => 'incompleto']);
-        }
+        // Refrescar para asegurar que las imágenes recién guardadas se cuenten en el check de estado
+        $informe->refresh();
 
-        if ($request->input('stay') == '2') {
-            return redirect()->route('revision')->with('success', 'Progreso guardado correctamente.');
-        }
+        // El estado solo pasa a 'completo' si getPrimeraFaseIncompleta devuelve null (todo lleno)
+        $primeraPendiente = $this->getPrimeraFaseIncompleta($informe);
+        $informe->update(['estado' => ($primeraPendiente === null) ? 'completo' : 'incompleto']);
 
-        if ($request->input('stay') == '1') {
-            return back()->with('success', 'Progreso guardado.');
-        }
-
-        $faseActual = (int) $request->input('fase_origen', 1);
-
-        if ($primeraIncompleta === null) {
-            return redirect()->route('revision')->with('success', 'Informe completado correctamente.');
-        }
-
-        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $primeraIncompleta])
-            ->with('success', 'Progreso guardado. Redirigiendo a la siguiente fase pendiente.');
+        return $this->redirectAfterSave($request, $informe, 'Progreso guardado.');
     }
 
-    // --- Métodos Privados y Auxiliares ---
-
-    private function getFaseInfo($informe)
+    private function redirectAfterSave(Request $request, Informe $informe, string $baseMsg): RedirectResponse
     {
-        $numero = $this->getPrimeraFaseIncompleta($informe) ?: 4;
+        $stay = $request->input('stay');
+
+        if ($stay == '2') return redirect()->route('revision')->with('success', $baseMsg);
+        if ($stay == '1') return back()->with('success', $baseMsg);
+
+        $next = $this->getPrimeraFaseIncompleta($informe);
+        if (!$next) return redirect()->route('revision')->with('success', 'Informe finalizado correctamente.');
         
-        $nombres = [1 => 'Recepción', 2 => 'Procesamiento', 3 => 'Tinción', 4 => 'Citodiagnóstico'];
-        
-        return [
-            'nombre' => $nombres[$numero],
-            'numero' => $numero
-        ];
+        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $next])
+            ->with('success', $baseMsg . ' Redirigiendo a la fase pendiente.');
     }
 
     /**
      * Devuelve el número (1-4) de la primera fase que le falta información obligatoria.
-     * Devuelve null si todas están completas.
+     * Devuelve null si todas (1, 2, 3 y 4) están realmente completas.
      */
     private function getPrimeraFaseIncompleta(Informe $informe)
     {
@@ -316,26 +292,26 @@ class InformeController extends Controller
         if (empty($informe->tincion_tipo)) return 3;
         if (empty($informe->citodiagnostico)) return 4;
         
-        // Verificación de imágenes obligatorias en fase 4
+        // Verificación de los 4 aumentos obligatorios en fase 4
         $imgsFase4 = $informe->imagenes()->where('fase', 'microscopio')->where('obligatoria', 1)->pluck('zoom')->toArray();
         $requeridos = ['x4', 'x10', 'x40', 'x100'];
         foreach ($requeridos as $z) {
             if (!in_array($z, $imgsFase4)) return 4;
         }
 
-        return null; // Todo OK
+        return null; // Absolutamente todo completo
     }
+
+    // --- Métodos Privados y Auxiliares ---
 
     private function obtenerExpedienteId(Request $request)
     {
-        if ($request->filled('paciente_correo')) {
-            $expediente = Expediente::firstOrCreate(
+        return $request->filled('paciente_correo') 
+            ? Expediente::firstOrCreate(
                 ['correo' => $request->paciente_correo],
                 ['nombre' => $request->paciente_nombre ?? 'Paciente sin nombre']
-            );
-            return $expediente->id;
-        }
-        return null;
+              )->id 
+            : null;
     }
 
     private function validarRequisitosMicroscopio(Request $request, Informe $informe)
@@ -371,96 +347,37 @@ class InformeController extends Controller
 
     private function procesarImagenes(Request $request, Informe $informe)
     {
-        // 1. Procesar Fases Estándar y Extras (Arrays de archivos)
-        $configuraciones = [
+        $configs = [
             'recepcion'     => ['img' => 'recepcion_img', 'desc' => 'recepcion_desc'],
             'procesamiento' => ['img' => 'procesamiento_img', 'desc' => 'procesamiento_desc'],
             'tincion'       => ['img' => 'tincion_img', 'desc' => 'tincion_desc'],
-            'microscopio'   => ['img' => 'micros_extra_img', 'desc' => 'micros_extra_desc', 'zoom' => 'micros_extra_zoom'] // Extras
+            'microscopio'   => ['img' => 'micros_extra_img', 'desc' => 'micros_extra_desc', 'zoom' => 'micros_extra_zoom']
         ];
 
-        foreach ($configuraciones as $faseKey => $conf) {
-            $faseBD = ($faseKey === 'microscopio') ? 'microscopio' : $faseKey;
+        foreach ($configs as $fase => $c) {
+            if (!$request->hasFile($c['img'])) continue;
+            
+            $files = collect($request->file($c['img']))->flatten();
+            $descs = $request->input($c['desc'], []);
+            $zooms = isset($c['zoom']) ? $request->input($c['zoom'], []) : [];
+            $count = $informe->imagenes()->where('fase', $fase)->count();
 
-            if ($request->hasFile($conf['img'])) {
-                $rawFiles = $request->file($conf['img']);
-                
-                // Aplanamos el array de archivos (por si vienen de varios inputs file[])
-                $files = [];
-                if (is_array($rawFiles)) {
-                    foreach ($rawFiles as $item) {
-                        if (is_array($item)) {
-                            $files = array_merge($files, $item);
-                        } else {
-                            $files[] = $item;
-                        }
-                    }
-                } else {
-                    $files = [$rawFiles];
-                }
-
-                $descs = $request->input($conf['desc'], []);
-                $zoomsInput = isset($conf['zoom']) ? $request->input($conf['zoom'], []) : [];
-
-                // Contar cuántas hay ya en esta fase
-                $countExistentes = $informe->imagenes()->where('fase', $faseBD)->count();
-
-                foreach ($files as $i => $file) {
-                    if (($countExistentes + $i) < 6) {
-                        $this->guardarImagen(
-                            $file, 
-                            $informe, 
-                            $faseBD, 
-                            $descs[$i] ?? null, 
-                            $zoomsInput[$i] ?? null, 
-                            false 
-                        );
-                    }
+            foreach ($files as $i => $file) {
+                if (($count + $i) < 6) {
+                    $this->guardarImagen($file, $informe, $fase, $descs[$i] ?? null, $zooms[$i] ?? null, false);
                 }
             }
         }
 
-        // 2. Procesar Microscopio OBLIGATORIAS (Inputs planos por Zoom)
-        foreach (['x4', 'x10', 'x40', 'x100'] as $zoom) {
-            $inputImg = "micro_{$zoom}_img";
+        // Obligatorias Microscopio
+        foreach (['x4', 'x10', 'x40', 'x100'] as $z) {
+            if (!$request->hasFile("micro_{$z}_img")) continue;
             
-            if ($request->hasFile($inputImg)) {
-                $rawFiles = $request->file($inputImg);
-                
-                // Aplanamos también aquí por si acaso
-                $files = [];
-                if (is_array($rawFiles)) {
-                    foreach ($rawFiles as $item) {
-                        if (is_array($item)) {
-                            $files = array_merge($files, $item);
-                        } else {
-                            $files[] = $item;
-                        }
-                    }
-                } else {
-                    $files = [$rawFiles];
-                }
-
-                $descs = $request->input("micro_{$zoom}_desc", []);
-                
-                // Contar ya existentes para este ZOOM específico
-                $countExistentes = $informe->imagenes()
-                    ->where('fase', 'microscopio')
-                    ->where('zoom', $zoom)
-                    ->count();
-
-                foreach ($files as $i => $file) {
-                    if (($countExistentes + $i) < 6) {
-                        $this->guardarImagen(
-                            $file, 
-                            $informe, 
-                            'microscopio', 
-                            $descs[$i] ?? null, 
-                            $zoom, 
-                            true 
-                        );
-                    }
-                }
+            $file = collect($request->file("micro_{$z}_img"))->flatten()->first();
+            $desc = $request->input("micro_{$z}_desc.0");
+            
+            if ($informe->imagenes()->where(['fase' => 'microscopio', 'zoom' => $z])->count() < 6) {
+                $this->guardarImagen($file, $informe, 'microscopio', $desc, $z, true);
             }
         }
     }

@@ -174,82 +174,18 @@
         </section>
     </main>
 
+
     <div id="toast-container" class="toast-container"></div>
     <x-footer />
 
-    @vite(['resources/js/formulario-ui.js', 'resources/js/formulario-acciones.js'])
+    @vite(['resources/js/formulario-ui.js', 'resources/js/formulario-acciones.js', 'resources/js/autocomplete.js'])
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputNombre = document.getElementById('paciente_nombre');
-            const list = document.getElementById('autocomplete-list');
-            if (!inputNombre || !list) return;
+    @if(session('success'))
+        <script>window.addEventListener('load', () => { Swal.fire({ toast: true, position: 'top-start', icon: 'success', title: "{{ session('success') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true }); });</script>
+    @endif
 
-            const inputCorreo = document.getElementById('paciente_correo');
-            const warningBox = document.getElementById('similarity-warning');
-            const suggestedNameParams = document.getElementById('suggested-name');
-            let debounceTimer;
-            let currentResults = [];
-
-            // Cerrar lista al hacer clic fuera
-            document.addEventListener('click', function(e) {
-                if (e.target !== inputNombre && e.target !== list) {
-                    list.style.display = 'none';
-                }
-            });
-
-            // Función para rellenar datos
-            function selectPatient(name, email) {
-                inputNombre.value = name;
-                if(email && inputCorreo && !inputCorreo.value) inputCorreo.value = email;
-                list.style.display = 'none';
-                if(warningBox) warningBox.style.display = 'none';
-            }
-
-            // Manejar clic en sugerencia del warning
-            if (suggestedNameParams) {
-                suggestedNameParams.addEventListener('click', function() {
-                    const name = this.textContent;
-                    const found = currentResults.find(r => r.nombre === name);
-                    selectPatient(name, found ? found.correo : '');
-                });
-            }
-
-            inputNombre.addEventListener('input', function() {
-                const term = this.value;
-                if(warningBox) warningBox.style.display = 'none';
-                
-                if(term.length < 2) {
-                    list.style.display = 'none';
-                    return;
-                }
-
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    fetch(`/api/expedientes/search?term=${encodeURIComponent(term)}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            currentResults = data;
-                            list.innerHTML = '';
-                            
-                            if (data.length > 0) {
-                                data.forEach(item => {
-                                    const li = document.createElement('li');
-                                    const regex = new RegExp(`(${term})`, "gi");
-                                    const highlighted = item.nombre.replace(regex, "<strong>$1</strong>");
-                                    
-                                    li.innerHTML = highlighted;
-                                    li.addEventListener('click', () => selectPatient(item.nombre, item.correo));
-                                    list.appendChild(li);
-                                });
-                                list.style.display = 'block';
-                            } else {
-                                list.style.display = 'none';
-                            }
-                        });
-                }, 300);
-            });
-        });
-    </script>
+    @if($errors->any())
+        <script>window.addEventListener('load', () => { Swal.fire({ icon: 'error', title: 'Revisa los campos', text: "{{ implode('\n', $errors->all()) }}", confirmButtonColor: '#0234AB' }); });</script>
+    @endif
 </body>
 </html>
