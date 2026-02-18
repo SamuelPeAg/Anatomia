@@ -53,3 +53,9 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/paciente/acceso', [ExpedienteController::class, 'showAcceso'])->name('paciente.acceso');
 Route::post('/paciente/acceso', [ExpedienteController::class, 'acceder'])->name('paciente.login');
 Route::get('/paciente/mis-informes', [ExpedienteController::class, 'misInformes'])->name('paciente.informes');
+
+// Páginas Estáticas del Footer
+Route::get('/ayuda', function () { return view('paginas.ayuda'); })->name('ayuda');
+Route::get('/privacidad', function () { return view('paginas.privacidad'); })->name('privacidad');
+Route::get('/terminos', function () { return view('paginas.terminos'); })->name('terminos');
+Route::get('/configuracion', function () { return view('paginas.configuracion'); })->name('configuracion');

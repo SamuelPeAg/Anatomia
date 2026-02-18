@@ -24,6 +24,7 @@ export default defineConfig({
                 'resources/css/dashboard.css',
                 'resources/css/paciente-informes.css',
                 'resources/css/paciente-login.css',
+                'resources/css/paginas.css',
             ],
             refresh: true,
         }),
