@@ -187,84 +187,93 @@
     color: var(--text-muted);
 }
 
-/* Buttons */
-.acciones-layout {
+/* Layout de Estado y Validar */
+.estado-celda {
+    min-width: 140px;
+}
+
+.status-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.5rem;
     align-items: flex-start;
 }
 
-.btn-action {
+.btn-validar-mini {
     display: inline-flex;
     align-items: center;
-    width: 100%;
-    max-width: 180px;
-    padding: 0.6rem 1rem;
-    gap: 0.6rem;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid transparent;
+    gap: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    background: #EEF2FF;
+    color: #4338CA;
+    border: 1px solid #C7D2FE;
+    border-radius: 6px;
+    font-size: 0.75rem;
     font-weight: 600;
-    font-size: 0.85rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.btn-edit {
+.btn-validar-mini:hover {
+    background: #4338CA;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(67, 56, 202, 0.2);
+}
+
+/* Layout de Acciones Horizontal */
+.acciones-celda {
+    width: 100px;
+    text-align: right;
+}
+
+.acciones-horizontal {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    color: #64748b;
+    background: #f8fafc;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon.btn-edit:hover {
     background: #EFF6FF;
-    color: var(--secondary);
+    color: #2563EB;
     border-color: #DBEAFE;
 }
 
-.btn-edit:hover {
-    background: var(--secondary);
-    color: white;
-    border-color: var(--secondary);
-}
-
-.btn-view {
-    background: #F1F5F9;
-    color: #475569;
+.btn-icon.btn-view:hover {
+    background: #F8FAFC;
+    color: #334155;
     border-color: #E2E8F0;
 }
 
-.btn-view:hover {
-    background: #475569;
-    color: white;
-    border-color: #475569;
-}
-
-.btn-review-confirm {
-    background: #F0FDF4;
-    color: #16A34A;
-    border-color: #BBF7D0;
-    cursor: pointer;
-}
-
-.btn-review-confirm:hover {
-    background: #16A34A;
-    color: white;
-}
-
-.btn-delete-report {
+.btn-icon.btn-delete:hover {
     background: #FEF2F2;
     color: #DC2626;
     border-color: #FECACA;
-    cursor: pointer;
 }
 
-.btn-delete-report:hover {
-    background: #DC2626;
-    color: white;
+.inline-form {
+    display: inline-block;
+    margin: 0;
 }
 
-.acciones-layout {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    align-items: center;
-}
 
 .empty-state {
     padding: 6rem 2rem;

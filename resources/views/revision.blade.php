@@ -108,44 +108,44 @@
                                     </td>
                                     <td>{{ $informe->tipo->nombre ?? 'N/A' }}</td>
                                     <td>{{ $informe->created_at->format('d/m/Y') }}</td>
-                                    <td>
-                                        <span class="status-badge status-{{ $informe->estado }}">
-                                            {{ ucfirst($informe->estado) }}
-                                        </span>
+                                    <td class="estado-celda">
+                                        <div class="status-wrapper">
+                                            <span class="status-badge status-{{ $informe->estado }}">
+                                                {{ ucfirst($informe->estado) }}
+                                            </span>
+                                            
+                                            @if(auth()->user()->isAdmin() && $informe->estado === 'completo')
+                                                <form action="{{ route('informes.revisar', $informe) }}" method="POST" class="form-revisar inline-form">
+                                                    @csrf @method('PATCH')
+                                                    <button type="submit" class="btn-validar-mini" title="Validar y cerrar informe">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                                        <span>Validar</span>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+
                                         @if($informe->estado == 'incompleto')
                                             <span class="next-phase">Pendiente: {{ $informe->siguiente_fase }}</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <div class="acciones-layout">
+                                    <td class="acciones-celda">
+                                        <div class="acciones-horizontal">
                                             @if($informe->estado !== 'revisado')
-                                                <a href="{{ route('informes.edit', $informe) }}?fase={{ $informe->fase_n }}" class="btn-action btn-edit">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                                                    <span>Editar Fases</span>
+                                                <a href="{{ route('informes.edit', $informe) }}?fase={{ $informe->fase_n }}" class="btn-icon btn-edit" title="Editar fases">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                                 </a>
                                             @else
-                                                <a href="{{ route('informes.edit', $informe) }}?fase=1" class="btn-action btn-view">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                                    <span>Ver Informe</span>
+                                                <a href="{{ route('informes.edit', $informe) }}?fase=1" class="btn-icon btn-view" title="Ver informe (Lectura)">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                                 </a>
                                             @endif
 
                                             @if(auth()->user()->isAdmin())
-                                                @if($informe->estado === 'completo')
-                                                    <form action="{{ route('informes.revisar', $informe) }}" method="POST" style="display:inline;" class="form-revisar">
-                                                        @csrf @method('PATCH')
-                                                        <button type="submit" class="btn-action btn-review-confirm">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                                                            <span>Sellar Informe</span>
-                                                        </button>
-                                                    </form>
-                                                @endif
-
-                                                <form action="{{ route('informes.destroy', $informe) }}" method="POST" style="display:inline;" class="form-borrar">
+                                                <form action="{{ route('informes.destroy', $informe) }}" method="POST" class="form-borrar inline-form">
                                                     @csrf @method('DELETE')
-                                                    <button type="submit" class="btn-action btn-delete-report">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m5 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                                                        <span>Borrar</span>
+                                                    <button type="submit" class="btn-icon btn-delete" title="Borrar informe">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m5 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path></svg>
                                                     </button>
                                                 </form>
                                             @endif
@@ -168,19 +168,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Confirmación para SELLAR (antes Revisar)
+            // Confirmación para VALIDAR
             document.querySelectorAll('.form-revisar').forEach(form => {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     Swal.fire({
-                        title: '¿Sellar informe permanentemente?',
-                        text: "Una vez sellado, el informe quedará bloqueado y no podrá ser modificado bajo ninguna circunstancia.",
-                        icon: 'warning',
+                        title: '¿Validar este informe?',
+                        text: "Una vez validado, el informe quedará cerrado y no podrá ser editado.",
+                        icon: 'question',
                         showCancelButton: true,
-                        confirmButtonColor: '#16A34A',
+                        confirmButtonColor: '#0234AB',
                         cancelButtonColor: '#94a3b8',
-                        confirmButtonText: 'Sí, sellar y finalizar',
-                        cancelButtonText: 'Volver'
+                        confirmButtonText: 'Sí, validar ahora',
+                        cancelButtonText: 'Cancelar'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             form.submit();
@@ -194,13 +194,13 @@
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     Swal.fire({
-                        title: '¿Eliminar informe completamente?',
-                        text: "Esta acción es irreversible: se perderán todos los datos y las imágenes subidas.",
+                        title: '¿Eliminar informe?',
+                        text: "Esta acción no se puede deshacer.",
                         icon: 'error',
                         showCancelButton: true,
                         confirmButtonColor: '#DC2626',
                         cancelButtonColor: '#94a3b8',
-                        confirmButtonText: 'Sí, borrar permanentemente',
+                        confirmButtonText: 'Eliminar',
                         cancelButtonText: 'Cancelar'
                     }).then((result) => {
                         if (result.isConfirmed) {
