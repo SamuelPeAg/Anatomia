@@ -34,7 +34,7 @@ class Imagen extends Model
     {
         if (!$this->ruta) return asset('img/placeholder.png');
         
-        // En Plesk/Producción, esto asegura que usemos la URL correcta del disco public
-        return \Storage::disk('public')->url($this->ruta);
+        // Forma infalible para Plesk: ruta relativa directa al enlace simbólico
+        return '/storage/' . $this->ruta;
     }
 }
