@@ -47,7 +47,9 @@ class DatabaseSeeder extends Seeder
         );
 
         // 1) TIPOS FIJOS (catalogo)
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Tipomuestra::query()->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         Tipomuestra::insert([
             ['nombre'=>'Biopsia',               'prefijo'=>'B',   'contador_actual'=>0, 'requiere_organo'=>1, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
@@ -63,38 +65,31 @@ class DatabaseSeeder extends Seeder
             ['nombre'=>'Otro',                  'prefijo'=>'OTRO','contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
         ]);
 
-        // 2) SEEDING DE DATOS DE PRUEBA (Expedientes e Informes)
-        // Solo si no hay datos ya para no duplicar demasiado en cada seed (opcional)
-        if (Informe::count() < 5) {
-            $pacientes = [
-                ['nombre' => 'Juan Pérez', 'correo' => 'juan@ejemplo.com'],
-                ['nombre' => 'María García', 'correo' => 'maria@ejemplo.com'],
-                ['nombre' => 'Carlos López', 'correo' => 'carlos@ejemplo.com'],
-                ['nombre' => 'Ana Martínez', 'correo' => 'ana@ejemplo.com'],
-                ['nombre' => 'Roberto Gómez', 'correo' => 'roberto@ejemplo.com'],
-            ];
+        // 2) SEEDING MASIVO CON FACTORÍAS (30 Pacientes con Informes e Imágenes)
+        echo "Generando 30 pacientes y sus informes...\n";
 
-            foreach ($pacientes as $p) {
-                $exp = Expediente::create($p);
+        Expediente::factory()
+            ->count(30)
+            ->create()
+            ->each(function ($expediente) {
+                // Crear entre 1 y 3 informes por cada paciente
+                $numInformes = rand(1, 3);
                 
-                // Crear 2 informes por paciente
-                for ($i = 1; $i <= 2; $i++) {
-                    $tipo = Tipomuestra::inRandomOrder()->first();
-                    $codigo = $tipo->prefijo . str_pad($tipo->contador_actual + 1, 5, '0', STR_PAD_LEFT);
-                    
-                    $informe = Informe::create([
-                        'expediente_id' => $exp->id,
-                        'tipo_id' => $tipo->id,
-                        'anio' => now()->year,
-                        'correlativo' => $tipo->contador_actual + 1,
-                        'codigo_identificador' => $codigo,
-                        'estado' => $i % 2 == 0 ? 'completo' : 'incompleto',
-                        'recepcion_observaciones' => 'Observaciones de prueba para ' . $p['nombre'],
-                    ]);
+                Informe::factory()
+                    ->count($numInformes)
+                    ->create([
+                        'expediente_id' => $expediente->id
+                    ])
+                    ->each(function ($informe) {
+                        // Añadir algunas imágenes aleatorias (2-5 por informe)
+                        Imagen::factory()
+                            ->count(rand(2, 5))
+                            ->create([
+                                'informe_id' => $informe->id
+                            ]);
+                    });
+            });
 
-                    $tipo->increment('contador_actual');
-                }
-            }
-        }
+        echo "Seed completado con éxito.\n";
     }
 }

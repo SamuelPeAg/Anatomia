@@ -22,7 +22,7 @@
                 <div class="hero-btns">
                     @auth
                         <a href="{{ route('nuevo informe') }}" class="btn-premium">Nuevo Informe</a>
-                        <a href="{{ route('revision') }}" class="btn-outline">Ver Mis Informes</a>
+                        <a href="{{ route('revision') }}" class="btn-outline">Revisión</a>
                     @else
                         <a href="{{ route('login') }}" class="btn-premium">Comenzar Ahora</a>
                         <a href="#proceso" class="btn-outline">Ver Funcionamiento</a>

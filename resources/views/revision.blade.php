@@ -26,10 +26,24 @@
             width: 32px !important;
             height: 32px !important;
             border-radius: 8px !important;
-            background: #f1f5f9 !important;
+            background: #f8fafc !important;
             border: 1px solid #e2e8f0 !important;
+            color: #64748b !important;
             padding: 0 !important;
             cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+        .btn-edit:hover {
+            background: #EFF6FF !important;
+            color: #0234AB !important;
+            border-color: #BFDBFE !important;
+            transform: translateY(-2px) !important;
+        }
+        .btn-delete:hover {
+            background: #FEF2F2 !important;
+            color: #DC2626 !important;
+            border-color: #FECACA !important;
+            transform: translateY(-2px) !important;
         }
         .btn-validar-mini {
             display: inline-flex !important;
@@ -179,7 +193,6 @@
                                     <td><strong>{{ $informe->codigo_identificador }}</strong></td>
                                     <td>
                                         <div style="font-weight: 600;">{{ $informe->expediente->nombre ?? 'Anónimo' }}</div>
-                                        <div style="font-size: 0.8rem; color: #64748b;">ID: {{ $informe->expediente->id ?? 'N/A' }}</div>
                                     </td>
                                     <td>{{ $informe->tipo->nombre ?? 'N/A' }}</td>
                                     <td>{{ $informe->created_at->format('d/m/Y') }}</td>

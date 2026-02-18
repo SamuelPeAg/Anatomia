@@ -166,13 +166,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (totalCurrent + input.files.length > 6) {
                     const disponibles = 6 - totalCurrent;
+
                     if (disponibles <= 0) {
-                        mostrarToast("Ya has alcanzado el límite de 6 imágenes.", 'error');
-                    } else {
-                        mostrarToast(`Solo puedes añadir ${disponibles} imágenes más para no superar el límite de 6.`, 'warning');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Límite alcanzado',
+                            text: 'Ya tienes el máximo de 6 imágenes permitidas para esta sección.',
+                            confirmButtonColor: '#0234AB'
+                        });
+                        input.value = '';
+                        return;
                     }
-                    input.value = '';
-                    return; // IMPORTANTE: Bloquear la ejecución
+
+                    // Si hay hueco pero seleccionó de más, avisamos y recortamos
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Demasiadas imágenes',
+                        text: `Has seleccionado ${input.files.length} fotos, pero el límite es 6. Solo se añadirán las primeras ${disponibles} que caben para no superar el tope.`,
+                        confirmButtonColor: '#0234AB'
+                    });
+
+                    // Filtrar archivos usando DataTransfer (necesario para modificar input.files)
+                    const dataTransfer = new DataTransfer();
+                    Array.from(input.files).slice(0, disponibles).forEach(file => {
+                        dataTransfer.items.add(file);
+                    });
+                    input.files = dataTransfer.files;
                 }
 
                 const loteId = 'lote-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);

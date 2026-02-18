@@ -89,4 +89,17 @@ class InformeFactory extends Factory
             'citodiagnostico' => null,
         ]);
     }
+
+    /**
+     * Estado totalmente completado.
+     */
+    public function completo(): static
+    {
+        return $this->state(fn () => [
+            'estado' => 'completo',
+            'procesamiento_tipo' => $this->faker->randomElement(['CITOCENTRIFUGADO', 'EXTENSION', 'BLOQUE_CELULAR']),
+            'tincion_tipo' => $this->faker->randomElement(['Hematoxilina - Eosina (H/E)', 'Giemsa', 'PAS', 'Papanicolaou (PAP)']),
+            'citodiagnostico' => $this->faker->paragraph(3),
+        ]);
+    }
 }
