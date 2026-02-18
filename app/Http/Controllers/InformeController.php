@@ -191,8 +191,11 @@ class InformeController extends Controller
                 ->with('success', 'Recepción guardada.');
         }
 
-        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => 2])
-            ->with('success', 'Recepción completada. Continuando a Procesamiento.');
+        // Buscar la siguiente fase incompleta
+        $siguiente = $this->getPrimeraFaseIncompleta($informe) ?: 2;
+
+        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $siguiente])
+            ->with('success', 'Recepción guardada. Continuando...');
     }
 
     /**
@@ -257,11 +260,18 @@ class InformeController extends Controller
 
         if ($request->has('citodiagnostico')) {
             $data['citodiagnostico'] = $request->citodiagnostico;
-            $data['estado'] = 'completo';
         }
 
         $informe->update($data);
         $this->procesarImagenes($request, $informe);
+
+        // Calcular estado final
+        $primeraIncompleta = $this->getPrimeraFaseIncompleta($informe);
+        if ($primeraIncompleta === null) {
+            $informe->update(['estado' => 'completo']);
+        } else {
+            $informe->update(['estado' => 'incompleto']);
+        }
 
         if ($request->input('stay') == '2') {
             return redirect()->route('revision')->with('success', 'Progreso guardado correctamente.');
@@ -273,26 +283,47 @@ class InformeController extends Controller
 
         $faseActual = (int) $request->input('fase_origen', 1);
 
-        if ($faseActual == 4) {
-            return redirect()->route('revision')->with('success', 'Informe finalizado correctamente.');
+        if ($primeraIncompleta === null) {
+            return redirect()->route('revision')->with('success', 'Informe completado correctamente.');
         }
 
-        $siguienteFase = ($faseActual < 4) ? $faseActual + 1 : 4;
-
-        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $siguienteFase])
-            ->with('success', 'Fase completada. Continuando...');
+        return redirect()->route('informes.edit', ['informe' => $informe, 'fase' => $primeraIncompleta])
+            ->with('success', 'Progreso guardado. Redirigiendo a la siguiente fase pendiente.');
     }
 
     // --- Métodos Privados y Auxiliares ---
 
     private function getFaseInfo($informe)
     {
-        if (empty($informe->recepcion_observaciones)) return ['nombre' => 'Recepción', 'numero' => 1];
-        if (empty($informe->procesamiento_tipo)) return ['nombre' => 'Procesamiento', 'numero' => 2];
-        if (empty($informe->tincion_tipo)) return ['nombre' => 'Tinción', 'numero' => 3];
-        if (empty($informe->citodiagnostico)) return ['nombre' => 'Citodiagnóstico', 'numero' => 4];
+        $numero = $this->getPrimeraFaseIncompleta($informe) ?: 4;
         
-        return ['nombre' => 'Finalizado', 'numero' => 4];
+        $nombres = [1 => 'Recepción', 2 => 'Procesamiento', 3 => 'Tinción', 4 => 'Citodiagnóstico'];
+        
+        return [
+            'nombre' => $nombres[$numero],
+            'numero' => $numero
+        ];
+    }
+
+    /**
+     * Devuelve el número (1-4) de la primera fase que le falta información obligatoria.
+     * Devuelve null si todas están completas.
+     */
+    private function getPrimeraFaseIncompleta(Informe $informe)
+    {
+        if (empty($informe->recepcion_observaciones)) return 1;
+        if (empty($informe->procesamiento_tipo)) return 2;
+        if (empty($informe->tincion_tipo)) return 3;
+        if (empty($informe->citodiagnostico)) return 4;
+        
+        // Verificación de imágenes obligatorias en fase 4
+        $imgsFase4 = $informe->imagenes()->where('fase', 'microscopio')->where('obligatoria', 1)->pluck('zoom')->toArray();
+        $requeridos = ['x4', 'x10', 'x40', 'x100'];
+        foreach ($requeridos as $z) {
+            if (!in_array($z, $imgsFase4)) return 4;
+        }
+
+        return null; // Todo OK
     }
 
     private function obtenerExpedienteId(Request $request)

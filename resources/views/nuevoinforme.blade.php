@@ -174,7 +174,6 @@
         </section>
     </main>
 
-    <x-modal-confirm />
     <div id="toast-container" class="toast-container"></div>
     <x-footer />
 
