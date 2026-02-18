@@ -177,7 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const loteId = 'lote-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 actualizarContador(container); // Actualizar tras añadir
-                // ... (rest of the reader.onload logic is fine)
 
                 // Generar previews
                 Array.from(input.files).forEach((file) => {

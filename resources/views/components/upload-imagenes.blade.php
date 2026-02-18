@@ -1,4 +1,3 @@
-```
 <div class="subtarjeta">
     <div class="subtarjeta-cabecera">
         <div class="subtarjeta-info-grupo">
