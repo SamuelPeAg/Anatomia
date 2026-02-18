@@ -125,17 +125,6 @@
                                value="{{ request('fecha', \Carbon\Carbon::now()->format('Y-m-d')) }}" 
                                class="filters-input">
                     </div>
-
-                    <div class="filter-group">
-                        <label for="fase" class="filters-label">Fase:</label>
-                        <select name="fase" id="fase" class="filters-input">
-                            <option value="">Todas las fases</option>
-                            <option value="1" {{ request('fase') == '1' ? 'selected' : '' }}>1. Recepción</option>
-                            <option value="2" {{ request('fase') == '2' ? 'selected' : '' }}>2. Procesamiento</option>
-                            <option value="3" {{ request('fase') == '3' ? 'selected' : '' }}>3. Tinción</option>
-                            <option value="4" {{ request('fase') == '4' ? 'selected' : '' }}>4. Citodiagnóstico</option>
-                        </select>
-                    </div>
                     
                     <div class="filter-group">
                         <label for="search" class="filters-label">Buscador:</label>
