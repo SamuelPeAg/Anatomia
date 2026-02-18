@@ -159,11 +159,22 @@ document.addEventListener("DOMContentLoaded", () => {
             const container = document.getElementById(containerId);
 
             if (input.files && input.files.length > 0 && container) {
-                if (input.files.length > 10) {
-                    mostrarToast("Máximo 10 imágenes por selección.", 'warning');
-                    input.value = ''; // Limpiar
+                const parent = container.closest('.subtarjeta-cuerpo');
+                const existingCount = parent.querySelectorAll('.imagen-card').length;
+                const newQueuedCount = container.querySelectorAll('.nueva-imagen-fila').length;
+                const totalCurrent = existingCount + newQueuedCount;
+
+                if (totalCurrent + input.files.length > 12) {
+                    const disponibles = 12 - totalCurrent;
+                    if (disponibles <= 0) {
+                        mostrarToast("Ya has alcanzado el límite de 12 imágenes.", 'error');
+                    } else {
+                        mostrarToast(`Solo puedes añadir ${disponibles} imágenes más para no superar el límite de 12.`, 'warning');
+                    }
+                    input.value = '';
                     return;
                 }
+
                 const loteId = 'lote-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 
                 // Generar previews
