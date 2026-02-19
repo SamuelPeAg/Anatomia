@@ -65,28 +65,23 @@ class DatabaseSeeder extends Seeder
             ['nombre'=>'Otro',                  'prefijo'=>'OTRO','contador_actual'=>0, 'requiere_organo'=>0, 'descripcion'=>null, 'activo'=>1, 'created_at'=>now(), 'updated_at'=>now()],
         ]);
 
-        // 2) SEEDING MASIVO CON FACTORÍAS (30 Pacientes con Informes e Imágenes)
-
-        Expediente::factory()
+        // 2) SEEDING MASIVO CON FACTORÍAS (100 Informes con sus Pacientes e Imágenes)
+        Informe::factory()
             ->count(100)
             ->create()
-            ->each(function ($expediente) {
-                // Crear entre 1 y 3 informes por cada paciente
-                $numInformes = rand(1, 3);
-                
-                Informe::factory()
-                    ->count($numInformes)
+            ->each(function ($informe) {
+                // Aseguramos que tenga un expediente (el factory a veces lo deja null al 40%)
+                if (!$informe->expediente_id) {
+                    $expediente = Expediente::inRandomOrder()->first() ?? Expediente::factory()->create();
+                    $informe->update(['expediente_id' => $expediente->id]);
+                }
+
+                // Añadir algunas imágenes aleatorias (2-5 por informe)
+                Imagen::factory()
+                    ->count(rand(2, 5))
                     ->create([
-                        'expediente_id' => $expediente->id
-                    ])
-                    ->each(function ($informe) {
-                        // Añadir algunas imágenes aleatorias (2-5 por informe)
-                        Imagen::factory()
-                            ->count(rand(2, 5))
-                            ->create([
-                                'informe_id' => $informe->id
-                            ]);
-                    });
+                        'informe_id' => $informe->id
+                    ]);
             });
 
     }
