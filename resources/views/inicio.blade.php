@@ -30,45 +30,6 @@
                 </div>
             </section>
 
-            <!-- Dashboard Preview / Mockup -->
-            <section class="dashboard-preview">
-                <div class="preview-window">
-                    <div class="window-header">
-                        <div class="window-dots">
-                            <span class="dot red"></span>
-                            <span class="dot yellow"></span>
-                            <span class="dot green"></span>
-                        </div>
-                        <div class="window-address">anatomiamedac.es/informes</div>
-                    </div>
-                    <div class="window-content">
-                        <img src="https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&q=80&w=1200" alt="Vista previa del sistema" class="img-preview">
-                        <div class="dashboard-overlay">
-                            <div class="overlay-card">
-                                <h3>Informes Activos</h3>
-                                <p>12 muestras en proceso</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Stats Section -->
-            <section class="stats-section">
-                <div class="stat-card">
-                    <span class="stat-value">+500</span>
-                    <span class="stat-label">Informes Generados</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value">100%</span>
-                    <span class="stat-label">Trazabilidad</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value">24/7</span>
-                    <span class="stat-label">Acceso Remoto</span>
-                </div>
-            </section>
-
             <!-- Benefits/Process Section -->
             <section class="benefits-section" id="proceso">
                 <div class="section-header">
@@ -101,18 +62,8 @@
                         </div>
                     </div>
                     <div class="benefit-visual">
-                        <div class="visual-container">
-                            <img src="https://images.unsplash.com/photo-1579154273821-392900c80461?auto=format&fit=crop&q=80&w=1200" alt="Laboratorio de Patología" class="img-hero-main">
-                            <div class="visual-overlay">
-                                <div class="mockup-row">
-                                    <div class="mockup-dot"></div>
-                                    <div class="mockup-line"></div>
-                                </div>
-                                <div class="mockup-row">
-                                    <div class="mockup-dot"></div>
-                                    <div class="mockup-line"></div>
-                                </div>
-                            </div>
+                        <div class="visual-placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
                         </div>
                     </div>
                 </div>
