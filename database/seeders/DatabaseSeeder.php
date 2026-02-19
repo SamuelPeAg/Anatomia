@@ -68,7 +68,7 @@ class DatabaseSeeder extends Seeder
         // 2) SEEDING MASIVO CON FACTORÍAS (30 Pacientes con Informes e Imágenes)
 
         Expediente::factory()
-            ->count(30)
+            ->count(100)
             ->create()
             ->each(function ($expediente) {
                 // Crear entre 1 y 3 informes por cada paciente
