@@ -36,7 +36,6 @@
                 
                 <x-upload-imagenes :informe="$informe" fase="microscopio" zoom="x100" titulo="Aumento 100x (Obligatorio)" :required="true" input-name="micro_x100_img[]" input-name-desc="micro_x100_desc[]" />
 
-                <x-upload-imagenes :informe="$informe" fase="microscopio" zoom="extra" titulo="Otras imágenes (Opcional)" :required="false" input-name="micros_extra_img[]" input-name-desc="micros_extra_desc[]" />
             </div>
         </div>
 
