@@ -69,6 +69,6 @@
     <div id="toast-container" class="toast-container"></div>
     <x-footer />
 
-    @vite(['resources/js/app-alerts.js', 'resources/js/formulario-ui.js', 'resources/js/formulario-acciones.js', 'resources/js/fase-citodiagnostico.js', 'resources/js/autocomplete.js'])
+    @vite(['resources/js/alertas.js', 'resources/js/formulario-informe.js'])
 </body>
 </html>

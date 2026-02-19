@@ -144,6 +144,6 @@
 
     <x-footer />
 
-    @vite(['resources/js/app-alerts.js', 'resources/js/revision.js'])
+    @vite(['resources/js/alertas.js', 'resources/js/informe-listado.js'])
 </body>
 </html>

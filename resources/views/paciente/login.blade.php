@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso Pacientes — Anatomía MEDAC</title>
-    @vite(['resources/css/principal.css', 'resources/css/alerts.css', 'resources/css/paciente-login.css', 'resources/js/app-alerts.js'])
+    @vite(['resources/css/principal.css', 'resources/css/alerts.css', 'resources/css/paciente-login.css', 'resources/js/alertas.js'])
 
 </head>
 <body class="login-body" 

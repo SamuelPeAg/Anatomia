@@ -5,10 +5,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\InformeController;
 use App\Http\Controllers\ExpedienteController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-
 // Página Principal
-Route::get('/', [DashboardController::class, 'index'])->name("inicio");
+Route::get('/', function () { return view('inicio'); })->name("inicio");
 
 // Autenticación
 Route::get('/login', function () {
@@ -28,7 +26,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 // Rutas Protegidas
 Route::middleware(['auth'])->group(function () {
     
-    Route::get('/home', [DashboardController::class, 'index'])->name("home");
+    Route::get('/home', function () { return view('inicio'); })->name("home");
 
     Route::get("/nuevo_informe", [InformeController::class, "create"])->name("nuevo informe");
 
@@ -58,4 +56,3 @@ Route::get('/paciente/mis-informes', [ExpedienteController::class, 'misInformes'
 Route::get('/ayuda', function () { return view('paginas.ayuda'); })->name('ayuda');
 Route::get('/privacidad', function () { return view('paginas.privacidad'); })->name('privacidad');
 Route::get('/terminos', function () { return view('paginas.terminos'); })->name('terminos');
-Route::get('/configuracion', function () { return view('paginas.configuracion'); })->name('configuracion');
