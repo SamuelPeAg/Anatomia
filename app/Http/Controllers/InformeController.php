@@ -68,7 +68,7 @@ class InformeController extends Controller
         // 1. Prioridad: Si hay búsqueda (search), mostramos todos los resultados que coincidan
         // independientemente de la fecha.
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim($request->search);
             $query->where(function($q) use ($search) {
                 $q->where('codigo_identificador', 'like', "%$search%")
                   ->orWhereHas('expediente', function($qe) use ($search) {

@@ -34,7 +34,7 @@
                         <label for="search" class="filters-label">Buscador:</label>
                         <input type="text" name="search" id="search" 
                                value="{{ request('search') }}" 
-                               placeholder="Nombre..."
+                               placeholder="Nombre o Código..."
                                class="filters-input">
                     </div>
 
