@@ -234,7 +234,7 @@ class InformeController extends Controller
             $data['recepcion_observaciones'] = $request->observaciones_llegada;
             $data['recepcion_organo'] = $request->organo;
             
-            if ($id = $this->obtenerExpedienteId($request)) {
+            if ($id = $this->obtenerExpedienteId($request, $informe)) {
                 $data['expediente_id'] = $id;
             }
         }
@@ -304,14 +304,40 @@ class InformeController extends Controller
 
     // --- Métodos Privados y Auxiliares ---
 
-    private function obtenerExpedienteId(Request $request)
+    private function obtenerExpedienteId(Request $request, ?Informe $informe = null)
     {
-        return $request->filled('paciente_correo') 
-            ? Expediente::updateOrCreate(
-                ['correo' => $request->paciente_correo],
-                ['nombre' => $request->paciente_nombre ?? 'Paciente sin nombre']
-              )->id 
-            : null;
+        $nombre = $request->input('paciente_nombre');
+        $correo = $request->input('paciente_correo');
+
+        // Si no hay ni nombre ni correo, no hay expediente que guardar/vincular
+        if (empty($nombre) && empty($correo)) {
+            return null;
+        }
+
+        // Caso 1: Se proporciona un correo (Vínculo fuerte)
+        if (!empty($correo)) {
+            return Expediente::updateOrCreate(
+                ['correo' => $correo],
+                ['nombre' => $nombre ?? 'Paciente sin nombre']
+            )->id;
+        }
+
+        // Caso 2: No hay correo, pero hay nombre
+        // Si estamos editando y el informe ya tiene un expediente, actualizamos ese.
+        if ($informe && $informe->expediente_id) {
+            $expediente = Expediente::find($informe->expediente_id);
+            if ($expediente) {
+                $expediente->update(['nombre' => $nombre]);
+                return $expediente->id;
+            }
+        }
+
+        // Caso 3: No hay correo, hay nombre, y es un informe nuevo (o sin expediente previo)
+        // Creamos uno nuevo solo con el nombre.
+        return Expediente::create([
+            'nombre' => $nombre,
+            'correo' => null
+        ])->id;
     }
 
     private function validarRequisitosMicroscopio(Request $request, Informe $informe)
