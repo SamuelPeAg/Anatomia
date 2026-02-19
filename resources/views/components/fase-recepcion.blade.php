@@ -63,7 +63,6 @@
                     name="paciente_nombre"
                     placeholder="Ej: Juan Pérez"
                     value="{{ $informe && $informe->expediente ? $informe->expediente->nombre : '' }}"
-                    {{ $informe ? 'readonly' : '' }}
                     autocomplete="off"
                 />
                 <ul id="autocomplete-list" class="autocomplete-items" style="display: none;"></ul>
@@ -86,7 +85,6 @@
                 name="paciente_correo"
                 placeholder="paciente@ejemplo.com"
                 value="{{ $informe && $informe->expediente ? $informe->expediente->correo : '' }}"
-                {{ $informe ? 'readonly' : '' }}
             />
             <small class="ayuda-campo">Vínculo de informes al mismo paciente.</small>
         </div>

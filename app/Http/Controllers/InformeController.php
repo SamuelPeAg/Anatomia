@@ -307,7 +307,7 @@ class InformeController extends Controller
     private function obtenerExpedienteId(Request $request)
     {
         return $request->filled('paciente_correo') 
-            ? Expediente::firstOrCreate(
+            ? Expediente::updateOrCreate(
                 ['correo' => $request->paciente_correo],
                 ['nombre' => $request->paciente_nombre ?? 'Paciente sin nombre']
               )->id 
