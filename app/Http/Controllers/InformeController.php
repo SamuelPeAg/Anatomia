@@ -86,7 +86,7 @@ class InformeController extends Controller
             }
         }
 
-        $informes = $query->paginate(10)->withQueryString();
+        $informes = $query->paginate(10)->onEachSide(2)->withQueryString();
 
         $informes->getCollection()->transform(function ($informe) {
             $numIncompleta = $this->getPrimeraFaseIncompleta($informe);
