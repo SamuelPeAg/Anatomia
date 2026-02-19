@@ -45,17 +45,26 @@
 
                 <div class="filters-divider"></div>
 
-                @if(!request('mostrar_todos'))
-                    <a href="{{ route('revision', ['mostrar_todos' => 1]) }}" class="filters-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        Ver Historial Completo
-                    </a>
-                @else
-                    <a href="{{ route('revision') }}" class="filters-link active">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
-                        Volver a Hoy
-                    </a>
-                @endif
+                @php
+                    $today = \Carbon\Carbon::now()->format('Y-m-d');
+                    $isFiltered = request('search') || (request('fecha') && request('fecha') !== $today) || request('mostrar_todos');
+                @endphp
+
+                <div class="filters-actions" style="display: flex; gap: 1rem; align-items: center;">
+                    @if($isFiltered)
+                        <a href="{{ route('revision') }}" class="filters-link active" title="Limpiar todos los filtros y volver a hoy">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+                            Volver a Hoy
+                        </a>
+                    @endif
+
+                    @if(!request('mostrar_todos'))
+                        <a href="{{ route('revision', ['mostrar_todos' => 1]) }}" class="filters-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            Ver Historial Completo
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <div class="reports-table-wrapper">
