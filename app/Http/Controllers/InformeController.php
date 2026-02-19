@@ -364,7 +364,11 @@ class InformeController extends Controller
 
             foreach ($files as $i => $file) {
                 if (($count + $i) < 6) {
-                    $this->guardarImagen($file, $informe, $fase, $descs[$i] ?? null, $zooms[$i] ?? null, false);
+                    $zoomParaGuardar = $zooms[$i] ?? null;
+                    if ($fase === 'microscopio' && !$zoomParaGuardar) {
+                         $zoomParaGuardar = 'extra';
+                    }
+                    $this->guardarImagen($file, $informe, $fase, $descs[$i] ?? null, $zoomParaGuardar, false);
                 }
             }
         }

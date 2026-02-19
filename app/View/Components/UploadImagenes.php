@@ -54,7 +54,7 @@ class UploadImagenes extends Component
              // Fallback si no está cargada (aunque debería estarlo por eager loading)
              $this->imagenes = $this->informe->imagenes()->where('fase', $this->fase);
              if ($this->zoom !== null) {
-                 $this->imagenes->where('zoom', $this->zoom);
+                 $this->imagenes = $this->imagenes->where('zoom', $this->zoom);
              }
              $this->imagenes = $this->imagenes->get();
         }
