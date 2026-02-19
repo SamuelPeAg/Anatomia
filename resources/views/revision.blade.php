@@ -26,7 +26,7 @@
                     <div class="filter-group">
                         <label for="fecha" class="filters-label">Fecha:</label>
                         <input type="date" name="fecha" id="fecha" 
-                               value="{{ request('fecha', \Carbon\Carbon::now()->format('Y-m-d')) }}" 
+                               value="{{ request('fecha', now()->format('Y-m-d')) }}" 
                                class="filters-input">
                     </div>
                     
@@ -46,7 +46,7 @@
                 <div class="filters-divider"></div>
 
                 @php
-                    $today = \Carbon\Carbon::now()->format('Y-m-d');
+                    $today = now()->format('Y-m-d');
                     $isFiltered = request('search') || (request('fecha') && request('fecha') !== $today) || request('mostrar_todos');
                 @endphp
 
